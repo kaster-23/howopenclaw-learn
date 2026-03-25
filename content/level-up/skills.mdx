@@ -1,0 +1,145 @@
+---
+title: "Skills & ClawHub"
+description: "Install community skills, build custom integrations, and extend what your agent can do."
+---
+
+Read this when you want to connect new services or extend your agent beyond the built-in tools.
+
+---
+
+## Skills vs tools
+
+**Built-in tools** (web_fetch, web_search, read, write, exec) are general-purpose and always available.
+
+**Skills** are purpose-built integrations for specific services. They're structured — your agent knows the exact API surface, not just how to make HTTP requests.
+
+The difference in practice:
+- `web_fetch` can read any URL but returns raw HTML/text
+- The `github` skill can list PRs, read code, and comment — with proper types and auth handled
+
+---
+
+## Finding skills on ClawHub
+
+[ClawHub](https://clawhub.ai) is the community skill directory. Browse by category or search by service name.
+
+Each skill page shows:
+- What it enables your agent to do
+- Configuration format
+- Required API key or OAuth scopes
+- Example prompts
+
+---
+
+## Installing a skill
+
+Most skills are installed via npm:
+
+```bash
+openclaw skills install @openclaw/skill-github
+openclaw skills install @openclaw/skill-linear
+openclaw skills install @openclaw/skill-notion
+```
+
+Then add the config:
+
+```json
+{
+  "skills": {
+    "github": {
+      "enabled": true,
+      "token": "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"
+    }
+  }
+}
+```
+
+Restart the Gateway:
+
+```bash
+openclaw gateway restart
+```
+
+---
+
+## Popular skills
+
+### Productivity
+- `@openclaw/skill-gmail` — read, search, draft emails
+- `@openclaw/skill-google-calendar` — events, scheduling, conflicts
+- `@openclaw/skill-notion` — read/write pages and databases
+- `@openclaw/skill-linear` — issues, cycles, projects
+- `@openclaw/skill-github` — PRs, issues, code, commits
+- `@openclaw/skill-jira` — tickets, sprints, boards
+
+### Data & Finance
+- `@openclaw/skill-alpha-vantage` — stock prices, financials
+- `@openclaw/skill-polygon` — real-time market data
+- `@openclaw/skill-weather` — current weather and forecasts
+
+### Communication
+- `@openclaw/skill-gmail-send` — actually send emails (separate from read)
+- `@openclaw/skill-slack-read` — read Slack history (separate from the channel integration)
+
+### Utilities
+- `@openclaw/skill-wikipedia` — structured Wikipedia queries
+- `@openclaw/skill-wolframalpha` — computation, math, factual queries
+- `@openclaw/skill-pdf` — extract text from PDF files
+
+---
+
+## Building a custom skill
+
+If a skill doesn't exist for your service, you can build one.
+
+A skill is a Node.js module that exports a tool definition:
+
+```javascript
+// my-skill/index.js
+module.exports = {
+  name: "my_service",
+  description: "Access My Service API",
+  tools: [
+    {
+      name: "get_items",
+      description: "Get a list of items from My Service",
+      parameters: {
+        type: "object",
+        properties: {
+          filter: { type: "string", description: "Filter items by this string" }
+        }
+      },
+      async execute({ filter }, config) {
+        const response = await fetch(`https://api.myservice.com/items?q=${filter}`, {
+          headers: { "Authorization": `Bearer ${config.apiKey}` }
+        })
+        return await response.json()
+      }
+    }
+  ]
+}
+```
+
+Point to it in your config:
+
+```json
+{
+  "skills": {
+    "my_service": {
+      "enabled": true,
+      "path": "./skills/my-skill",
+      "apiKey": "YOUR_KEY"
+    }
+  }
+}
+```
+
+The official skill development guide is at [docs.openclaw.ai/tools/creating-skills](https://docs.openclaw.ai/tools/creating-skills).
+
+---
+
+## Skill permissions
+
+Each skill only gets the credentials you give it. No skill can access other skills' credentials or read your SOUL.md. This is enforced by the Gateway's skill sandbox.
+
+For OAuth-based skills (Gmail, Calendar, etc.), tokens are stored at `~/.openclaw/tokens/` and never sent to any OpenClaw server.

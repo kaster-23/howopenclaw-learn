@@ -1,0 +1,177 @@
+---
+title: "SOUL.md & Identity"
+description: "Design your agent's personality, communication style, and values. The most important file in your workspace."
+---
+
+> **The alpha comes from the systems around the model, not just the model itself.**
+
+Don't rush through this. Your SOUL.md is the foundation that every response runs through. A generic SOUL.md produces a generic agent. A specific, well-crafted one produces an assistant that actually feels like yours.
+
+## The Three Identity Files
+
+| File | Purpose | Update Frequency |
+|---|---|---|
+| `SOUL.md` | Agent personality, communication style, values, expertise | Monthly or when adjustments are needed |
+| `IDENTITY.md` | Agent name, creature type, visual description | Rarely — once or twice |
+| `USER.md` | Information about you, the human | Weekly or as circumstances change |
+
+## SOUL.md — Your Agent's Personality
+
+Every response your agent gives is filtered through SOUL.md. Get this right and everything else improves.
+
+### Key Components
+
+#### 1. Personality Traits
+
+Be specific. Vague adjectives are useless. Compare:
+
+❌ "Be helpful and friendly"
+✅ "Direct and opinionated. Say what you think, then explain why. Don't hedge unless you're genuinely uncertain."
+
+#### 2. Communication Style
+
+Tell the agent exactly how to format responses:
+
+```
+- Default to short responses (2-3 sentences max)
+- Use bullets, never numbered lists
+- No preambles: skip "Great question!" and "Certainly!"
+- Lead with the answer, explain after
+- Use everyday analogies before technical precision
+```
+
+#### 3. Values and Priorities
+
+What should the agent optimize for?
+
+```
+- Accuracy over speed
+- Usefulness over politeness
+- Privacy-first — never suggest storing sensitive data externally
+- Brevity — say more with less
+```
+
+#### 4. Areas of Expertise
+
+Three tiers:
+
+```
+Deep expertise: [your actual domain knowledge]
+Working knowledge: [areas where you're competent but not expert]
+Avoid pretending: [areas where the agent should say "I don't know"]
+```
+
+#### 5. Situational Behavior
+
+How should the agent behave in specific contexts?
+
+```
+Brainstorming: generate 5+ options, hold opinions until asked
+Writing requests: match my voice, not a generic professional tone
+Factual questions: cite sources when uncertain
+When I'm frustrated: don't tell me to calm down, just solve the problem
+```
+
+#### 6. Anti-Patterns
+
+Explicit prohibitions help more than you'd expect:
+
+```
+Never use: "I hope this helps", "Certainly!", "As an AI..."
+Never: bullet points for things that work better as prose
+Never: hedge on decisions when I've asked for a recommendation
+```
+
+### The Specificity Rule
+
+The more specific your instructions, the better the output. This is universally true:
+
+| Vague | Specific |
+|---|---|
+| "Be funny" | "Use dry, understated humor like Mitch Hedberg" |
+| "Be concise" | "Max 3 sentences unless asked for more" |
+| "Know about tech" | "Deep expertise in React and Node.js, working knowledge of Python" |
+
+## IDENTITY.md — Your Agent's Name and Appearance
+
+OpenClaw uses a creature tradition — agents get animal or mythical creature identities. This isn't just cosmetic.
+
+**Template:**
+
+```markdown
+Name: [Name]
+Creature: [Type]
+Appearance: [Visual description — 2-3 sentences]
+Vibe: [One-sentence personality summary]
+Pronouns: [they/them, she/her, etc.]
+```
+
+**Why it matters:**
+
+- Image generation consistency (if you use visual features)
+- Multi-agent distinction (when you have several agents)
+- Voice and TTS personality adaptation
+- A sense of identity that makes interactions feel less transactional
+
+## USER.md — Context About You
+
+The more context your agent has about you, the more useful it becomes. Include:
+
+**Basic info:**
+- Name, location, timezone
+- Communication preferences (text vs. voice, response length)
+
+**Work context:**
+- Role and current projects
+- Working hours and batching patterns
+- Key collaborators and contacts
+
+**Relationships:**
+- People who matter to you (names, relationship, context)
+- Groups and teams you're part of
+
+**Outside interests:**
+- What you do outside work
+- What you're learning or building
+
+**Schedule quirks:**
+- Recurring commitments
+- Anything that affects availability
+
+### What NOT to Include
+
+Treat USER.md like an unencrypted workplace document:
+
+- No passwords or API keys
+- No financial account numbers
+- No sensitive medical information
+- No other people's private data
+
+## Putting It All Together
+
+### The Iteration Process
+
+1. Start with the default templates
+2. Use your agent for a week and notice gaps
+3. Diagnose: is this a personality problem (SOUL.md) or a context problem (USER.md)?
+4. Add specific instructions — don't rewrite everything
+5. Repeat. Your SOUL.md should get better over months, not days.
+
+### Common Mistakes
+
+- **Too long:** Keep SOUL.md under 200 lines. Longer isn't better.
+- **Internal contradictions:** "Be concise" + "Always provide full context" = confusion
+- **Never updating:** Your life changes. Your SOUL.md should too.
+- **Copying others' files:** Templates are starting points, not solutions.
+
+### The Validation Test
+
+After setup, test your agent on:
+
+1. A factual question in your domain of expertise
+2. A request to write something in your voice
+3. A brainstorming session
+4. A "I don't know" scenario — did it admit uncertainty?
+5. A message where you're clearly frustrated
+
+If responses feel generic, your SOUL.md needs more specificity. That's always the answer.

@@ -1,0 +1,162 @@
+---
+title: "Cost Management"
+description: "OpenClaw is free. The AI model APIs are not. Here's how to keep monthly costs under control without degrading your experience."
+---
+
+OpenClaw itself is free. What costs money are the AI model API calls it makes on your behalf. Understanding where those costs come from — and how to reduce them — lets you optimize without sacrificing quality where it matters.
+
+## Where Your Money Goes
+
+For a typical OpenClaw setup, costs break down roughly as:
+
+| Component | Share of Costs |
+|---|---|
+| LLM API calls | 70–85% |
+| Text-to-speech (if enabled) | 5–15% |
+| Web search | 2–5% |
+| Image generation | Variable |
+| Embeddings and memory | 1–2% |
+
+LLM calls are the dominant cost. Everything else is secondary.
+
+## Model Pricing Reality
+
+The pricing difference between models is enormous:
+
+| Model | Relative Cost |
+|---|---|
+| Claude Opus | ~100x |
+| Claude Sonnet | ~10x |
+| Claude Haiku | ~2x |
+| GPT-4o-mini | 1x (baseline) |
+
+Using Claude Opus for every request — including your morning briefing and simple web searches — is like using a private jet to commute. The capability isn't the issue. The necessity is.
+
+## The Tiered Model Strategy
+
+Match model capability to task requirements:
+
+```json
+{
+  "models": {
+    "default": "claude-sonnet-4-6",
+    "reasoning": "claude-opus-4-6",
+    "fast": "claude-haiku-4-5",
+    "cheapest": "gpt-4o-mini"
+  },
+  "routing": {
+    "morningBriefing": "fast",
+    "webSearch": "cheapest",
+    "codeReview": "reasoning",
+    "casualChat": "default"
+  }
+}
+```
+
+Practical rule: escalate to reasoning models only when the task requires multi-step logical reasoning, complex analysis, or high-stakes output. Use your default model for most things. Use cheap models for automations.
+
+## Seven Cost Reduction Tactics
+
+### 1. Audit Your Cron Jobs
+
+Every scheduled job costs money. Review frequency and model selection:
+
+```bash
+openclaw costs --breakdown cron
+```
+
+A daily briefing at the wrong frequency (every hour instead of once a day) multiplies costs 24x. An hourly market check running on Opus instead of Haiku multiplies costs 50x.
+
+### 2. Shorten Your System Prompts
+
+SOUL.md loads into every conversation. Every token in SOUL.md adds to every API call.
+
+- Keep SOUL.md under 2,000 tokens (~1,500 words)
+- Remove redundant instructions
+- Cut vague adjectives that don't actually change behavior
+
+### 3. Limit Conversation History
+
+By default, OpenClaw includes full conversation history in every API call. This compounds quickly in long conversations.
+
+```json
+{
+  "context": {
+    "maxHistoryMessages": 20,
+    "maxHistoryTokens": 4000
+  }
+}
+```
+
+20 messages is enough context for almost any conversation.
+
+### 4. Route Sub-Agents to Cheap Models
+
+Sub-agents doing research, summarization, and data gathering don't need your most capable model:
+
+```javascript
+sessions_spawn({
+  instruction: "Research competitor pricing",
+  model: "gpt-4o-mini",    // Not claude-opus-4-6
+  skills: ["web-search"]
+})
+```
+
+### 5. Batch Your Questions
+
+Instead of three separate messages, combine them:
+
+❌ Three API calls:
+```
+What's the weather?
+What's on my calendar?
+Any urgent emails?
+```
+
+✅ One API call:
+```
+Give me: 1) weather, 2) today's calendar, 3) urgent emails
+```
+
+### 6. Disable Unused Features
+
+Voice, image generation, and continuous memory operations add up. If you're not using a feature, disable it:
+
+```json
+{
+  "voice": { "enabled": false },
+  "imageGeneration": { "enabled": false },
+  "continuousMemory": { "enabled": false }
+}
+```
+
+### 7. Set Provider Spending Caps
+
+Most AI providers offer spending limits. Set them:
+
+- Anthropic: Console → Billing → Spend limits
+- OpenAI: Platform → Billing → Usage limits
+
+Set a monthly limit 20% above your expected usage. This prevents runaway costs from automation bugs while giving you headroom.
+
+## Realistic Budget Projections
+
+| Usage Level | Description | Monthly Cost |
+|---|---|---|
+| Light | 10–20 daily messages, no voice, 1 cron job | $10–15 |
+| Moderate | 30–50 messages, basic voice, 3 cron jobs | $20–40 |
+| Heavy | 50–100+ messages, voice enabled, 5+ automations | $50–80 |
+
+These numbers will decrease over time — AI model pricing has been dropping consistently, and that trend is likely to continue.
+
+## Tracking Your Costs
+
+```bash
+openclaw costs                          # Current month summary
+openclaw costs --breakdown model        # By model
+openclaw costs --breakdown cron         # By automation
+openclaw costs --breakdown channel      # By channel
+openclaw costs --since 2026-03-01       # Custom date range
+```
+
+Check weekly until you understand your baseline. Then check monthly.

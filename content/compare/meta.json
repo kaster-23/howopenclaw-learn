@@ -1,0 +1,14 @@
+{
+  "title": "Compare",
+  "icon": "Scale",
+  "pages": [
+    "index",
+    "openclaw-vs-claude-code",
+    "openclaw-vs-chatgpt",
+    "openclaw-vs-n8n",
+    "openclaw-vs-zapier",
+    "openclaw-vs-autogpt",
+    "openclaw-vs-openai-assistants",
+    "openclaw-vs-flowise"
+  ]
+}

@@ -1,0 +1,121 @@
+---
+title: "Build Your Routines"
+description: "Use webhooks and standing orders to make your household agent fully autonomous."
+---
+
+By the end of this page, you'll have a set of household routines your agent runs reliably, plus webhook-triggered actions for one-off tasks.
+
+**Time:** ~20 minutes
+
+---
+
+## Routine templates
+
+Routines are just automations with well-designed prompts. The key is making the prompt complete enough that the output is useful without editing.
+
+Here are templates you can adapt:
+
+### Morning family check-in
+
+```json
+{
+  "id": "morning-checkin",
+  "schedule": "0 7 * * *",
+  "prompt": "Good morning message for the family. Check today's calendar if connected. Note any family appointments or events. Mention the weather briefly. Friendly, 3-4 lines. Don't be overly cheerful.",
+  "channel": "telegram"
+}
+```
+
+### Weekend prep (Friday afternoon)
+
+```json
+{
+  "id": "weekend-prep",
+  "schedule": "0 15 * * 5",
+  "prompt": "Weekend prep summary: check household-tasks.md for anything pending. Check meal-plan.md for weekend meals. Remind about anything that needs doing before Monday. Casual tone, 4-5 lines.",
+  "channel": "telegram"
+}
+```
+
+### Monthly review (first Sunday of each month)
+
+```json
+{
+  "id": "monthly-review",
+  "schedule": "0 10 1-7 * 0",
+  "prompt": "Monthly household review. Check household-tasks.md — what got done, what's still pending, what should be added for this month. Check MEMORY.md for anything noted last month. Give a summary and a suggested focus for the month.",
+  "channel": "telegram"
+}
+```
+
+---
+
+## Standing orders
+
+Standing orders are instructions in SOUL.md that your agent follows in every conversation — they don't need to be repeated.
+
+Add to `~/.openclaw/SOUL.md`:
+
+```markdown
+## Standing household orders
+- If someone says they're sick, log it to household-tasks.md with the date and offer to reschedule any commitments mentioned
+- If someone asks "what's for dinner?", check meal-plan.md. If no plan, suggest something based on the day and season.
+- If someone mentions a bill or expense, note it in expenses.md with date and amount
+- If someone says "add [X] to the shopping list", append it to shopping-list.md
+- If someone says "done" after a task reminder, mark it as done in household-tasks.md
+```
+
+These feel like magic once set up. You send "add milk to the shopping list" and it just happens.
+
+---
+
+## Webhook-triggered actions
+
+For one-off triggers (a button, a shortcut, an external service), you can send webhooks to the Gateway.
+
+The Gateway listens at `http://127.0.0.1:18789/webhook`. To trigger an action:
+
+```bash
+curl -X POST http://127.0.0.1:18789/webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "run_prompt",
+    "prompt": "I just got home. Check household-tasks.md for anything urgent. Brief 2-line summary.",
+    "channel": "telegram"
+  }'
+```
+
+You can bind this to a keyboard shortcut, an iOS Shortcut, or any automation platform that can make HTTP requests.
+
+---
+
+## iOS Shortcut integration
+
+On iPhone, create a Shortcut that sends a POST request to your Gateway (when running on a local network):
+
+1. New Shortcut → Add Action → **Get Contents of URL**
+2. URL: `http://[your Mac's local IP]:18789/webhook`
+3. Method: POST
+4. Body: JSON — `{"action": "run_prompt", "prompt": "I'm leaving the house. Any reminders?", "channel": "telegram"}`
+5. Add this Shortcut to your Home Screen or watch face
+
+Now tapping the shortcut sends a message to your agent and you get a reply on Telegram.
+
+---
+
+## Goal complete
+
+Your Life Ops setup is running:
+- Household automations run on schedule
+- Any family member can talk to the agent
+- Standing orders handle recurring patterns automatically
+- Shared files track tasks, meals, and shopping
+- Webhooks can trigger actions from anywhere
+
+---
+
+## Where to go next
+
+- [Level Up: All Your Channels →](/level-up/channels) — add more family members on different platforms
+- [Level Up: Run It 24/7 →](/level-up/deployment) — so automations run even when your laptop is closed
+- [Pick another goal →](/foundation/set-your-goal)

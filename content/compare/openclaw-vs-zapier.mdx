@@ -1,0 +1,58 @@
+---
+title: "OpenClaw vs Zapier: Self-Hosted AI Agent vs Cloud Automation"
+description: "Zapier automates tasks between cloud apps with no code. OpenClaw is a self-hosted AI agent you access through messaging apps. Here's what each does well and when to choose one over the other."
+---
+
+Zapier and OpenClaw both automate things so you don't have to. That's where the similarity ends. Zapier is a cloud platform for connecting apps. OpenClaw is a self-hosted AI agent that lives in your messaging apps. The data privacy and control differences are significant.
+
+## At a Glance
+
+| | OpenClaw | Zapier |
+|---|---|---|
+| **Hosting** | Your machine (self-hosted) | Zapier's cloud |
+| **Type** | Conversational AI agent | No-code app automation |
+| **Integrations** | Messaging channels + AI providers | 6,000+ apps |
+| **Trigger model** | Message + cron schedules | App events (new email, form submit, etc.) |
+| **AI capability** | Native — Claude, GPT-4, Gemini | Via "AI by Zapier" add-on |
+| **Data privacy** | Data stays on your machine | Data passes through Zapier's servers |
+| **Cost** | API usage only, no subscription | Free tier + $19.99–$69/mo per seat |
+| **Requires coding** | No | No |
+| **Setup time** | 15 minutes | Instant (web-based) |
+
+## What Zapier Does
+
+Zapier is the most widely used no-code automation platform. You connect a trigger app to an action app — "when a new email arrives in Gmail, create a Trello card" — and Zapier handles the integration. With 6,000+ app integrations, it connects nearly everything. No-code, runs in a browser, and the free tier covers basic use.
+
+Zapier also has "AI by Zapier," which lets you add LLM steps to automations. But AI is a feature inside Zapier's workflow engine — not the core product.
+
+## What OpenClaw Does
+
+OpenClaw is a personal AI agent. It runs as a background process on your machine, connects to Telegram, WhatsApp, iMessage, and other messaging channels, and responds to your messages with full context about who you are. You configure it with markdown files (SOUL.md, USER.md), and it maintains persistent memory across sessions.
+
+Automations in OpenClaw are cron-based: "every weekday at 7am, send me a briefing." The briefing is AI-generated based on your context — not a workflow between two specific apps.
+
+## Key Differences
+
+**Data ownership.** This is the biggest difference. When you use Zapier, your data passes through Zapier's servers. Every trigger payload, every action response — Zapier processes it. With OpenClaw, your conversations and context stay on your hardware. Only the message payload goes to your AI provider's API, which you select.
+
+**Integration breadth.** Zapier wins by a wide margin. 6,000+ integrations means Zapier can connect to virtually any SaaS tool. OpenClaw doesn't try to compete here — it connects to messaging channels and AI providers.
+
+**Conversational intelligence.** OpenClaw is designed for natural conversation with persistent memory. Zapier's AI step can call an LLM, but it's stateless — each automation run is independent, with no memory of past interactions.
+
+**Cost model.** OpenClaw has no subscription. You pay only for AI API usage (a few cents per conversation, depending on the model). Zapier's free tier is limited; serious usage costs $20–$70/month.
+
+**Setup.** Zapier is instant — no install, browser-based. OpenClaw takes about 15 minutes to install and configure. After that, both run in the background.
+
+## Who Should Use Zapier
+
+You need to automate workflows between cloud apps — Gmail, Slack, Notion, Salesforce, Shopify. You want something that's running in 5 minutes without touching a terminal. You're fine with your data passing through a third-party platform. You need deep integrations with specific business tools.
+
+## Who Should Use OpenClaw
+
+You want an AI assistant you can text from your phone. You care about data privacy and want everything on your own hardware. You want persistent memory and personalized context built into every conversation. You want a monthly cost of $0 (beyond API usage) and no subscription.
+
+## Bottom Line
+
+Zapier is the right tool for no-code app automation when integration breadth matters. OpenClaw is the right tool when you want a private, personal AI agent that texts you back. If you're currently paying for ChatGPT Plus and wish you could message it from WhatsApp without handing your data to a third party — that's OpenClaw's pitch.
+
+The [installation guide](/foundation/install) covers setup if you want to try it.

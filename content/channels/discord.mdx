@@ -1,0 +1,102 @@
+---
+title: "Discord"
+description: "Connect OpenClaw to Discord. Create a bot in the Developer Portal, invite it to your server, and configure channel access."
+---
+
+Discord works well for community-facing use cases and casual personal use. The setup requires creating a bot application in Discord's Developer Portal — slightly more involved than Telegram, but well-documented.
+
+## Create Your Discord Bot
+
+1. Go to [discord.com/developers/applications](https://discord.com/developers/applications)
+2. Click **New Application** and give it a name
+3. Go to the **Bot** tab → click **Add Bot**
+4. Under **Privileged Gateway Intents**, enable:
+   - Message Content Intent (required to read messages)
+5. Copy the bot token
+6. Go to **OAuth2 → URL Generator**:
+   - Scopes: `bot`, `applications.commands`
+   - Bot Permissions: Send Messages, Read Message History, Use Slash Commands
+7. Open the generated URL to invite the bot to your server
+
+Save your token:
+
+```bash
+export DISCORD_BOT_TOKEN="your-bot-token-here"
+```
+
+## Configuration
+
+```json
+{
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "groupPolicy": "mention",
+      "requireMention": true,
+      "botToken": "${DISCORD_BOT_TOKEN}",
+      "allowedGuilds": [
+        "123456789012345678"
+      ],
+      "allowedChannels": [
+        "987654321098765432"
+      ]
+    }
+  }
+}
+```
+
+To find IDs: enable Developer Mode in Discord settings (Appearance → Advanced → Developer Mode), then right-click any server or channel to copy its ID.
+
+## Stability Considerations
+
+Discord's WebSocket gateway can experience crashes, zombie connections, and rate limiting during high traffic. A zombie connection is when the bot appears online but isn't receiving events — the worst kind of failure because it's silent.
+
+Enable reconnection logic in your config:
+
+```json
+{
+  "reconnect": {
+    "enabled": true,
+    "maxRetries": 10,
+    "retryDelay": 5000,
+    "heartbeatInterval": 30000
+  }
+}
+```
+
+This automatically detects and recovers from dropped connections.
+
+## Security Recommendations
+
+**Never grant Administrator permissions.** Your bot only needs to read and send messages in specific channels.
+
+**Restrict to allowedChannels.** Don't let the bot operate in every channel — create a dedicated `#assistant` channel.
+
+**Use threads.** Configure `threadReplies: true` to keep conversations organized and reduce rate-limiting risk.
+
+**Avoid public servers.** If your bot is in a public server, use `allowedGuilds` to restrict it to servers you control.
+
+## Rate Limiting
+
+Discord enforces rate limits on bots. If you're sending many messages quickly (e.g., from an automation), you may hit these limits.
+
+To avoid rate limiting:
+- Use `threadReplies: true` — threads have more permissive limits than main channels
+- Add response delays for automated messages
+- Don't use Discord for high-frequency automations — use Slack or iMessage instead
+
+## Testing
+
+After configuration and restart:
+
+```bash
+openclaw gateway restart
+openclaw logs --filter discord
+```
+
+@mention your bot in an allowed channel:
+
+```
+@YourBot are you there?
+```

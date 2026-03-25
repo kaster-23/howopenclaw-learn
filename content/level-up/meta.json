@@ -1,0 +1,14 @@
+{
+  "title": "Level Up",
+  "icon": "Zap",
+  "pages": [
+    "memory",
+    "channels",
+    "models",
+    "skills",
+    "sub-agents",
+    "deployment",
+    "multi-channel",
+    "mobile"
+  ]
+}

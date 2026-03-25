@@ -1,0 +1,96 @@
+---
+title: "Channels Overview"
+description: "OpenClaw meets you where you already are. Connect it to BlueBubbles, Slack, WhatsApp, Telegram, Discord, Signal, and 18 more channels — 24 in total."
+---
+
+Channels are how you communicate with your agent. Rather than forcing you into a dedicated app, OpenClaw meets you where you already are — your existing messaging apps, team tools, and communication platforms.
+
+## Channel Comparison
+
+OpenClaw supports 24 official channels. They're grouped below by category.
+
+### Messaging
+
+| Channel | Stability | Setup Difficulty | Best For |
+|---|---|---|---|
+| BlueBubbles | High | Medium | iMessage integration (recommended) — uses BlueBubbles macOS server REST API |
+| iMessage (legacy) | Medium | Medium | Personal use on Apple devices — superseded by BlueBubbles |
+| LINE | High | Medium | Users in Japan, Taiwan, Thailand |
+| Signal | High | Hard | Privacy-first use cases |
+| Telegram | High | Easy | Public bots, international users |
+| WhatsApp | Medium | Medium | Personal (unofficial API) |
+| Zalo | Medium | Medium | Users in Vietnam (official account) |
+| Zalo Personal | Medium | Medium | Personal Zalo messaging |
+
+### Workplace
+
+| Channel | Stability | Setup Difficulty | Best For |
+|---|---|---|---|
+| Google Chat | High | Medium | Google Workspace teams |
+| Mattermost | High | Medium | Self-hosted team collaboration |
+| Microsoft Teams | High | Medium | Enterprise / Microsoft 365 teams |
+| Nextcloud Talk | High | Medium | Self-hosted Nextcloud environments |
+| Slack | High | Easy | Work and team contexts |
+| Synology Chat | High | Medium | Synology NAS users |
+
+### Social & Community
+
+| Channel | Stability | Setup Difficulty | Best For |
+|---|---|---|---|
+| Discord | Medium | Easy | Communities, casual use |
+| IRC | High | Medium | Developer communities, open source |
+| Matrix | High | Medium | Decentralized, privacy-focused communities |
+| Nostr | Medium | Medium | Decentralized social networking |
+| Tlon | Medium | Medium | Urbit-based communities |
+| Twitch | Medium | Medium | Live streaming interaction |
+
+### Other
+
+| Channel | Stability | Setup Difficulty | Best For |
+|---|---|---|---|
+| Feishu | High | Medium | Lark / Feishu (ByteDance) workspace users |
+| Voice Call | Medium | Medium | Phone-based voice interaction |
+| WebChat | High | None | Testing and local access |
+
+## Message Routing
+
+The `MESSAGING.md` file controls how your agent handles incoming messages across all channels. Write it in plain English — your agent reads it as natural language instructions.
+
+Example routing rules:
+
+```
+Route all work-related requests from Slack to my work assistant mode.
+For iMessage, use a casual conversational tone.
+If someone messages me on Telegram about technical questions, be more formal.
+Priority messages that require immediate attention should trigger a response even during quiet hours.
+```
+
+As the guide notes: "Your agent reads MESSAGING.md as natural language instructions, so you can write routing rules conversationally."
+
+## Starting Strategy
+
+**Don't connect everything at once.** The most common mistake is setting up five channels simultaneously, ending up with five unstable channels and no idea which configuration is causing problems.
+
+**Recommended starting setup:**
+1. WebChat — zero setup, perfect for testing
+2. BlueBubbles (macOS / iMessage users) or Slack (work-focused) — your primary daily channel
+3. Second channel once the first is stable
+
+Get one channel working well. Understand how DM policies and tool permissions interact on it. Then expand.
+
+## Security Is Per-Channel
+
+A critical point: **security settings are per-channel.** An allowlist on iMessage doesn't automatically apply to Telegram. An open DM policy on WebChat doesn't affect Slack.
+
+Review your DM policy and tool permissions separately for each channel you connect. Start restrictive and loosen as needed.
+
+## Common Troubleshooting
+
+**Non-responsive channel:** Check if the gateway is running (`openclaw status`) and that the channel is enabled in your config.
+
+**Message routing errors:** Review MESSAGING.md for conflicting rules. The agent processes rules top-to-bottom and stops at the first match.
+
+**Disconnections:** Some channels (especially WhatsApp) require reconnection after extended periods. Configure auto-reconnect where available.
+
+**Latency:** If responses are slow, check whether you're using the right model tier for the channel. Consider a faster, cheaper model for simple channel messages.
+

@@ -1,0 +1,143 @@
+---
+title: "Automate Your Work Rituals"
+description: "Set up meeting prep, email triage, and scheduled summaries that run on their own."
+---
+
+By the end of this page, your agent will be running your recurring work rituals automatically — no daily setup required.
+
+**Time:** ~20 minutes
+
+---
+
+## Work rituals worth automating
+
+The best automations are things you do every day anyway and find tedious. Common ones:
+
+- **Meeting prep** — pull agenda and context before each meeting
+- **Email triage** — morning summary of what needs attention
+- **EOD review** — end-of-day summary of what got done
+- **Weekly digest** — Friday afternoon recap of the week
+
+These all follow the same pattern: schedule + prompt + channel.
+
+---
+
+## Meeting prep automation
+
+This assumes you've connected the Google Calendar skill (see [Add Work Skills](/goals/work-hub/skills)). A meeting prep automation:
+
+```json
+{
+  "automations": [
+    {
+      "id": "meeting-prep",
+      "schedule": "0 8 * * 1-5",
+      "prompt": "Check my calendar for today. For each meeting: list the title, time, and attendees. If there are any recurring meetings, add a reminder of the usual agenda. Flag anything that needs preparation. Format as a clean list.",
+      "channel": "slack",
+      "slackChannel": "D0123456789"
+    }
+  ]
+}
+```
+
+Replace `D0123456789` with your Slack DM channel ID (your bot's DM with you). To find it: open the DM, copy the channel ID from the URL.
+
+---
+
+## Email triage automation
+
+With Gmail connected:
+
+```json
+{
+  "id": "email-triage",
+  "schedule": "0 8 * * 1-5",
+  "prompt": "Fetch unread emails from the last 18 hours (Gmail). Group them: (1) needs reply today, (2) FYI only, (3) can wait. For each in group 1, give me a one-line summary and suggested action. Skip newsletters and automated emails.",
+  "channel": "slack",
+  "slackChannel": "D0123456789"
+}
+```
+
+---
+
+## EOD review automation
+
+```json
+{
+  "id": "eod-review",
+  "schedule": "0 17 * * 1-5",
+  "prompt": "End-of-day check. Look at my calendar — what meetings happened today? Check MEMORY.md for any tasks I noted. Give me a 3-bullet summary: what happened, what's pending, what I should prioritize tomorrow. Keep it short.",
+  "channel": "slack",
+  "slackChannel": "D0123456789"
+}
+```
+
+---
+
+## Weekly digest automation
+
+```json
+{
+  "id": "weekly-digest",
+  "schedule": "0 16 * * 5",
+  "prompt": "It's Friday afternoon. Give me a weekly digest: what happened this week (from calendar), what's coming next week, and one thing I should do before Monday. 5-8 lines.",
+  "channel": "slack",
+  "slackChannel": "D0123456789"
+}
+```
+
+---
+
+## Add all automations at once
+
+Here's the full `automations` array with all four:
+
+```json
+{
+  "automations": [
+    {
+      "id": "meeting-prep",
+      "schedule": "0 8 * * 1-5",
+      "prompt": "Check my calendar for today. For each meeting: title, time, attendees, what needs prep. Clean list format.",
+      "channel": "slack",
+      "slackChannel": "D0123456789"
+    },
+    {
+      "id": "email-triage",
+      "schedule": "0 8 * * 1-5",
+      "prompt": "Fetch unread emails (Gmail, last 18 hours). Group: needs reply, FYI, can wait. For group 1, give summary + suggested action.",
+      "channel": "slack",
+      "slackChannel": "D0123456789"
+    },
+    {
+      "id": "eod-review",
+      "schedule": "0 17 * * 1-5",
+      "prompt": "EOD review: what meetings happened (calendar), pending tasks (MEMORY.md), top 3 priorities for tomorrow. 5 lines max.",
+      "channel": "slack",
+      "slackChannel": "D0123456789"
+    },
+    {
+      "id": "weekly-digest",
+      "schedule": "0 16 * * 5",
+      "prompt": "Weekly digest: what happened, what's next week, one thing to do before Monday. 8 lines max.",
+      "channel": "slack",
+      "slackChannel": "D0123456789"
+    }
+  ]
+}
+```
+
+---
+
+## Test them
+
+After updating config:
+
+```bash
+openclaw gateway restart
+openclaw cron list
+openclaw cron run meeting-prep
+```
+
+Check Slack. Adjust the prompt if the output isn't what you wanted.
+

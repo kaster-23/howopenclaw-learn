@@ -1,0 +1,58 @@
+---
+title: "OpenClaw vs AutoGPT: Autonomous Agent vs Conversational Agent"
+description: "AutoGPT runs tasks autonomously with minimal input. OpenClaw is a conversational AI agent you interact with through messaging apps. Both are 'AI agents' — but they're designed for very different situations."
+---
+
+"AI agent" means different things to different tools. AutoGPT is built for autonomous, long-running task execution with minimal human intervention. OpenClaw is built for responsive, daily-use conversation through messaging apps. The word "agent" applies to both, but the intended use case is different.
+
+## At a Glance
+
+| | OpenClaw | AutoGPT |
+|---|---|---|
+| **Agent type** | Conversational, user-initiated | Autonomous, goal-directed |
+| **Interaction model** | Chat via messaging apps | Goal input → autonomous execution |
+| **Human-in-the-loop** | Yes — every exchange | Optional / minimal |
+| **Persistence** | Runs as daemon, always available | Runs per-task |
+| **Memory** | Persistent files (MEMORY.md, SOUL.md) | Vector DB + file memory per run |
+| **Self-hosted** | Yes | Yes |
+| **AI provider** | Any (Claude, GPT-4, Gemini) | OpenAI (primarily GPT-4) |
+| **Setup** | 15 minutes | Complex (Docker, API keys, config) |
+| **Best for** | Daily personal AI assistant | Research, autonomous multi-step tasks |
+
+## What AutoGPT Does
+
+AutoGPT is an autonomous AI agent designed to pursue a goal through a series of self-directed steps. You give it a goal ("research competitors and write a report"), and it plans its own subtasks, searches the web, reads files, and iterates — with minimal input from you. It can run for minutes or hours, doing work in the background.
+
+The appeal is "set it and forget it" execution of complex tasks. The limitation is unpredictability: autonomous agents can go off-course, waste tokens on dead ends, or produce results that need significant review.
+
+## What OpenClaw Does
+
+OpenClaw doesn't pursue goals autonomously. You interact with it the way you'd text a person — short exchanges, context carried across the conversation, you always in control of the next step. It stays connected to your messaging apps as a daemon and responds when you message it.
+
+It can run scheduled automations (a daily briefing, a weekly summary), but those are pre-configured cron jobs with predictable output — not open-ended autonomous goal-seeking.
+
+## Key Differences
+
+**Control model.** AutoGPT minimizes human involvement by design. OpenClaw maximizes it — you're the driver of every exchange. This isn't just a preference: for personal use (calendar, tasks, information retrieval), you almost always want to stay in the loop.
+
+**Reliability.** Autonomous agents are powerful but fail unpredictably. OpenClaw's bounded, conversational model is more reliable for everyday use because you're confirming each step.
+
+**Always-on vs on-demand.** OpenClaw runs as a persistent daemon. It's always listening for your messages, always ready. AutoGPT runs per task — you start it, it runs, it stops.
+
+**Memory model.** Both persist memory, but differently. AutoGPT uses a vector database to store embeddings from task runs. OpenClaw uses plain-text markdown files (MEMORY.md, SOUL.md, USER.md) that you can read and edit directly. The OpenClaw approach is less sophisticated technically but far more inspectable and controllable.
+
+**Setup complexity.** OpenClaw installs in 15 minutes via a one-line installer. AutoGPT's recommended setup involves Docker, multiple API keys, and non-trivial configuration.
+
+## Who Should Use AutoGPT
+
+You have a specific, complex, multi-step task (research, content generation, data gathering) that you want to run autonomously with minimal supervision. You're comfortable with autonomous agents and understand their limitations. You don't need it running all day — you invoke it for specific tasks.
+
+## Who Should Use OpenClaw
+
+You want an AI that's always available, knows who you are, and responds instantly when you text it. You want daily-use reliability over autonomous capability. You want your data local, your context persistent, and your agent accessible through the messaging app already on your phone.
+
+## Bottom Line
+
+AutoGPT is for complex autonomous tasks where you want the AI to do most of the driving. OpenClaw is for daily personal use where you want a responsive, context-aware AI that you control. They address different problems — if you need both, you can run both.
+
+The [installation guide](/foundation/install) covers setup if you want to try it.

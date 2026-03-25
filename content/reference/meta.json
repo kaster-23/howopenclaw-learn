@@ -1,0 +1,9 @@
+{
+  "title": "Reference",
+  "icon": "FileText",
+  "pages": [
+    "cli",
+    "concepts",
+    "troubleshooting"
+  ]
+}

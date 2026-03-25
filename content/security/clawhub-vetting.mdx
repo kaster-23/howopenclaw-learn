@@ -1,0 +1,124 @@
+---
+title: "ClawHub Vetting"
+description: "Over 400 malicious or unsafe skills have been identified on ClawHub. Here's how to evaluate community skills before installing them."
+---
+
+ClawHub is OpenClaw's community marketplace for agent capabilities — thousands of skills for email, calendar integration, smart home control, and more. It's also where over 400 malicious or unsafe skills have been discovered.
+
+Malicious skills range from API key theft and data exfiltration to context injection attacks that hijack your agent's behavior. Most look legitimate. This guide shows you how to tell the difference.
+
+<Callout type="warn" title="A skill runs with your agent's full permissions">
+Installing a skill is equivalent to running untrusted code with access to your files, shell, and API keys. Download count and star ratings are not a substitute for code review.
+</Callout>
+
+## The Vetting Process
+
+### Step 1: Check the Author
+
+Before reading a line of code, look at who built it.
+
+**Good signs:**
+- Recognized OpenClaw contributor (check the official contributor list)
+- Active GitHub profile with a history of OpenClaw-related work
+- Multiple published skills with consistent maintenance
+- Real name or well-established handle
+
+**Red flags:**
+- Account created within the last few weeks
+- No other public repositories
+- No activity outside this skill
+- Username that mimics a known contributor
+
+### Step 2: Analyze Community Metrics
+
+Numbers tell a story — but only in context.
+
+**Healthy patterns:**
+- Steady download growth over time
+- Star ratings consistent with download count (high downloads + low stars = problems)
+- Recent activity in Issues and Discussions
+
+**Warning patterns:**
+- Hundreds of downloads with zero community engagement
+- Sudden download spike on a previously ignored project
+- Overwhelmingly positive reviews with no specifics
+
+New, unvetted skills show minimal downloads. That's not necessarily bad — but it means less community verification.
+
+### Step 3: Inspect the Code
+
+Clone the repository and audit before installing. This is non-negotiable for any skill requesting elevated permissions.
+
+```bash
+git clone https://github.com/author/skill-name
+cd skill-name
+```
+
+Search for these red flags:
+
+```bash
+# Outbound HTTP requests to unknown domains
+grep -r "http" . --include="*.js" --include="*.ts"
+
+# Environment variable access
+grep -r "process.env" . --include="*.js" --include="*.ts"
+
+# Code execution
+grep -r "eval\|exec\|spawn" . --include="*.js" --include="*.ts"
+
+# Obfuscation
+grep -r "Buffer.from\|atob\|btoa" . --include="*.js" --include="*.ts"
+```
+
+Legitimate skills have a clear relationship between their stated purpose and what they actually do in code. A calendar skill that makes HTTP requests to a domain that isn't Google or the stated calendar service is suspicious.
+
+### Step 4: Check Recent Commits
+
+Supply chain attacks often look like this: an abandoned project gets acquired or compromised, then receives a sudden update introducing malicious code.
+
+```bash
+git log --oneline -20
+git show HEAD
+```
+
+Look for:
+- Dormant project with a sudden major update
+- New contributor appearing out of nowhere with merge access
+- Code changes unrelated to the skill's stated functionality
+- Dependency updates that pull in new packages
+
+### Step 5: Research the Community
+
+Search OpenClaw's Discord and GitHub Discussions for the skill name. Real users leave real feedback — both positive and negative. If a skill has been installed by thousands of people with no community discussion, that's unusual.
+
+## Safe Installation
+
+Once you've vetted a skill, install it with restricted permissions:
+
+```bash
+openclaw skills install @author/skill-name --sandbox
+```
+
+The `--sandbox` flag isolates the skill in a controlled environment, preventing access to:
+- Your file system outside the workspace
+- Environment variables
+- Shell commands (unless explicitly permitted)
+- Other installed skills
+
+Monitor the skill's behavior for the first few days. Unexpected API calls, file access attempts, or permission requests after installation are immediate red flags.
+
+## Skills to Trust Without Extensive Vetting
+
+- Official first-party skills from the OpenClaw team
+- Skills from contributors listed on the official contributors page
+- Well-established skills with 10,000+ installs and active maintenance
+
+## Skills That Always Need Vetting
+
+- Any skill requesting shell access
+- Any skill that sends messages on your behalf
+- Any skill accessing email or calendar data
+- Any skill making HTTP requests to external services
+- Anything with fewer than 100 installs
+
+When in doubt, don't install it. The community builds new skills constantly — a vetted alternative almost always exists.

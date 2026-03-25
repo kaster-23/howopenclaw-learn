@@ -1,0 +1,89 @@
+---
+title: "iMessage"
+description: "Connect OpenClaw to iMessage on macOS. Requires a Mac running the agent — uses the macOS Messages framework."
+---
+
+iMessage integration requires a Mac running the agent because it relies on the macOS Messages framework. You can't run the iMessage channel on Linux or Windows — even in a VM, the Messages framework won't be available.
+
+If you're on macOS and want the most natural, personal channel, this is the one to set up first.
+
+## Prerequisites
+
+- macOS 13 Ventura or later
+- Apple ID signed into the Messages app
+- OpenClaw gateway running on that Mac
+
+The Mac must remain powered on and awake for iMessage to work. If it sleeps, messages queue and deliver when it wakes — but proactive cron-triggered messages won't fire during sleep.
+
+## Configuration
+
+Add the iMessage channel to `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "channels": {
+    "imessage": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "allowedContacts": [
+        "+15551234567",
+        "+447700900123"
+      ],
+      "groupPolicy": "mention",
+      "requireMention": true,
+      "responseDelay": 2500
+    }
+  }
+}
+```
+
+Restart the gateway after saving:
+
+```bash
+openclaw gateway restart
+```
+
+## Critical: Phone Number Formatting
+
+Phone numbers **must include the country code** in E.164 format. This is the #1 source of allowlist failures.
+
+| Format | Works? |
+|---|---|
+| `+15551234567` | ✅ Yes |
+| `+1 555 123 4567` | ❌ No |
+| `(555) 123-4567` | ❌ No |
+| `5551234567` | ❌ No |
+
+## Group Chat Behavior
+
+With `requireMention: true`, your agent only responds in group chats when explicitly @mentioned. Without this, it will respond to every message in every group — which is almost never what you want.
+
+Recommended group policies by use case:
+
+- **Family group chat:** `groupPolicy: mention` — respond only when asked
+- **Dedicated work group:** `groupPolicy: always` — always respond
+- **Social groups:** `groupPolicy: never` — don't respond at all
+
+## Testing the Connection
+
+After configuration, send yourself a test message from another Apple device:
+
+```
+Hello, are you there?
+```
+
+If configured correctly, your agent will respond. If not, check:
+
+```bash
+openclaw logs --filter imessage
+```
+
+Common issues: Messages app not signed in, Mac in sleep mode, phone number format errors in allowedContacts.
+
+## Tips for Daily Use
+
+**Set a response delay.** A 2–3 second delay (`responseDelay: 2500`) makes responses feel more conversational and less robotic. The instant response of a chatbot is actually jarring in a personal messaging context.
+
+**Use reactions.** If you've installed the Reactions skill, your agent can send iMessage reactions (hearts, thumbs up, etc.) in addition to text responses.
+
+**Voice notes.** With the audio transcription skill installed, you can send voice messages and your agent will transcribe and respond to them.

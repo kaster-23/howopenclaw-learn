@@ -1,0 +1,148 @@
+---
+title: "Install & First Message"
+description: "Install OpenClaw, run the setup wizard, and send your first message."
+howToSteps:
+  - "Install OpenClaw by running the installer script: curl -fsSL https://openclaw.ai/install.sh | bash (macOS/Linux/WSL2) or iwr -useb https://openclaw.ai/install.ps1 | iex (Windows). Requires Node.js 22.14 or later."
+  - "Run the setup wizard with: openclaw onboard --install-daemon. Choose your AI provider (Anthropic, OpenAI, or Google), enter your API key, set your workspace path, and install the background daemon."
+  - "Start the Gateway with: openclaw gateway. It will listen on port 18789. Verify it is running by visiting http://localhost:18789 in your browser."
+  - "Open the web interface at http://localhost:18789 and send your first message to confirm your agent is responding."
+---
+
+By the end of this page, you'll have a running Gateway and will have sent your first message through the built-in web interface.
+
+**Time:** ~15 minutes
+
+---
+
+## Step 1 — Install
+
+Open a terminal and run the installer for your platform:
+
+<Callout type="warn" title="Review installer scripts before running">
+Piping a remote script directly to bash executes code with your full user permissions. You can inspect the script at `https://openclaw.ai/install.sh` before running — good practice for any installer from the internet.
+</Callout>
+
+**macOS / Linux / WSL2:**
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+iwr -useb https://openclaw.ai/install.ps1 | iex
+```
+
+The installer will attempt to set up Node.js if it isn't present, and adds `openclaw` to your PATH. OpenClaw requires **Node.js 22.14 or later** (Node 24 recommended). If the installer fails with a Node version error, install it manually first:
+
+```bash
+# macOS/Linux — using nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
+nvm install 24
+```
+
+Then re-run the installer. When it finishes, verify it worked:
+
+```bash
+openclaw --version
+```
+
+**Prefer npm?** You can also install globally:
+```bash
+npm install -g openclaw@latest
+```
+
+---
+
+## Step 2 — Run the setup wizard
+
+```bash
+openclaw onboard --install-daemon
+```
+
+The wizard walks you through four things:
+
+1. **Your AI provider** — Choose Anthropic (Claude), OpenAI (GPT), or Google (Gemini) and enter your API key. If you don't have a key yet, get one from your provider's dashboard — this is required.
+
+2. **Your workspace** — Where files the agent creates will live. The default (`~/.openclaw/workspace`) is fine.
+
+3. **Channel setup** — You can skip this for now. You'll connect a real channel in a later step.
+
+4. **Daemon install** — This installs OpenClaw as a background service so it starts automatically. Say yes.
+
+When the wizard finishes, your config lives at `~/.openclaw/openclaw.json`.
+
+---
+
+## Step 3 — Start the Gateway
+
+If the daemon wasn't installed in Step 2, start the Gateway manually:
+
+```bash
+openclaw gateway
+```
+
+Check that it's running:
+
+```bash
+openclaw gateway status
+```
+
+You should see output like:
+
+```
+Gateway: running (pid 12847, uptime 0h 0m)
+Channels:
+  ✓ webchat      ready
+Automations: 0 active
+```
+
+The key line is `Gateway: running`. If you see it, the Gateway is up.
+
+---
+
+## Step 4 — Send your first message
+
+Open the WebChat interface in your browser:
+
+```bash
+openclaw dashboard
+```
+
+This opens `http://localhost:18789` — the built-in chat interface. You'll see a chat window. Type something and press Enter. Your agent will respond.
+
+WebChat is always available as long as the Gateway is running. No setup required — it's built in.
+
+---
+
+## What just happened
+
+When you sent that message, here's what OpenClaw did:
+
+1. Received your message via the Gateway (port 18789)
+2. Loaded your configuration from `~/.openclaw/`
+3. Sent the message to your AI provider's API
+4. Streamed the response back to your browser
+
+The files created during setup:
+```
+~/.openclaw/
+├── openclaw.json    ← Your main config
+├── SOUL.md          ← Your agent's personality (you'll edit this next)
+├── USER.md          ← Information about you
+├── MESSAGING.md     ← Channel routing rules
+└── workspace/
+    ├── MEMORY.md    ← Grows over sessions; agent writes notes here
+    └── HEARTBEAT.md ← Standing context; things always in scope
+```
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `openclaw: command not found` | Restart your terminal or add npm's global bin to `$PATH` |
+| Wizard fails on Node version | Run `node --version` — need 22.14+ (Node 24 recommended). Install via `nvm install 24` |
+| Gateway won't start | Check logs: `openclaw logs` — usually a port conflict (change `gateway.port` in config) |
+| No response in WebChat | Make sure your API key is valid and has credit |
+

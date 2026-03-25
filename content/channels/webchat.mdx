@@ -1,0 +1,56 @@
+---
+title: "WebChat"
+description: "The built-in browser interface for OpenClaw. No setup required. Available at http://localhost:3000 as soon as the gateway is running."
+---
+
+WebChat is the built-in browser interface for OpenClaw. It requires no installation, no configuration, no accounts. If the gateway is running, WebChat is available.
+
+**Access it at:** `http://localhost:3000`
+
+## When to Use WebChat
+
+### Initial Verification
+
+Before connecting any external channels, verify your agent works. Send test messages through WebChat to confirm:
+- Your SOUL.md personality is configured correctly
+- Skills are installed and responding
+- The AI model connection is working
+- Memory and context are behaving as expected
+
+If something's wrong, you want to catch it here — not after you've connected iMessage or Slack.
+
+### Development and Testing
+
+When you're modifying SOUL.md, installing new skills, or iterating on configuration, WebChat lets you test changes without affecting your live channels.
+
+Change SOUL.md → restart gateway → test in WebChat → confirm behavior → then trust it on your real channels.
+
+### Local Access
+
+Sometimes you just want to use your agent from your computer without switching to a messaging app. WebChat works for that.
+
+### Troubleshooting
+
+If your agent is behaving unexpectedly on a channel, test the same query in WebChat. If it works in WebChat but not in the channel, the problem is channel-specific (configuration, permissions, routing). If it fails in both, the problem is the agent itself (SOUL.md, skills, model).
+
+This isolation makes debugging much faster.
+
+## Technical Details
+
+- **URL:** `http://localhost:3000`
+- **Conversation type:** Single-user, single-session
+- **Group support:** Not available
+- **Authentication:** None (local access only)
+
+WebChat only listens on localhost. It's not accessible from other devices on your network unless you've explicitly configured remote access (see [Network Security](/security/network-security)).
+
+## Limitations
+
+**Single session only.** WebChat doesn't support multiple concurrent conversations. If you close the browser and reopen it, you start a fresh session.
+
+**Local only.** Can't use WebChat from your phone or other devices without additional configuration.
+
+**No persistent history.** Conversation history isn't persisted between sessions in WebChat. For persistent memory, see the [Memory System](/core-concepts/memory) guide.
+
+**No channel-specific behavior.** MESSAGING.md routing rules don't apply in WebChat. It uses your default configuration directly.
+

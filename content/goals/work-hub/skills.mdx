@@ -1,0 +1,149 @@
+---
+title: "Add Work Skills"
+description: "Connect Gmail, Google Calendar, and Notion to complete your work hub."
+---
+
+By the end of this page, your agent will have access to your email, calendar, and notes — and you'll understand how to add any skill from ClawHub.
+
+**Time:** ~20 minutes
+
+---
+
+## Skills vs tools
+
+A reminder on terminology:
+
+- **Tools** (web_fetch, read, exec) are built in and deal with general-purpose tasks
+- **Skills** are purpose-built integrations — Gmail, Calendar, Notion, Linear, etc. — that give your agent structured access to a specific service
+
+Skills are maintained separately and installed from ClawHub or configured directly.
+
+---
+
+## Gmail
+
+**Config:**
+
+```json
+{
+  "skills": {
+    "gmail": {
+      "enabled": true,
+      "maxEmails": 20,
+      "includeRead": false
+    }
+  }
+}
+```
+
+**Authenticate:**
+
+```bash
+openclaw skills auth gmail
+```
+
+Browser will open for Google OAuth. Authorize it. Your token is stored locally at `~/.openclaw/tokens/gmail.json`.
+
+**What your agent can now do:**
+- List and read emails
+- Search emails by sender, subject, or date range
+- Draft replies (it writes, you send — or configure `send: true` to let it send)
+
+---
+
+## Google Calendar
+
+**Config:**
+
+```json
+{
+  "skills": {
+    "google_calendar": {
+      "enabled": true,
+      "calendarId": "primary",
+      "lookAheadDays": 7
+    }
+  }
+}
+```
+
+**Authenticate:**
+
+```bash
+openclaw skills auth google_calendar
+```
+
+Same OAuth flow as Gmail. Both use the same Google account — you'll only need to authorize once if you do them together.
+
+**What your agent can now do:**
+- Read today's events and upcoming events
+- Check for scheduling conflicts
+- Look up attendee lists
+
+---
+
+## Notion
+
+Notion requires creating an integration in your workspace.
+
+**1. Create a Notion integration:**
+
+Go to [notion.so/my-integrations](https://www.notion.so/my-integrations) → click **New integration** → name it "OpenClaw" → copy the **Internal Integration Token**.
+
+**2. Share your pages with the integration:**
+
+In each Notion page you want the agent to access: click **...** menu → **Connections** → add your integration.
+
+**3. Config:**
+
+```json
+{
+  "skills": {
+    "notion": {
+      "enabled": true,
+      "token": "secret_YOUR_NOTION_TOKEN_HERE"
+    }
+  }
+}
+```
+
+**What your agent can now do:**
+- Read pages and databases
+- Create and update pages
+- Search your workspace
+
+---
+
+## Finding more skills on ClawHub
+
+[ClawHub](https://clawhub.ai) is the community skill directory. Skills are available for:
+
+- Jira, Linear (issue tracking)
+- GitHub, GitLab (code and PRs)
+- Slack channels (reading history, not just sending)
+- HubSpot, Salesforce (CRM)
+- Airtable, Coda (structured data)
+- Weather, news, finance data
+
+Each skill page shows the config format and what permissions it needs.
+
+---
+
+## Goal complete
+
+Your work hub is done. Your agent:
+
+- Lives in Slack, responds to DMs and mentions
+- Runs morning meeting prep, email triage, EOD review, and weekly digest automatically
+- Has access to Gmail, Calendar, and Notion
+
+You have a real second brain running on your machine.
+
+---
+
+## Where to go next
+
+- [Level Up: Multi-Channel Routing →](/level-up/multi-channel) — send different automations to different channels
+- [Level Up: Sub-Agents →](/level-up/sub-agents) — delegate complex multi-step tasks
+- [Level Up: Run It 24/7 →](/level-up/deployment) — so your Mac sleeping doesn't break things
+- [Pick another goal →](/foundation/set-your-goal)

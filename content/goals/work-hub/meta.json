@@ -1,0 +1,9 @@
+{
+  "title": "Work Hub on Slack",
+  "icon": "Building2",
+  "pages": [
+    "slack",
+    "automations",
+    "skills"
+  ]
+}

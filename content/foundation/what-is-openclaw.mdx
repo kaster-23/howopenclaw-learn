@@ -1,0 +1,101 @@
+---
+title: "What is OpenClaw?"
+description: "Understand what OpenClaw is, how it works, and how it's different from ChatGPT or Claude."
+faqs:
+  - q: "What is OpenClaw?"
+    a: "OpenClaw is a self-hosted AI assistant that runs on your own machine and talks to you through the apps you already use — WhatsApp, Telegram, Slack, iMessage, Discord, and more."
+  - q: "How is OpenClaw different from ChatGPT or Claude?"
+    a: "Unlike ChatGPT or Claude.ai, OpenClaw is always running in the background on your machine. It is persistent (remembers you across conversations), can take real actions (send messages, read and write files, run shell commands, call APIs), and runs locally — not in a cloud you don't control."
+  - q: "Is OpenClaw free?"
+    a: "OpenClaw itself is free and open source. You pay directly for the AI model API calls it makes — Anthropic, OpenAI, or Google — with no markup."
+  - q: "What messaging apps does OpenClaw support?"
+    a: "OpenClaw supports 24+ channels including WhatsApp, Telegram, Discord, Slack, iMessage, Signal, Matrix, LINE, and more. You talk to your agent through whatever messaging app you already use."
+  - q: "Does OpenClaw run on my own machine?"
+    a: "Yes. OpenClaw runs as a background service on your own machine or a server you control. It is not a cloud service. Your data and conversations stay on your hardware."
+---
+
+By the end of this page, you'll be able to explain what OpenClaw is and why it's fundamentally different from browser-based AI tools.
+
+---
+
+## The one-sentence version
+
+OpenClaw is a self-hosted AI assistant that runs on your own machine and talks to you through the apps you already use — WhatsApp, Telegram, Slack, iMessage, Discord, and more.
+
+---
+
+## Why this is different from ChatGPT
+
+When you use ChatGPT or Claude, you go to a website, type a message, get a response, and close the tab. The conversation is over. Nothing carries forward. The AI doesn't know what happened yesterday.
+
+OpenClaw flips this model. Instead of you going to the AI, the AI is always running in the background — waiting, watching for messages, and capable of acting on its own schedule.
+
+| | ChatGPT / Claude.ai | OpenClaw |
+|---|---|---|
+| Always on | No — you open a tab | Yes — runs 24/7 in the background |
+| Runs locally | No — cloud only | Yes — on your machine |
+| Remembers you | Limited (within a chat) | Yes — persistent memory files |
+| Takes actions | Limited plugins | Yes — messaging, files, APIs, shell |
+| Cost model | Subscription or credits | Direct API pay-per-use, no markup |
+
+A few things this changes:
+
+**It's always on.** You send your agent a message on WhatsApp at 11pm, it responds. You set it to send you a briefing every morning at 7am, it sends it — whether or not you're at your computer.
+
+**It knows you.** You write a file called `SOUL.md` that describes how your agent should think and communicate. You write `USER.md` that tells it about you. It reads these every time it starts.
+
+**It remembers.** Conversations accumulate into a memory system. Things your agent learned about you last week are still there this week.
+
+**It can take action.** It can browse the web, read and write files, run shell commands, call APIs, send messages to other channels — with your permission.
+
+<Callout type="warn" title="Real system access — configure security before going further">
+Shell execution, file writes, and messaging on your behalf are real capabilities with real consequences. Before connecting channels or installing community skills, read the [Security](/foundation/security) section — specifically DM policies, sandboxing, and API key management.
+</Callout>
+
+---
+
+## How it works (the mental model)
+
+Think of OpenClaw as hiring a personal assistant and setting them up in a home office on your computer.
+
+```
+Gateway (always running on your machine, port 18789)
+  ├── Channels    — Telegram, WhatsApp, Slack, iMessage, Discord...
+  ├── Agent       — your SOUL.md + USER.md + MEMORY.md + AI model
+  │   └── Skills  — web_search, email, calendar, GitHub...
+  └── Cron Jobs   — scheduled tasks that run without you asking
+```
+
+- **The Gateway** is the office — always running, managing everything
+- **Channels** are the phones on the desk — WhatsApp, Telegram, Slack, etc.
+- **The Agent** is the assistant — your instructions, your memory, your configured personality
+- **Skills** are tools the assistant can use — web search, calendar, email, custom integrations
+- **Cron jobs** are their standing instructions — "every morning, do this"
+
+<Callout title="The key mental shift">
+With ChatGPT you go to the AI. With OpenClaw, the AI is always there — waiting for your message, running its schedule, watching what you've asked it to track.
+</Callout>
+
+The Gateway runs as a background service on your machine (or a server you control). It listens on port `18789`. You talk to it through whatever messaging app you prefer.
+
+---
+
+## What OpenClaw is not
+
+**It's not a cloud service.** Your data, your conversation history, and your configuration stay on your machine. You pay your AI provider (Anthropic, OpenAI, etc.) directly — no OpenClaw middleman.
+
+**It's not a chatbot you deploy for customers.** It's a personal assistant for you, controlled by you, with your credentials.
+
+**It's not trying to replace Claude or ChatGPT.** Those are tools you use on-demand. OpenClaw is infrastructure for continuous, proactive assistance. Many people use both.
+
+---
+
+## What you'll need
+
+Before moving forward:
+
+- A computer running macOS, Linux, or Windows (WSL2)
+- Node.js 24 (recommended) or 22.14+ (the installer handles this)
+- An API key from one of 35+ supported providers (Anthropic, OpenAI, and Google are the most common) — you'll need this during setup
+- About 20 minutes for the Foundation
+

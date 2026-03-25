@@ -1,0 +1,175 @@
+---
+title: "CLI Cheatsheet"
+description: "Every OpenClaw command you'll actually use, in one place."
+---
+
+Copy-paste reference. For full options, run `openclaw [command] --help`.
+
+---
+
+## Gateway
+
+Use these when starting, stopping, or diagnosing the Gateway. `gateway status` is the first thing to run when something feels off.
+
+```bash
+openclaw gateway               # Start the Gateway (foreground)
+openclaw gateway status        # Check if running + channel status
+openclaw gateway restart       # Reload config without full stop
+openclaw gateway stop          # Stop the Gateway
+openclaw gateway install       # Install Gateway as a system daemon (auto-starts on boot)
+openclaw logs                  # View logs
+openclaw logs --tail 50        # Last 50 lines
+openclaw logs --filter error   # Only error lines
+openclaw logs --filter [text]  # Filter by any keyword (e.g. --filter telegram)
+```
+
+Example output for `openclaw gateway status`:
+```
+Gateway: running (pid 12847, uptime 3d 14h)
+Channels:
+  ✓ telegram     connected
+  ✓ webchat      ready
+  ✗ slack        disconnected (token expired)
+Automations: 3 active, next run in 6h 22m
+```
+
+Example output for `openclaw logs --tail 20`:
+```
+[2025-03-12 07:00:01] [cron] Running automation: morning-briefing
+[2025-03-12 07:00:02] [agent] Fetching weather for San Francisco
+[2025-03-12 07:00:04] [skill] gmail: reading last 5 emails
+[2025-03-12 07:00:07] [agent] Sending summary to telegram
+[2025-03-12 07:00:07] [channel] telegram: message sent
+```
+
+---
+
+## Setup & Config
+
+`onboard` is for first-time setup. `configure` re-runs configuration on an existing install (e.g. to change your API key or provider).
+
+```bash
+openclaw onboard                    # First-time setup wizard (new installations)
+openclaw onboard --install-daemon   # Wizard + install as system daemon
+openclaw configure                  # Re-run configuration on an existing install
+openclaw config get [key]           # Get a config value
+openclaw config set [key] [value]   # Set a config value
+openclaw config unset [key]         # Remove a config value
+openclaw config validate            # Check config for errors
+openclaw config audit               # List all enabled tools, skills, channels
+openclaw config reset               # Reset openclaw.json to defaults
+openclaw doctor                     # Diagnose issues (risky DM policies, missing deps)
+openclaw update                     # Update to latest stable release
+openclaw update --channel beta      # Switch to beta channel
+openclaw update --channel stable    # Switch back to stable
+openclaw uninstall                  # Uninstall OpenClaw
+```
+
+---
+
+## Channels
+
+Use when adding a new messaging platform or approving a new user. `channels pair` is how you let someone new message your agent.
+
+```bash
+openclaw channels list                        # List configured channels
+openclaw channels pair                        # Approve pending pairing requests
+openclaw channels login --channel whatsapp    # WhatsApp QR code pairing
+openclaw channels setup imessage              # iMessage permission setup
+openclaw gateway status                       # Shows channel connection status
+```
+
+---
+
+## Automations (Cron)
+
+Use when building or managing scheduled tasks. `cron status` shows you what's running and when the next trigger fires.
+
+```bash
+openclaw cron list                     # List all cron automations
+openclaw cron status                   # Status and next run times
+openclaw cron run [id]                 # Run an automation immediately (for testing)
+openclaw cron add                      # Add a new cron automation
+openclaw cron edit [id]                # Edit an existing automation
+```
+
+---
+
+## Skills & Tools
+
+Use when adding new capabilities. Skills connect to external services (Gmail, GitHub); tools are built-in capabilities (`web_search`, `exec`).
+
+```bash
+openclaw skills list                   # List installed skills
+openclaw skills install [package]      # Install a skill from npm
+openclaw skills auth [skill-name]      # Authenticate a skill (OAuth)
+openclaw tools list                    # List enabled tools
+```
+
+---
+
+## Models & Plugins
+
+```bash
+openclaw models                        # List available AI models
+openclaw plugins                       # List installed plugins
+```
+
+---
+
+## WebChat
+
+```bash
+openclaw dashboard                    # Open WebChat in browser (http://localhost:18789)
+```
+
+---
+
+## Messaging
+
+Use `agent --message` to test your agent from the terminal without opening any channel. Useful for quick verification after config changes.
+
+```bash
+openclaw agent --message "prompt"                    # Chat with the agent directly from CLI
+openclaw agent --message "prompt" --thinking high    # Higher-effort reasoning
+openclaw message send --to +1234567890 --message "text"  # Send a message to a number (WhatsApp/Signal)
+openclaw pairing approve <channel> <code>            # Approve a pairing request by channel + code
+```
+
+---
+
+## Devices & Secrets
+
+```bash
+openclaw devices                       # Manage device pairing (mobile app, etc.)
+openclaw secrets                       # Manage stored credentials and API keys
+```
+
+---
+
+## Useful flags
+
+```bash
+--config [path]    # Use a different config file
+--verbose          # More detailed output
+--json             # Output as JSON (for scripting)
+--dev              # Run in development mode
+--profile <name>   # Use a named configuration profile
+--no-color         # Disable colored output
+--update           # Check for updates before running
+-V / --version     # Print version
+--help             # Show all options for any command
+```
+
+---
+
+## Config file locations
+
+```
+~/.openclaw/openclaw.json    ← Main config
+~/.openclaw/SOUL.md          ← Agent personality
+~/.openclaw/USER.md          ← User context
+~/.openclaw/workspace/       ← Files the agent reads/writes
+~/.openclaw/tokens/          ← OAuth tokens (don't edit)
+~/.openclaw/sessions/        ← Channel sessions (don't edit)
+```

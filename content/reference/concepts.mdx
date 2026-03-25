@@ -1,0 +1,128 @@
+---
+title: "Key Concepts"
+description: "One-line definitions for every term OpenClaw uses."
+faqs:
+  - q: "What is the OpenClaw Gateway?"
+    a: "The Gateway is the always-running background process at the heart of OpenClaw. It listens on port 18789, manages all channels, handles incoming messages, runs the agent, and executes cron jobs."
+  - q: "What are OpenClaw Skills?"
+    a: "Skills are extensions that give your agent new capabilities — web search, email, calendar, GitHub, and more. Each skill is a Markdown SKILL.md file that describes a tool set the agent can use."
+  - q: "What are OpenClaw Channels?"
+    a: "Channels are the messaging platforms your agent communicates through. OpenClaw supports 24+ channels including WhatsApp, Telegram, Slack, Discord, iMessage, Signal, and more."
+  - q: "What is SOUL.md in OpenClaw?"
+    a: "SOUL.md is a Markdown file where you write your agent's personality, communication style, values, and behavioral rules. The agent reads it on every startup to establish its identity."
+  - q: "What are Cron Jobs in OpenClaw?"
+    a: "Cron jobs are scheduled tasks your agent runs automatically on a timer — without you initiating them. Examples include morning briefings, daily summaries, or periodic data fetches."
+---
+
+Quick reference. Terms are listed in the order you'll encounter them.
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    Gateway                          │
+│              (port 18789, always on)                │
+│                                                     │
+│  ┌──────────────┐      ┌──────────────────────────┐ │
+│  │   Channels   │      │         Agent            │ │
+│  │              │◄────►│  SOUL.md + USER.md +     │ │
+│  │  Telegram    │      │  MEMORY.md + AI model    │ │
+│  │  Slack       │      │                          │ │
+│  │  WhatsApp    │      │  ┌────────┐ ┌─────────┐  │ │
+│  │  iMessage    │      │  │ Skills │ │  Tools  │  │ │
+│  │  WebChat...  │      │  └────────┘ └─────────┘  │ │
+│  └──────────────┘      └──────────────────────────┘ │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Cron Jobs  (run on schedule, no user input) │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## Core components
+
+**Gateway** — The central process that runs on your machine. An HTTP + WebSocket server listening on port `18789`. Manages all channels, runs automations, routes messages to your AI provider, hosts canvas interfaces, serves OpenAI-compatible API endpoints (`/v1/models`, `/v1/chat/completions`, `/v1/responses`), and handles device pairing. Everything flows through the Gateway.
+
+*In practice: When you send a message on Telegram, it arrives at the Gateway first. The Gateway routes it to your AI model and sends the response back.*
+
+**Agent** — Your configured AI assistant. The combination of Gateway + your SOUL.md + your AI provider model. The "agent" is not a separate process — it's the Gateway acting under your configuration.
+
+*In practice: The same Claude model gives wildly different results depending on your SOUL.md. The "agent" is the model shaped by your config.*
+
+**Channel** — A messaging platform your agent can send and receive messages through. Telegram, WhatsApp, Slack, Discord, iMessage, email, and WebChat are all channels.
+
+*In practice: You might read replies in Telegram but send daily alerts to Slack — same agent, two channels.*
+
+**Skill** — A purpose-built integration for a specific service (Gmail, Calendar, GitHub, etc.). Gives your agent structured access to that service's API. Installed from ClawHub or configured manually.
+
+*In practice: Add the Gmail skill and your agent can read, send, and search your email on demand.*
+
+**Tool** — A general-purpose built-in capability. `web_fetch`, `web_search`, `read`, `write`, `edit`, `apply_patch`, and `exec` are core tools. Additional tools include `browser`, `message`, `canvas`, `nodes`, `cron`, `gateway`, `image`, `image_generate`, `sessions_*`, and `agents_list`. Tools are organized into profiles (full, coding, messaging, minimal) and can be grouped for easier management. Enabled in config, not installed separately.
+
+*In practice: `web_search` lets your agent look up current information; `exec` lets it run shell commands on your machine.*
+
+---
+
+## Config files
+
+**`openclaw.json`** — Main configuration file at `~/.openclaw/openclaw.json`. Contains provider config, channel config, tools, skills, and automations.
+
+**`SOUL.md`** — Plain text file at `~/.openclaw/SOUL.md`. Defines your agent's personality, communication style, and behavioral rules. Read every session.
+
+*In practice: "Always respond in under 3 sentences unless I ask for more" goes here.*
+
+**`USER.md`** — Plain text file at `~/.openclaw/USER.md`. Describes you — your role, projects, preferences. Read every session.
+
+**`MEMORY.md`** — Growing file at `~/.openclaw/workspace/MEMORY.md`. Accumulates notes from past sessions. Your agent reads it at startup and can write to it during sessions.
+
+*In practice: After you tell your agent you're working on a new project, it writes a note to MEMORY.md so it remembers next session.*
+
+**`HEARTBEAT.md`** — Standing instructions at `~/.openclaw/workspace/HEARTBEAT.md`. Things your agent should always track or be aware of. Unlike MEMORY.md, it's curated and doesn't grow automatically.
+
+**`MESSAGING.md`** — Routing rules at `~/.openclaw/MESSAGING.md`. Defines which content goes to which channel and cross-channel identity mapping.
+
+---
+
+## Messaging concepts
+
+**DM policy** — Controls who can send direct messages to your agent on a channel. Options: `pairing` (approve on first contact), `allowlist` (explicit user IDs only), `open` (anyone), `disabled`.
+
+*In practice: Use `pairing` when sharing your agent with someone new; use `allowlist` once you know the user IDs.*
+
+**Pairing** — The process of approving a new user on a `pairing` DM policy channel. The user sends `/start`, you run `openclaw channels pair` and approve.
+
+**Allowlist** — An explicit list of user IDs permitted to message the agent. More secure than `pairing` for long-term setups.
+
+**Session** — A single conversation thread. The agent maintains context within a session. MEMORY.md persists context across sessions.
+
+---
+
+## Automation concepts
+
+**Automation** — A scheduled task. Defined with a cron schedule, a prompt, and a target channel. Runs automatically without user input.
+
+*In practice: "Every morning at 7am, send me a weather + email summary" is a single automation — no user trigger needed.*
+
+**Cron schedule** — A 5-field expression defining when an automation runs: `minute hour day month weekday`. Example: `0 7 * * 1-5` = 7am on weekdays. Test expressions at [crontab.guru](https://crontab.guru).
+
+**Hook** — A command that runs in response to an event. `session_end` hook runs after each conversation. Used for automatic memory writes and post-session summaries.
+
+*In practice: A `session_end` hook that writes key decisions to MEMORY.md runs automatically every time you finish a conversation.*
+
+**Sub-agent** — A separate agent instance your main agent can delegate tasks to. Useful for parallel research, specialized roles, or isolating tool permissions.
+
+---
+
+## Technical terms
+
+**WebChat** — The built-in browser interface at `http://localhost:18789`. Always available when the Gateway is running. No setup required. Open it with `openclaw dashboard`.
+
+**Socket Mode** — Slack's connection method that uses a persistent WebSocket instead of requiring a public webhook URL. OpenClaw uses this for Slack integration.
+
+**Talk Mode** — Voice interface for OpenClaw. Uses Deepgram (or Whisper as a fallback) for speech-to-text (STT) and ElevenLabs or system TTS for text-to-speech. Implemented as a plugin-based voice feature, activated with a wake key or wake word.
+
+**Daemon** — A background process that starts automatically on boot. OpenClaw can install itself as a daemon so the Gateway is always running without manual start.
+
+**ClawHub** — The community skill directory at [clawhub.ai](https://clawhub.ai). Browse and install skills for specific services.
+
+**Workspace** — The directory at `~/.openclaw/workspace/`. The agent's read/write sandbox. MEMORY.md, task files, and any files the agent creates live here.

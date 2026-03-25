@@ -1,0 +1,131 @@
+---
+title: "Search, Fetch & Summarize"
+description: "Enable web search and fetch so your agent can research any topic on demand."
+---
+
+By the end of this page, your agent will be able to search the web, fetch and read any URL, and give you structured research summaries — on demand or on a schedule.
+
+**Time:** ~20 minutes
+
+---
+
+## What research mode looks like
+
+You send:
+> "What are the current best practices for RAG architecture in production LLM applications? Check a few recent sources."
+
+Your agent searches the web, fetches the top results, reads them, and gives you a synthesized summary with the key points and sources — not just a list of links.
+
+That's the goal.
+
+---
+
+## Enable the research tools
+
+Open `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "tools": {
+    "web_search": {
+      "enabled": true,
+      "maxResults": 5
+    },
+    "web_fetch": {
+      "enabled": true,
+      "maxContentLength": 50000
+    }
+  }
+}
+```
+
+**`web_search`** lets your agent search the web and get a list of results with titles, URLs, and excerpts.
+
+**`web_fetch`** lets your agent fetch the full content of a URL — articles, documentation, GitHub READMEs, PDFs, etc.
+
+Both together give your agent the ability to do real research.
+
+---
+
+## Restart
+
+```bash
+openclaw gateway restart
+```
+
+---
+
+## Test with a research prompt
+
+In your channel (Telegram, WhatsApp, or WebChat), try:
+
+> "Research the latest approaches to vector database selection for RAG. Find 2-3 recent sources and summarize the key trade-offs."
+
+Your agent will:
+1. Run a web search
+2. Fetch the top results
+3. Read and synthesize the content
+4. Return a structured summary
+
+---
+
+## Prompt design for research
+
+Generic prompts get generic results. Specific prompts get useful research:
+
+**Too generic:**
+> "Research machine learning"
+
+**Better:**
+> "Find 3 recent articles (2024 or later) comparing transformer architectures for time series forecasting. Summarize: what approaches are compared, what the key findings are, and which one performs best on standard benchmarks."
+
+The pattern: **topic + source criteria + output format**.
+
+---
+
+## Format research output usefully
+
+By default your agent will prose-summarize. For research work, you often want structure. Tell it:
+
+```
+Format your research as:
+1. Summary (2-3 sentences)
+2. Key findings (bullet points)
+3. Sources (title + URL)
+4. My take (your assessment of reliability/relevance)
+```
+
+Add this to SOUL.md under a "Research" section to make it the default for research requests.
+
+---
+
+## Scheduled research digests
+
+You can also set up automated research checks. Example — a daily industry news briefing:
+
+```json
+{
+  "automations": [
+    {
+      "id": "industry-news",
+      "schedule": "0 8 * * 1-5",
+      "prompt": "Search for the latest news about [your industry] from the last 24 hours. Summarize the 3 most relevant items. Include source name and link for each. Skip press releases and sponsored content.",
+      "channel": "telegram"
+    }
+  ]
+}
+```
+
+---
+
+## Cost discipline for research
+
+Web search + fetch can add up. Each research task might use 2,000-8,000 tokens depending on how many sources are read.
+
+To stay lean:
+- Set `"maxResults": 3` instead of 5
+- Set `"maxContentLength": 20000` to limit how much of each page is read
+- Use a cheaper model for research tasks: `"model": "claude-haiku-4-5-20251001"`
+
+Most research summaries don't require the most capable model. Haiku handles synthesis well and costs 10x less.
+

@@ -1,0 +1,188 @@
+---
+title: "Models & Providers"
+description: "Switch AI models, compare costs, and add local models for offline use."
+---
+
+Read this when you want to change which AI model your agent uses, switch providers, or run a local model.
+
+---
+
+## Current model support
+
+OpenClaw supports 35+ providers. Here are the most commonly used, followed by the full list.
+
+### Popular providers
+
+| Provider | Example Models |
+|---|---|
+| Anthropic | Claude Sonnet 4.6, Claude Haiku 4.5, Claude Opus 4.6 |
+| OpenAI | GPT-4o, GPT-4o-mini, o1, o3-mini |
+| Google (Gemini) | Gemini 2.0 Flash, Gemini 2.5 Pro |
+| Ollama | Any locally-hosted model (Llama, Mistral, etc.) |
+| DeepSeek | DeepSeek-V3, DeepSeek-R1 |
+| Groq | Fast inference for open models |
+| OpenRouter | Aggregated access to many models |
+| xAI | Grok models |
+
+### All official providers
+
+Amazon Bedrock, Anthropic, Claude Max API Proxy, Cloudflare AI Gateway, Deepgram (transcription), DeepSeek, GitHub Copilot, GLM, Google (Gemini), Groq, Hugging Face, Kilocode, LiteLLM, MiniMax, Mistral, Model Studio, Moonshot AI, NVIDIA, Ollama, OpenAI, OpenCode, OpenCode Go, OpenRouter, Perplexity, Qianfan, Qwen, SGLang, Synthetic, Together AI, Venice, Vercel AI Gateway, vLLM, Volcengine, xAI, Xiaomi, Z.AI
+
+---
+
+## Changing your default model
+
+In `~/.openclaw/openclaw.json`, model references use the `"provider/model"` format:
+
+```json
+{
+  "ai": {
+    "model": "anthropic/claude-sonnet-4-6",
+    "apiKey": "YOUR_API_KEY"
+  }
+}
+```
+
+To switch to OpenAI:
+
+```json
+{
+  "ai": {
+    "model": "openai/gpt-4o",
+    "apiKey": "YOUR_OPENAI_API_KEY"
+  }
+}
+```
+
+---
+
+## Per-automation model overrides
+
+You don't have to use the same model for everything. Set a cheaper model for routine tasks:
+
+```json
+{
+  "automations": [
+    {
+      "id": "morning-briefing",
+      "model": "claude-haiku-4-5-20251001",
+      "schedule": "0 7 * * *",
+      "prompt": "..."
+    }
+  ]
+}
+```
+
+Good defaults by task type:
+
+| Task | Recommended model | Why |
+|---|---|---|
+| Casual conversation | Haiku / GPT-4o-mini | Fast, cheap, good enough |
+| Routine briefings | Haiku / GPT-4o-mini | Structured output only |
+| Research synthesis | Sonnet / GPT-4o | Better reasoning, worth the cost |
+| Complex reasoning | Sonnet / Opus | Multi-step thinking |
+| Code review | Sonnet / GPT-4o | Good code understanding |
+| Voice responses | Haiku | Latency matters more than depth |
+
+---
+
+## Cost comparison
+
+Approximate costs per 1,000 tokens (input/output combined, as of March 2026):
+
+| Model | Cost / 1M tokens |
+|---|---|
+| Claude Haiku 4.5 | ~$0.80 |
+| GPT-4o-mini | ~$0.15 |
+| Claude Sonnet 4.6 | ~$3 |
+| GPT-4o | ~$2.50 |
+| Claude Opus 4.6 | ~$15 |
+
+A typical conversation: 1,000-3,000 tokens. A morning briefing with skills: 2,000-5,000 tokens. A research task: 10,000-30,000 tokens.
+
+At Haiku prices, you'd need to send 1,000 messages to spend $1. At Sonnet prices, about $0.01/message.
+
+---
+
+## Multiple providers
+
+You can configure multiple providers and reference them by name:
+
+```json
+{
+  "providers": {
+    "fast": {
+      "model": "anthropic/claude-haiku-4-5-20251001",
+      "apiKey": "YOUR_KEY"
+    },
+    "smart": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "apiKey": "YOUR_KEY"
+    }
+  },
+  "ai": {
+    "default": "fast"
+  }
+}
+```
+
+Then in automations or skill config, reference `"provider": "smart"` for tasks where you want the better model.
+
+---
+
+## Local models via Ollama
+
+For offline use or privacy-sensitive tasks, run a local model with Ollama.
+
+**1. Install Ollama:**
+
+```bash
+curl -fsSL https://ollama.ai/install.sh | sh
+```
+
+**2. Pull a model:**
+
+```bash
+ollama pull llama3.2
+ollama pull mistral
+```
+
+**3. Configure OpenClaw:**
+
+```json
+{
+  "ai": {
+    "model": "ollama/llama3.2",
+    "baseUrl": "http://localhost:11434"
+  }
+}
+```
+
+Local models are slower and less capable for complex reasoning, but free and private. Good for simple automations and summaries.
+
+**Note:** Local models don't support tool use as reliably as cloud models. Disable tools or use simple prompts if you hit issues.
+
+---
+
+## Switching providers on the fly
+
+You can ask your agent to use a different model mid-conversation:
+
+> "For this next task, use the smart model — I want a thorough analysis"
+
+Add to SOUL.md:
+
+```markdown
+When I say "use the fast model" switch to claude-haiku-4-5-20251001 for that response.
+When I say "use the smart model" switch to claude-sonnet-4-6.
+```
+
+This requires `model_override: true` in your config:
+
+```json
+{
+  "ai": {
+    "model_override": true
+  }
+}
+```

@@ -1,0 +1,239 @@
+---
+title: "Use Case Playbooks"
+description: "Ten concrete workflow templates for OpenClaw — from daily briefings to trading alerts to small business operations."
+---
+
+These playbooks are concrete starting points, not finished solutions. Each one is designed to be running within 30 minutes and improved over weeks. Start with one or two before layering more — most power users run three to five concurrently.
+
+## Where to Start
+
+If you're new: **Daily Briefing System** first. It's the most universally useful, demonstrates proactive capability, and teaches the core automation pattern you'll reuse everywhere else.
+
+---
+
+## 1. Personal Life Assistant
+
+**Difficulty:** Beginner | **Time to set up:** 30 minutes
+
+Daily logistics handled automatically: morning briefings, calendar awareness, weather, and task reminders.
+
+**Core setup:**
+```markdown
+# SOUL.md additions
+You are also my personal life assistant. Every morning at 7am,
+give me a concise briefing covering weather, calendar highlights,
+and one thing I should focus on.
+```
+
+```json
+{
+  "automations": [
+    {
+      "schedule": "0 7 * * *",
+      "prompt": "Morning briefing: weather, calendar, top focus item. Max 5 lines.",
+      "channel": "imessage"
+    }
+  ]
+}
+```
+
+---
+
+## 2. Daily Briefing System
+
+**Difficulty:** Beginner | **Time to set up:** 20 minutes
+
+The essential starting automation. An automated morning summary covering everything you need to start your day — in under 15 lines.
+
+```json
+{
+  "automations": [
+    {
+      "id": "morning-briefing",
+      "schedule": "0 7 * * 1-5",
+      "channel": "imessage",
+      "prompt": "Morning briefing (max 10 lines): 1. Weather 2. Calendar today 3. Anything urgent in email 4. Top priority for today 5. One interesting thing I might have missed"
+    }
+  ]
+}
+```
+
+**Iteration path:** Start with weather + calendar. Add email triage after a week. Add a news item after two weeks.
+
+---
+
+## 3. Research Assistant
+
+**Difficulty:** Intermediate | **Time to set up:** 45 minutes
+
+Track specified topics with daily updates, competitive intelligence, and a searchable knowledge base from accumulated findings.
+
+**Core pattern:**
+1. Morning: scan sources for tracked topics
+2. Summarize and send digest
+3. Store notable findings in MEMORY.md with tags
+4. Enable search across accumulated knowledge
+
+```json
+{
+  "automations": [
+    {
+      "id": "research-digest",
+      "schedule": "0 8 * * *",
+      "skills": ["web-search"],
+      "prompt": "Search for news on my tracked topics: {{topics_from_user_md}}. Summarize the 3 most relevant items. Tag each as [market/tech/competitor]. If any item is high priority, flag it clearly.",
+      "channel": "slack"
+    }
+  ]
+}
+```
+
+---
+
+## 4. Content Creation Pipeline
+
+**Difficulty:** Advanced | **Time to set up:** 2 hours
+
+Multi-stage workflow: trend monitoring → idea capture → research → outline → draft → edit → finalize.
+
+**With sub-agents:**
+```javascript
+// Parallel research
+const [trends, competitors, audience] = await Promise.all([
+  sessions_spawn({ instruction: "Top trending topics in my niche this week", skills: ["web-search"] }),
+  sessions_spawn({ instruction: "What content did my top 3 competitors publish this week?", skills: ["web-fetch"] }),
+  sessions_spawn({ instruction: "What questions is my audience asking right now?", skills: ["web-search"] }),
+])
+
+// Generate 5 content ideas based on research
+```
+
+---
+
+## 5. Email Triage
+
+**Difficulty:** Intermediate | **Time to set up:** 1 hour
+
+Categorize messages by urgency, draft routine responses, flag priority items. Requires email API (Gmail or similar).
+
+**Priority tiers:**
+- 🔴 Urgent (needs response today)
+- 🟡 Important (respond within 48 hours)
+- ⚪ Low priority (can batch or delegate)
+- 🗑️ Ignore (newsletters, automated)
+
+```markdown
+# SOUL.md
+When asked to triage email:
+- Flag anything from [boss name] or [key client] as urgent
+- Draft a response for routine requests, but don't send — ask me to review
+- Unsubscribe suggestions for newsletters I haven't opened in 30+ days
+```
+
+---
+
+## 6. Meeting Prep
+
+**Difficulty:** Intermediate | **Time to set up:** 45 minutes
+
+30 minutes before any meeting, receive a briefing: attendees, past interactions, agenda context, suggested talking points.
+
+```json
+{
+  "automations": [
+    {
+      "schedule": "*/5 8-18 * * 1-5",
+      "skills": ["google-calendar", "gmail"],
+      "prompt": "Check if I have a meeting starting in 25-35 minutes. If yes, prepare a briefing: Who's attending and what I know about them, context from past emails with them, meeting agenda if available, 2-3 suggested talking points.",
+      "channel": "imessage"
+    }
+  ]
+}
+```
+
+---
+
+## 7. Trading & Finance
+
+**Difficulty:** Advanced | **Time to set up:** 2 hours
+
+Portfolio monitoring, pre-market/post-market briefings, watchlist tracking, and financial alerts.
+
+**Daily structure:**
+- 6:00 AM: Pre-market briefing (futures, overnight news, earnings)
+- 4:30 PM: Post-market summary (what moved, why, implications)
+- Intraday alerts for watchlist triggers
+
+**Note:** This playbook requires financial data API keys and assumes you've done your own risk assessment. Nothing here is financial advice.
+
+---
+
+## 8. Smart Home & Life Automation
+
+**Difficulty:** Intermediate | **Time to set up:** 1 hour
+
+Household logistics: grocery management, meal planning, recurring task tracking, family coordination.
+
+**Requires:** Smart home skills (Home Assistant, Google Home, or similar)
+
+```markdown
+# SOUL.md additions
+You manage household logistics:
+- Track grocery list, alert when staples run low
+- Weekly meal planning on Sundays
+- Remind family members of tasks via their preferred channels
+- Track recurring household tasks (when they were last done)
+```
+
+---
+
+## 9. Learning & Education
+
+**Difficulty:** Intermediate | **Time to set up:** 30 minutes
+
+Flashcard generation, spaced repetition quizzing, study session scheduling, progress tracking.
+
+```json
+{
+  "automations": [
+    {
+      "id": "daily-review",
+      "schedule": "0 19 * * *",
+      "prompt": "It's review time. Quiz me on my current study topics using spaced repetition. Start with 5 questions on what I got wrong yesterday. Track my progress and adjust difficulty.",
+      "channel": "imessage"
+    }
+  ]
+}
+```
+
+---
+
+## 10. Small Business Operations
+
+**Difficulty:** Advanced | **Time to set up:** 3+ hours
+
+Client management, invoice reminders, social media scheduling, operational coordination for freelancers and consultants.
+
+**Components:**
+- Weekly client status summaries
+- Invoice follow-up automation (7, 14, 30 days overdue)
+- Social media content batching
+- Weekly operations review
+
+**Start with:** Just the invoice reminder automation. Get that working before adding everything else.
+
+---
+
+## Running Multiple Playbooks
+
+Most users run 3–5 concurrently. Common combinations:
+
+**For individuals:** Daily Briefing + Meeting Prep + Research Assistant
+
+**For freelancers:** Daily Briefing + Email Triage + Small Business Ops
+
+**For investors:** Daily Briefing + Research Assistant + Trading & Finance
+
+**For learners:** Daily Briefing + Learning & Education + Research Assistant
+
+Implement sequentially, not simultaneously. Stability matters more than features.

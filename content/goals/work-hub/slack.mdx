@@ -1,0 +1,149 @@
+---
+title: "Set Up Slack"
+description: "Connect OpenClaw to Slack using Socket Mode so your agent lives in your workspace."
+---
+
+By the end of this page, your agent will be live in Slack — you can DM it and mention it in channels.
+
+**Time:** ~30 minutes
+
+---
+
+## How the Slack integration works
+
+OpenClaw connects to Slack via **Socket Mode** — a WebSocket connection that doesn't require a public URL or webhook endpoint. Your agent runs entirely on your machine; Slack messages are pushed to it in real time.
+
+This means: no server, no ngrok, no domain name needed.
+
+---
+
+## Step 1 — Create a Slack app
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) and click **Create New App**
+2. Choose **From scratch**
+3. Name it (e.g. "My OpenClaw Agent") and select your workspace
+4. Click **Create App**
+
+---
+
+## Step 2 — Enable Socket Mode
+
+In your app's settings:
+
+1. Go to **Socket Mode** in the left sidebar
+2. Toggle it **on**
+3. When prompted, create an **App-Level Token** with the scope `connections:write`
+4. Give it a name (e.g. "openclaw-socket")
+5. Copy the token — it starts with `xapp-`
+
+---
+
+## Step 3 — Set bot permissions
+
+Go to **OAuth & Permissions** → **Bot Token Scopes** and add:
+
+```
+app_mentions:read
+channels:history
+channels:read
+chat:write
+groups:history
+groups:read
+im:history
+im:read
+im:write
+users:read
+```
+
+Then click **Install to Workspace** at the top of the OAuth page. Copy the **Bot User OAuth Token** — it starts with `xoxb-`.
+
+---
+
+## Step 4 — Enable event subscriptions
+
+Go to **Event Subscriptions** and toggle it on. Under **Subscribe to bot events**, add:
+
+```
+message.im
+app_mention
+```
+
+Save changes.
+
+---
+
+## Step 5 — Configure OpenClaw
+
+Open `~/.openclaw/openclaw.json` and add the Slack channel:
+
+```json
+{
+  "channels": {
+    "slack": {
+      "appToken": "xapp-YOUR-APP-TOKEN",
+      "botToken": "xoxb-YOUR-BOT-TOKEN",
+      "dmPolicy": "allowlist",
+      "allowlist": ["YOUR_SLACK_USER_ID"]
+    }
+  }
+}
+```
+
+To find your Slack user ID: click your profile picture → **View full profile** → the URL contains your user ID (starts with `U`).
+
+---
+
+## Step 6 — Restart and verify
+
+```bash
+openclaw gateway restart
+openclaw gateway status
+```
+
+You should see `slack: connected`.
+
+---
+
+## Step 7 — Message your agent
+
+In Slack, find the bot you created in the **Apps** section of the sidebar. Send it a DM. It should respond.
+
+You can also mention it in any channel it's been added to:
+
+```
+@MyOpenClawAgent what's on my agenda today?
+```
+
+---
+
+## Channel routing
+
+By default, your agent responds in whatever channel or DM it receives the message in. You can also configure routing — for example, have automated briefings post to a specific channel:
+
+```json
+{
+  "automations": [
+    {
+      "id": "standup-prep",
+      "schedule": "0 9 * * 1-5",
+      "prompt": "Prepare my standup update. What did I work on yesterday? What's on my calendar today? Any blockers? Keep it to 3 bullet points.",
+      "channel": "slack",
+      "slackChannel": "#standup"
+    }
+  ]
+}
+```
+
+This posts the standup prep to `#standup` at 9am on weekdays — without you doing anything.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Bot doesn't respond in DMs | Check that `im:history` and `im:write` scopes are added |
+| `slack: disconnected` in status | Verify both tokens are correct. App token starts with `xapp-`, bot token with `xoxb-` |
+| Agent responds in wrong channel | Check your `slackChannel` config if using routing |
+| "not_in_channel" error | Invite the bot to the channel first: `/invite @YourBotName` |
+

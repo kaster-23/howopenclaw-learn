@@ -1,0 +1,180 @@
+---
+title: "All Your Channels"
+description: "Connect every platform OpenClaw supports — BlueBubbles, WhatsApp, Signal, Slack, Discord, and 19 more."
+---
+
+Read this when you want to connect additional channels or understand which platform fits which use case.
+
+---
+
+## Channel overview
+
+OpenClaw supports 24 official channels:
+
+| Channel | Best for | Setup complexity |
+|---|---|---|
+| BlueBubbles | iMessage integration (recommended) — uses BlueBubbles macOS server REST API | Medium |
+| Discord | Communities, hobbyist setups | Medium |
+| Feishu | Lark / Feishu (ByteDance) workspace users | Medium |
+| Google Chat | Google Workspace teams | Medium |
+| iMessage (legacy) | Mac-centric workflows — superseded by BlueBubbles | Medium |
+| IRC | Developer communities, open source | Medium |
+| LINE | Users in Japan, Taiwan, Thailand | Medium |
+| Matrix | Decentralized, privacy-focused communities | Medium |
+| Mattermost | Self-hosted team collaboration | Medium |
+| Microsoft Teams | Enterprise / Microsoft 365 teams | Medium |
+| Nextcloud Talk | Self-hosted Nextcloud environments | Medium |
+| Nostr | Decentralized social networking | Medium |
+| Signal | Privacy-focused users, secure messaging | Easy |
+| Slack | Work use, team collaboration | Medium |
+| Synology Chat | Synology NAS users | Medium |
+| Telegram | General use, families, international | Easy |
+| Tlon | Urbit-based communities | Medium |
+| Twitch | Live streaming interaction | Medium |
+| Voice Call | Phone-based voice interaction | Medium |
+| WebChat | Testing, browser access, no phone | Built-in |
+| WhatsApp | Personal assistant, anyone already on WhatsApp | Medium |
+| Zalo | Users in Vietnam (official account) | Medium |
+| Zalo Personal | Personal Zalo messaging | Medium |
+
+---
+
+## Telegram
+
+Already covered in [Connect Your First Channel](/foundation/first-channel). The simplest setup.
+
+Multiple Telegram users are supported by adding their IDs to `allowlist`. You can also have multiple bots (one per project) by configuring multiple channel entries.
+
+---
+
+## WhatsApp
+
+WhatsApp uses a QR code pairing approach — no official API key required.
+
+```json
+{
+  "channels": {
+    "whatsapp": {
+      "dmPolicy": "pairing",
+      "sessionPath": "~/.openclaw/sessions/whatsapp"
+    }
+  }
+}
+```
+
+```bash
+openclaw channels login --channel whatsapp
+```
+
+Scan the QR code with your phone. The session is persisted so you only need to pair once.
+
+**Important:** WhatsApp uses an unofficial bridge (Baileys). This is stable but WhatsApp could theoretically ban the number. Use a secondary number if this is a concern.
+
+---
+
+## BlueBubbles (recommended for iMessage)
+
+The recommended way to connect iMessage. BlueBubbles uses the BlueBubbles macOS server REST API to bridge iMessage to OpenClaw.
+
+```json
+{
+  "channels": {
+    "bluebubbles": {
+      "dmPolicy": "allowlist",
+      "allowlist": ["your.email@icloud.com", "+1234567890"]
+    }
+  }
+}
+```
+
+```bash
+openclaw channels setup bluebubbles
+```
+
+You'll need the BlueBubbles server running on a Mac. Follow the permission prompts. Once configured, any iMessage to the addresses on your allowlist will reach the agent.
+
+Works with iPhone's Messages app and iMessage on Mac. Not compatible with Android SMS.
+
+---
+
+## iMessage (legacy)
+
+**Note:** The legacy iMessage channel is superseded by BlueBubbles. Use BlueBubbles for new setups.
+
+macOS only. Requires accessibility permissions.
+
+```json
+{
+  "channels": {
+    "imessage": {
+      "dmPolicy": "allowlist",
+      "allowlist": ["your.email@icloud.com", "+1234567890"]
+    }
+  }
+}
+```
+
+```bash
+openclaw channels setup imessage
+```
+
+Follow the permission prompts. Once configured, any iMessage to the addresses on your allowlist will reach the agent.
+
+---
+
+## Slack
+
+Covered in [Set Up Slack](/goals/work-hub/slack). Requires a Slack app with Socket Mode.
+
+The Slack integration supports:
+- DMs to your bot
+- `@mentions` in channels the bot is added to
+- Posting to specific channels via automations
+
+---
+
+## Discord
+
+Similar to Slack — requires creating a Discord bot.
+
+1. Go to [discord.com/developers/applications](https://discord.com/developers/applications) → New Application
+2. Go to Bot → Enable "Message Content Intent"
+3. Copy the Bot Token
+4. Go to OAuth2 → URL Generator → select `bot` scope + `Send Messages`, `Read Message History`
+5. Use the generated URL to invite the bot to your server
+
+Config:
+
+```json
+{
+  "channels": {
+    "discord": {
+      "token": "YOUR_DISCORD_BOT_TOKEN",
+      "dmPolicy": "allowlist",
+      "allowlist": ["YOUR_DISCORD_USER_ID"]
+    }
+  }
+}
+```
+
+To find your Discord user ID: Settings → Advanced → Enable Developer Mode → right-click your username → Copy User ID.
+
+---
+
+## Multiple channels simultaneously
+
+You can run all channels at once:
+
+```json
+{
+  "channels": {
+    "telegram": { ... },
+    "slack": { ... },
+    "whatsapp": { ... }
+  }
+}
+```
+
+Each channel has its own pairing/allowlist. The agent maintains separate conversation contexts per channel but shares SOUL.md, USER.md, and MEMORY.md.
+
+For routing specific automations to specific channels, use the `channel` field in each automation config.

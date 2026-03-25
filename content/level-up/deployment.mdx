@@ -1,0 +1,176 @@
+---
+title: "Run It 24/7"
+description: "Deploy OpenClaw to a server or keep it running reliably when your laptop sleeps."
+howToSteps:
+  - "Choose your deployment target: local machine (zero cost, stops when laptop sleeps), Docker (portable containers), VPS such as DigitalOcean or Hetzner (recommended for always-on), or Tailscale plus VPS (private network access)."
+  - "For VPS deployment, provision a server with at least 1 vCPU and 1GB RAM running Ubuntu 22.04. SSH in, install Node.js 24, and run the OpenClaw installer: curl -fsSL https://openclaw.ai/install.sh | bash."
+  - "Run the setup wizard on the server: openclaw onboard --install-daemon. Configure your AI provider, workspace, and install the systemd daemon so OpenClaw starts automatically on boot."
+  - "Start the Gateway and verify it is running: openclaw gateway. Test connectivity by curling the health endpoint: curl http://localhost:18789/health."
+  - "Point your channels (Telegram, WhatsApp, etc.) to the server's public IP or domain. Update your openclaw.json if the gateway port or host changes."
+---
+
+Read this when your laptop sleeping breaks scheduled automations, or when you want your agent available from anywhere.
+
+---
+
+## The problem with laptop deployments
+
+OpenClaw runs on your machine. When your Mac sleeps, the Gateway pauses. Cron jobs don't fire. Alerts don't send. For occasional use this is fine. For daily briefings or real-time monitoring, it's a problem.
+
+Three solutions, in order of increasing permanence:
+
+1. **Prevent sleep** (simplest — keep your current setup)
+2. **Deploy to a always-on server** (most reliable)
+3. **Use a small VPS or home server** (good balance)
+
+---
+
+## Option 1: Prevent sleep on Mac
+
+For a dedicated machine that's always on:
+
+```bash
+# Keep the display off but prevent sleep
+caffeinate -d &
+```
+
+Or in System Preferences → Battery → "Prevent your Mac from automatically sleeping when the display is off".
+
+Simple. Works if you have a machine that's always on (Mac mini, older MacBook plugged in).
+
+---
+
+## Option 2: Deploy to a VPS
+
+A $5-6/month VPS (DigitalOcean Droplet, Hetzner CX11, Linode Nanode) is enough to run OpenClaw 24/7.
+
+**1. Provision a server running Ubuntu 22.04+**
+
+**2. Install OpenClaw:**
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw onboard --install-daemon
+```
+
+**3. Copy your config:**
+
+```bash
+scp ~/.openclaw/openclaw.json user@your-server:~/.openclaw/
+scp ~/.openclaw/SOUL.md user@your-server:~/.openclaw/
+scp ~/.openclaw/USER.md user@your-server:~/.openclaw/
+```
+
+**4. Start the daemon:**
+
+```bash
+ssh user@your-server "openclaw gateway start --daemon"
+```
+
+The daemon registers as a systemd service and starts automatically on boot.
+
+**5. Verify:**
+
+```bash
+ssh user@your-server "openclaw gateway status"
+```
+
+---
+
+## Using systemd directly
+
+If you prefer to manage the service yourself:
+
+```ini
+# /etc/systemd/system/openclaw.service
+[Unit]
+Description=OpenClaw Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+ExecStart=/usr/local/bin/openclaw gateway
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable openclaw
+sudo systemctl start openclaw
+sudo systemctl status openclaw
+```
+
+---
+
+## Keeping your server config in sync
+
+When you update SOUL.md, USER.md, or openclaw.json locally, push changes to the server:
+
+```bash
+# Quick sync script
+rsync -avz ~/.openclaw/ user@your-server:~/.openclaw/ --exclude workspace/
+ssh user@your-server "openclaw gateway restart"
+```
+
+Add this to a shell alias for convenience.
+
+---
+
+## Monitoring your server
+
+Check if the Gateway is alive:
+
+```bash
+ssh user@your-server "openclaw gateway status && openclaw cron list"
+```
+
+View logs:
+
+```bash
+ssh user@your-server "openclaw logs --tail 50"
+```
+
+Set up a health check cron that alerts you if the Gateway stops:
+
+```json
+{
+  "id": "self-check",
+  "schedule": "*/30 * * * *",
+  "prompt": "Self-check: confirm you're running and responding. Reply with 'ok' only.",
+  "channel": "telegram",
+  "suppressIfOk": true
+}
+```
+
+---
+
+## Security for server deployments
+
+On a VPS, add these protections:
+
+**Firewall — only allow known ports:**
+
+```bash
+ufw allow 22/tcp   # SSH
+ufw allow 443/tcp  # HTTPS (if using reverse proxy)
+ufw deny 18789     # Block Gateway port from the internet
+ufw enable
+```
+
+The Gateway should NOT be directly accessible from the internet. Use a reverse proxy (nginx/Caddy) with authentication if you need external webhook access.
+
+**Keep the Gateway on localhost:**
+
+The default config binds to `127.0.0.1:18789`. Don't change this to `0.0.0.0` unless you've added authentication.
+
+---
+
+## Home server option
+
+A Raspberry Pi 4 or any always-on home machine works just as well as a VPS — and costs nothing monthly. The setup is identical to the VPS approach.
+
+Advantage: your data stays completely on your home network. Disadvantage: you need to handle dynamic DNS and port forwarding if you want external webhook access.

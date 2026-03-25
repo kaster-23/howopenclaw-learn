@@ -1,0 +1,69 @@
+---
+title: "Tools, Skills & Plugins"
+description: "OpenClaw's three-layer extension architecture: Tools (typed functions), Skills (Markdown files injected into prompts), and Plugins (full packages)."
+---
+
+Out of the box, OpenClaw handles conversation. Its extension system is what makes it actually useful — giving the agent real-world capabilities like web search, calendar access, image generation, and smart home control.
+
+## The Three Extension Layers
+
+### Tools (Typed Functions)
+
+Tools are the lowest layer — typed functions the agent can call during a conversation. OpenClaw ships with a wide set of built-in tools:
+
+- **exec/process** — Shell command execution
+- **browser** — Chromium control for web automation
+- **web_search / web_fetch** — Search the web and fetch page content
+- **read / write / edit** — File operations
+- **apply_patch** — Apply code patches
+- **message** — Send messages to channels
+- **canvas** — Visual workspace interactions
+- **nodes** — Cross-device functionality
+- **cron / gateway** — Manage scheduled jobs and gateway settings
+- **image / image_generate** — Image handling and generation
+- **sessions_* / agents_list** — Session management and agent listing
+
+You can use these immediately without installing anything.
+
+### Skills (Markdown SKILL.md Files)
+
+Skills are **Markdown files (`SKILL.md`) that get injected into the agent's system prompt**. They give the agent specialized knowledge, instructions, and behavioral patterns for specific tasks — think of them as expertise documents rather than executable code.
+
+A skill might teach the agent how to interact with a particular API, follow a specific workflow, or handle a domain-specific task. Because they're just Markdown, they're easy to read, write, and share.
+
+### Plugins (Full Packages)
+
+Plugins are complete packages that can register multiple extension types at once: channels, providers, tools, skills, speech engines, and image generation backends. They're the most powerful extension type — a single plugin can wire up an entire integration.
+
+## Writing a Custom Skill
+
+Since skills are just Markdown files, creating one is straightforward. Write a `SKILL.md` file that gives the agent the knowledge and instructions it needs for a specific task.
+
+A skill file might look like:
+
+```markdown
+# Weather Briefing Skill
+
+When asked about weather, use the web_search tool to fetch current conditions.
+
+## Instructions
+1. Search for current weather at the user's location
+2. Include temperature, conditions, and any notable alerts
+3. Format as a brief, conversational summary
+4. If the user hasn't specified a location, check USER.md for their city
+```
+
+Place skill files where your agent can load them — they get injected into the system prompt to shape the agent's behavior for specific domains.
+
+## Security Considerations
+
+Since skills are injected into the system prompt, review any third-party skill files before using them. A malicious skill could:
+
+- Inject instructions that override your agent's intended behavior
+- Attempt to exfiltrate context from the conversation
+- Redirect tool usage in unintended ways
+
+At minimum:
+- Read the full content of any skill file before adding it
+- Only use skills from sources you trust
+- Review skill files periodically for unexpected changes

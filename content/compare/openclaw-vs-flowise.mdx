@@ -1,0 +1,59 @@
+---
+title: "OpenClaw vs Flowise: Personal AI Agent vs LLM Flow Builder"
+description: "Flowise is a visual tool for building LLM-powered workflows and chatbots. OpenClaw is a self-hosted AI agent for personal use via messaging apps. Both run locally — here's the difference."
+---
+
+Flowise and OpenClaw are both self-hosted Node.js tools that bring LLMs to your own hardware. The similarity stops there. Flowise is a builder — you design AI workflows visually. OpenClaw is a configured agent — you run it and talk to it through messaging apps.
+
+## At a Glance
+
+| | OpenClaw | Flowise |
+|---|---|---|
+| **Type** | Personal AI agent | Visual LLM flow builder |
+| **Interface** | Messaging apps (Telegram, WhatsApp, etc.) | Drag-and-drop browser editor |
+| **Target user** | Personal productivity, non-developer | Developers and technical builders |
+| **Configuration** | JSON + markdown files | Visual node graph |
+| **Messaging channels** | Built-in (Telegram, WhatsApp, iMessage) | Not built-in — you build integrations |
+| **Memory** | Persistent files (MEMORY.md, SOUL.md) | Vector stores, configurable per flow |
+| **Self-hosted** | Yes | Yes |
+| **Requires coding** | No | No (but complex flows get technical) |
+| **AI providers** | Claude, GPT-4, Gemini | 50+ LLM integrations (LangChain-based) |
+| **Runtime** | Node.js 22+ | Node.js |
+
+## What Flowise Does
+
+Flowise is a visual LLM orchestration tool built on LangChain. You open a browser editor and drag nodes onto a canvas — an LLM node here, a vector store there, a prompt template, a memory buffer, an output — to build an AI workflow or chatbot. It supports 50+ LLM integrations, dozens of vector databases, and complex retrieval-augmented generation (RAG) pipelines.
+
+Flowise is for building: internal tools, customer-facing chatbots, document Q&A systems, multi-agent flows. The visual editor is its core value — it makes LangChain accessible without writing Python or TypeScript.
+
+## What OpenClaw Does
+
+OpenClaw is for running: a personal AI agent that knows you, stays online, and responds through your messaging apps. You configure it with a JSON file and some markdown files describing your personality and context. The agent is always on, always connected to Telegram (or WhatsApp or iMessage), and always loaded with your personal context.
+
+You're not designing a flow. You're configuring an agent — the equivalent of setting up preferences and letting it run.
+
+## Key Differences
+
+**Build vs run.** Flowise is a platform for building AI-powered tools. OpenClaw is a finished tool you configure. If you want to build something for others, Flowise gives you more flexibility. If you want something for yourself, OpenClaw skips the building step entirely.
+
+**Messaging integration.** OpenClaw's core feature is connecting to real messaging apps. Flowise doesn't have this built in — you can expose Flowise's chatbot via an embeddable widget, but it doesn't natively send messages over Telegram or WhatsApp.
+
+**Personality and memory model.** OpenClaw has an opinionated context system: SOUL.md (personality), USER.md (facts about you), HEARTBEAT.md (standing context), MEMORY.md (persistent notes across sessions). Flowise's memory is vector-store-based and configured per flow — more flexible, but requires more setup to get right.
+
+**Complexity curve.** OpenClaw is ready in 15 minutes. Flowise is fast to start but can get complex quickly as you build more sophisticated flows. For personal use, that complexity is unnecessary overhead.
+
+**LLM breadth.** Flowise supports 50+ LLM integrations via LangChain, including open-source models (Ollama, llama.cpp). OpenClaw supports the major hosted providers (Anthropic, OpenAI, Google). If you need local model inference with Ollama, Flowise is more flexible today.
+
+## Who Should Use Flowise
+
+You want to build an AI tool — a document Q&A chatbot, a customer support agent, a RAG pipeline over your company's knowledge base. You're comfortable with Node.js tooling. You need fine-grained control over the LLM workflow. You may want to run local models via Ollama.
+
+## Who Should Use OpenClaw
+
+You want a personal AI agent configured for you, running on your machine, accessible from your phone via Telegram or WhatsApp. You don't want to design flows — you want an agent that works with your preferences and memory right out of the box.
+
+## Bottom Line
+
+Flowise is the better choice if you're building LLM-powered tools for specific use cases or integrating AI into internal systems. OpenClaw is the better choice if you want a personal AI assistant configured to know you, running on your own hardware, accessible from your everyday messaging apps with no visual editor required.
+
+The [installation guide](/foundation/install) covers setup if you want to try it.

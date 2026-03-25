@@ -1,0 +1,144 @@
+---
+title: "Network Security"
+description: "Secure the OpenClaw HTTP gateway. Keep it local, set up safe remote access, and know what to do if something goes wrong."
+---
+
+The OpenClaw gateway handles communication between channels, the web interface, and the agent's core. By default, it's configured safely. The goal of this guide is to make sure you don't accidentally make it unsafe.
+
+## Default Configuration Is Safe
+
+Out of the box, the gateway binds to `127.0.0.1` — accessible only from your local machine. This is correct.
+
+<Callout type="error" title="Never bind the gateway to 0.0.0.0">
+Setting `host` to `0.0.0.0` exposes your agent to your entire network — and potentially the internet — with no authentication. Anyone who can reach your IP and port gains access to your agent, your files, and your tools.
+</Callout>
+
+**Never do this:**
+
+```json
+{
+  "gateway": {
+    "host": "0.0.0.0"
+  }
+}
+```
+
+Binding to `0.0.0.0` exposes the gateway to your entire local network and potentially the internet. This enables unauthorized access to the web interface, API endpoints, debug information, and your agent itself.
+
+## Remote Access: Do It Right
+
+Sometimes you need to reach your agent from another device. Here are the safe ways to do it:
+
+### Tailscale (Recommended)
+
+Tailscale creates an encrypted mesh VPN between your devices. Your agent stays on localhost — you reach it through the private Tailscale network.
+
+```bash
+# Install on both machines
+curl -fsSL https://tailscale.com/install.sh | sh
+tailscale up
+
+# Access your agent from any Tailscale device
+# http://your-machine-name:18789
+```
+
+Free tier supports personal use. Zero exposed ports, zero public internet exposure.
+
+### WireGuard/VPN (Self-Hosted)
+
+For those who prefer self-hosted infrastructure, WireGuard provides the same core benefit as Tailscale — an encrypted private tunnel between devices.
+
+### Reverse Proxy with Auth (If You Must Expose Publicly)
+
+If you genuinely need public internet access, use a reverse proxy with TLS and authentication:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name agent.yourdomain.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    auth_basic "OpenClaw";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+
+    location / {
+        proxy_pass http://127.0.0.1:18789;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+Never expose the gateway directly to the internet without a layer of authentication in front of it.
+
+## Monitoring and Logging
+
+Enable comprehensive logging to detect unusual network activity:
+
+```json
+{
+  "logging": {
+    "logToolCalls": true,
+    "logMessages": true,
+    "logApiCalls": true,
+    "logExternalRequests": true,
+    "redactSecrets": true
+  }
+}
+```
+
+`redactSecrets: true` ensures API keys and credentials never appear in log files, even when logging is verbose.
+
+To monitor outbound connections in real-time:
+
+```bash
+# macOS
+sudo lsof -i -n -P | grep openclaw
+
+# Linux
+ss -tulnp | grep node
+```
+
+Unexpected connections to unfamiliar domains warrant investigation.
+
+## Security Checklist
+
+Go through this list before considering your setup production-ready:
+
+- [ ] Gateway bound to `127.0.0.1` (check `openclaw.json`)
+- [ ] DM policy set to `allowlist` on all personal channels
+- [ ] Sandboxing enabled with restricted file system access
+- [ ] All API keys moved to environment variables or secrets manager
+- [ ] Tool permissions reviewed — high-risk tools require approval
+- [ ] Installed ClawHub skills audited for suspicious code
+- [ ] Logging enabled with `logToolCalls: true`
+- [ ] No sensitive paths accessible (`~/.ssh`, `~/.aws`, etc.)
+- [ ] Model fallback configured
+- [ ] Remote access via Tailscale or VPN (not open internet)
+
+## Incident Response
+
+If you suspect your agent has been compromised:
+
+1. **Stop the agent immediately**
+   ```bash
+   openclaw gateway stop
+   ```
+
+2. **Revoke all API keys** — rotate every credential your agent had access to
+
+3. **Review logs for unauthorized activity**
+   ```bash
+   openclaw logs --since 24h | grep -E "tool_call|external_request"
+   ```
+
+4. **Audit installed skills** — remove any you didn't install or don't recognize
+
+5. **Remove unauthorized contacts** — check paired contacts across all channels
+
+6. **Restore from backup** if your config files were modified
+
+7. **Report malicious skills** to the ClawHub community — prevent others from installing them

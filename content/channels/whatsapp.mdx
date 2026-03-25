@@ -1,0 +1,102 @@
+---
+title: "WhatsApp"
+description: "Connect OpenClaw to WhatsApp via Baileys (unofficial API). Scan a QR code to authenticate. Expect occasional re-authentication."
+---
+
+WhatsApp integration uses **Baileys**, an unofficial WhatsApp Web API library. It works by emulating a web session — the same way WhatsApp Web works in your browser. This means it's more fragile than official integrations and will occasionally require re-authentication.
+
+If stability is a priority, use Telegram or iMessage instead. If WhatsApp is where you actually communicate, here's how to set it up.
+
+## Step 1 — Create the session directory
+
+Do this first, before anything else. WhatsApp needs this directory to store its credentials:
+
+```bash
+mkdir -p ~/.openclaw/sessions/whatsapp
+```
+
+If you skip this step, authentication will fail with a confusing error.
+
+## Step 2 — Configuration
+
+Add the WhatsApp channel to `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "library": "baileys",
+      "dmPolicy": "allowlist",
+      "allowedContacts": [
+        "+15551234567"
+      ],
+      "groupPolicy": "mention",
+      "requireMention": true,
+      "sessionPath": "~/.openclaw/sessions/whatsapp"
+    }
+  }
+}
+```
+
+## Step 3 — First-Time Authentication
+
+Restart the gateway and watch the logs:
+
+```bash
+openclaw gateway restart
+openclaw logs --filter whatsapp
+```
+
+A QR code will appear in your terminal. Scan it with WhatsApp on your phone:
+1. Open WhatsApp → Settings → Linked Devices
+2. Tap **Link a Device**
+3. Scan the QR code
+
+The session is now stored in your `sessionPath` directory. You won't need to scan again unless the session expires.
+
+## Phone Number Formatting
+
+Same rule as iMessage: use E.164 format with no spaces.
+
+| Format | Works? |
+|---|---|
+| `+15551234567` | ✅ |
+| `+1 555 123 4567` | ❌ |
+| `005551234567` | ❌ |
+
+Formatting errors are the leading cause of allowlist failures.
+
+## Key Configuration Options
+
+| Setting | Purpose |
+|---|---|
+| `dmPolicy` | Who can message the agent (allowlist/pairing/open) |
+| `groupPolicy` | Group chat behavior (mention/always/never) |
+| `requireMention` | Require @mention in groups |
+| `allowedContacts` | Phone number whitelist |
+| `sessionPath` | Where to store session data |
+
+## Important Limitations
+
+**Unofficial API.** WhatsApp doesn't provide an official API for this type of integration. Baileys reverse-engineers the web protocol, which means:
+- WhatsApp updates can break the integration until Baileys updates
+- Occasional disconnections are normal
+- Your account could theoretically be flagged (rare, but possible)
+
+**Session file security.** The session files in `sessionPath` contain authentication credentials equivalent to being logged into WhatsApp. Never commit them to version control, never back them up to unencrypted cloud storage.
+
+**Multi-device limits.** WhatsApp limits linked devices. If you hit the limit, you'll need to unlink another device before the integration works.
+
+**Phone offline.** Extended periods with your phone offline can cause the session to invalidate, requiring re-authentication.
+
+## Re-Authentication
+
+When the session expires, delete the session files and repeat the QR code scan:
+
+```bash
+rm -rf ~/.openclaw/sessions/whatsapp/*
+openclaw gateway restart
+# Watch logs for QR code
+openclaw logs --filter whatsapp
+```

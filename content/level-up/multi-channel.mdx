@@ -1,0 +1,140 @@
+---
+title: "MESSAGING.md & Routing"
+description: "Control how your agent routes messages and automations across multiple channels."
+---
+
+Read this when you have two or more channels and want to control which content goes where.
+
+---
+
+## The routing problem
+
+Once you have Telegram, Slack, and WhatsApp all connected, you need to decide:
+
+- Where does the morning briefing go?
+- Where do price alerts go?
+- If your agent wants to send a follow-up, which channel?
+- What if someone messages from two channels — are they the same person?
+
+This is what routing solves.
+
+---
+
+## MESSAGING.md
+
+`MESSAGING.md` is the routing configuration file for your agent. Create it at `~/.openclaw/MESSAGING.md`:
+
+```markdown
+# Messaging Configuration
+
+## Default channel
+Telegram — use this for everything unless specified below.
+
+## Channel purposes
+- Telegram: personal assistant, casual messages, quick tasks
+- Slack (#general): work-related updates, meeting prep, email summaries
+- Slack (#alerts): price alerts, system notifications, urgent items
+- Email: weekly digests, long reports, anything I'll want to archive
+
+## Routing rules
+- Morning briefing → Telegram
+- Price alerts → Slack #alerts
+- Work automations (meeting prep, email triage) → Slack DM
+- Weekly reports → Email
+- Voice fallback links → Telegram
+
+## Cross-channel identity
+My accounts:
+- Telegram: @myusername
+- Slack: U0123456789
+- Email: me@example.com
+These are all me. If someone sends from multiple channels, they're the same person.
+```
+
+Your agent reads this file and applies routing decisions accordingly.
+
+---
+
+## Per-automation channel config
+
+The most explicit way to route: specify the channel per automation.
+
+```json
+{
+  "automations": [
+    {
+      "id": "morning-briefing",
+      "channel": "telegram",
+      "schedule": "0 7 * * 1-5",
+      "prompt": "..."
+    },
+    {
+      "id": "meeting-prep",
+      "channel": "slack",
+      "slackChannel": "D0123456789",
+      "schedule": "0 8 * * 1-5",
+      "prompt": "..."
+    },
+    {
+      "id": "price-alerts",
+      "channel": "slack",
+      "slackChannel": "#alerts",
+      "schedule": "*/30 9-16 * * 1-5",
+      "prompt": "..."
+    },
+    {
+      "id": "weekly-digest",
+      "channel": "email",
+      "emailTo": "me@example.com",
+      "schedule": "0 16 * * 5",
+      "prompt": "..."
+    }
+  ]
+}
+```
+
+---
+
+## Handling replies across channels
+
+If someone sends a message on Telegram and you reply on Slack, threads get confusing. By default, your agent replies on the same channel where it received the message.
+
+To override this in SOUL.md:
+
+```markdown
+## Channel reply policy
+Always reply on the channel where the message was received.
+Exception: if someone messages on Telegram asking about a Slack thread, reply on Telegram but include the Slack context.
+```
+
+---
+
+## Channel personas (optional)
+
+Some people prefer their agent to behave slightly differently per channel — more formal on Slack, more casual on WhatsApp.
+
+Add to SOUL.md:
+
+```markdown
+## Channel personas
+Slack: Professional tone. Concise. Suitable for a work context.
+Telegram/WhatsApp: Casual. Short. Like texting a smart friend.
+Email: Formal. Complete sentences. Proper salutation.
+```
+
+---
+
+## Debugging routing issues
+
+If a message ends up in the wrong channel or doesn't arrive:
+
+```bash
+openclaw logs --filter routing
+```
+
+This shows the routing decisions made for each message and automation, including which channel was selected and why.
+
+Common issues:
+- `slackChannel` is a channel name but should be a channel ID (or vice versa)
+- Automation has no valid `channel` specified — check that the channel name matches a configured channel
+- Automation has no `channel` specified and falls back to the default

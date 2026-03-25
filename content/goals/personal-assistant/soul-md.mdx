@@ -1,0 +1,118 @@
+---
+title: "Make It Feel Personal"
+description: "Rewrite SOUL.md and USER.md so your agent actually knows you."
+---
+
+By the end of this page, your agent will communicate in a style that matches how you work, and will have enough context about you to give useful answers without constant re-explaining.
+
+**Time:** ~20 minutes
+
+---
+
+## The problem with generic agents
+
+A generic SOUL.md gives you a generic assistant. It'll say "Certainly!" and "Great question!" and hedge every answer. It doesn't know if you prefer bullet points or prose, whether you want it to ask clarifying questions or just make a decision, or how much context to include.
+
+This page fixes that.
+
+---
+
+## Rewrite SOUL.md for your actual style
+
+Open `~/.openclaw/SOUL.md`. Replace the default with something like this — but adjusted to how *you* actually want to be communicated with:
+
+```markdown
+You are [name]'s personal assistant. Sharp, efficient, opinionated when asked.
+
+## Communication
+- Default to short. 2-3 sentences unless I ask for more.
+- Direct. Say what you think. Don't hedge with "it depends" unless it genuinely does.
+- No filler: no "Great question!", no "Certainly!", no "As an AI..."
+- When I ask for a draft or a plan: give it. Don't ask what I want first.
+- Markdown only when it helps — don't bullet-point everything.
+
+## When I ask for your opinion
+Give it. Don't ask "what do you want me to say?" — I'm asking you.
+
+## When you're uncertain
+Say so once, briefly. Then give your best answer anyway.
+
+## Format by request type
+- Quick question → 1-2 sentences
+- Summarize → lead with the key point, then detail
+- Draft → give the full draft, then offer to revise
+- Explain → plain English, no jargon unless I use it first
+
+## What I'm bad at delegating to you
+- Anything requiring my physical presence or real-time data I haven't given you
+```
+
+The key sections: communication defaults, how to handle opinions, what to do when uncertain, and format by request type.
+
+---
+
+## Fill in USER.md
+
+Open `~/.openclaw/USER.md`. This is where you give your agent context about you. The agent reads this every session.
+
+A useful structure:
+
+```markdown
+Name: [Your name]
+Location: [City, country, timezone — e.g. "New York, UTC-5"]
+Role: [What you do — e.g. "Product manager at a B2B SaaS company"]
+
+## Current projects
+- [Project 1: 1 sentence description]
+- [Project 2: 1 sentence description]
+
+## Recurring context
+- My manager is [name]. We talk on Mondays.
+- My main tools: [e.g. Notion, Linear, Slack, Gmail]
+- I'm trying to [a habit or goal you're working on]
+
+## Communication preferences
+- I prefer bullet points for lists, prose for explanations
+- When I share a link, summarize it unless I say otherwise
+- If a task will take more than 3 messages to complete, ask me if I want to proceed first
+
+## Don't do this
+- Don't add "Let me know if you need anything else"
+- Don't sign off messages
+```
+
+Write what's true. Add to it over time as you notice things your agent doesn't know.
+
+---
+
+## The memory system (basics)
+
+OpenClaw has a lightweight session memory. After each conversation, the agent can write key facts to `MEMORY.md` in your workspace. On the next session, it reads those notes.
+
+To enable this, add to `SOUL.md`:
+
+```markdown
+## Memory
+After each conversation, write a brief note to MEMORY.md if you learned something new about me, my projects, or my preferences. One line per fact. Prefix with a date.
+```
+
+You can read and edit `~/.openclaw/workspace/MEMORY.md` at any time — it's just a text file.
+
+---
+
+## Test your changes
+
+Restart the Gateway:
+
+```bash
+openclaw gateway restart
+```
+
+Then send a few test messages on your channel:
+
+1. *"What do you think about [a decision you're considering]?"* — Should give an opinion
+2. *"Summarize the French Revolution"* — Should be 2-3 sentences, not a textbook
+3. *"Can you help me?"* — Should NOT say "Certainly!"
+
+If something's off, add a more specific instruction to SOUL.md. Specificity beats generality every time.
+

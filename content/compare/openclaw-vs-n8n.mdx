@@ -1,0 +1,62 @@
+---
+title: "OpenClaw vs n8n: AI Agent vs Workflow Automation"
+description: "n8n is a self-hosted workflow automation tool with 400+ integrations. OpenClaw is a self-hosted AI agent you access through your messaging apps. Both run on your hardware — here's what each is actually good for."
+---
+
+n8n and OpenClaw share two things: they're both self-hosted and they both connect to external services. But they solve different problems. n8n is a workflow automation engine. OpenClaw is a conversational AI agent. The overlap is real but narrow.
+
+## At a Glance
+
+| | OpenClaw | n8n |
+|---|---|---|
+| **Type** | Conversational AI agent | Workflow automation engine |
+| **Interface** | Messaging apps (Telegram, WhatsApp, etc.) | Visual node-based editor in browser |
+| **Trigger model** | Message-driven + cron schedules | Event/webhook/cron triggers |
+| **AI integration** | Built-in (Claude, GPT-4, Gemini) | Via HTTP nodes or AI nodes (requires configuration) |
+| **Self-hosted** | Yes | Yes |
+| **Requires coding** | No | No (but complex flows get technical) |
+| **Memory / context** | Persistent files (MEMORY.md, SOUL.md) | No native memory model |
+| **Setup** | 15 minutes | 10–30 minutes (Docker recommended) |
+| **Integrations** | Messaging channels + AI providers | 400+ apps (Slack, Gmail, GitHub, CRMs, etc.) |
+
+## What n8n Does
+
+n8n is a visual workflow automation platform. You connect nodes — triggers, transformations, actions — to automate multi-step processes between apps. A trigger (a webhook, a new email, a cron schedule) fires a workflow that does things: updates a spreadsheet, sends a Slack message, creates a ticket, calls an API.
+
+It has hundreds of integrations and a growing AI node capability. You can wire an LLM call into any workflow. But n8n is fundamentally about structured data flows between apps, not about having a conversation.
+
+## What OpenClaw Does
+
+OpenClaw is about conversation. You send it a message, it responds based on context it knows about you, and that exchange can trigger actions (skills, cron jobs, API calls). The interaction model is the messaging apps you already use every day — Telegram, WhatsApp, iMessage — not a visual browser editor.
+
+It has cron-based automations (a daily briefing at 7am, for example), but those automations are typically "generate a summary and send it to me" rather than "orchestrate a 10-step workflow between five different apps."
+
+## Key Differences
+
+**Interaction model.** n8n workflows are designed and monitored in a browser editor. OpenClaw is designed to be invisible infrastructure — you interact with it by texting it, not by managing it.
+
+**Integration breadth.** n8n wins decisively here. 400+ app integrations means it connects to essentially any SaaS tool your business uses. OpenClaw connects to messaging channels and AI providers — that's its scope.
+
+**Memory and personality.** OpenClaw has a native context model: SOUL.md, USER.md, HEARTBEAT.md, MEMORY.md. The agent knows you across sessions. n8n has no such concept — it processes data flows, it doesn't have a persistent understanding of a user.
+
+**Conversational AI.** OpenClaw's entire purpose is natural conversation. n8n can invoke an LLM, but it's a node in a workflow — you're still building structured automation, not a conversational interface.
+
+**AI provider flexibility.** OpenClaw's core feature is routing your conversations to a chosen AI provider with your context loaded. In n8n, AI is one of many node types — powerful but not central.
+
+## Who Should Use n8n
+
+You want to automate business processes between apps: when a new lead comes in, create a record in your CRM, send a Slack notification, and add a row to a spreadsheet. You're comfortable with a visual workflow editor. You need deep SaaS integrations. You're fine with a browser-based management interface.
+
+## Who Should Use OpenClaw
+
+You want an AI assistant you can text. You want it to know your context, remember things, and send you proactive updates on your terms. You care about data privacy. You don't need to connect 50 different SaaS tools — you need one AI that knows you well and is always reachable.
+
+## Can You Use Both?
+
+Yes. n8n and OpenClaw aren't mutually exclusive. n8n can call OpenClaw's API (via HTTP node) to inject intelligence into an automation. You could have n8n trigger a workflow that sends a message to your OpenClaw agent, gets a response, and acts on it. For users who want deep automation *and* a conversational AI, both tools coexist on the same machine.
+
+## Bottom Line
+
+n8n is better for structured multi-app automation. OpenClaw is better for a personal AI you interact with through messaging. If your question is "how do I automate my business workflows," use n8n. If your question is "how do I have an AI that texts me every morning and remembers what we talked about," use OpenClaw.
+
+The [installation guide](/foundation/install) covers setup if you want to try it.

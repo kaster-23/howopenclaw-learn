@@ -1,0 +1,8 @@
+{
+  "title": "Voice Control",
+  "icon": "Mic",
+  "pages": [
+    "setup",
+    "talk-mode"
+  ]
+}

@@ -1,0 +1,126 @@
+---
+title: "Household Automation"
+description: "Set up proactive automations and multi-person channels for household logistics."
+---
+
+By the end of this page, your agent will be managing recurring household tasks, reminders, and logistics — proactively, without you having to ask.
+
+**Time:** ~25 minutes
+
+---
+
+## What Life Ops looks like
+
+Your agent sends your partner a grocery reminder on Wednesday afternoon. It checks in with your kids about their homework status at 5pm. It tells you about the upcoming garbage collection the night before. You didn't ask for any of this — it just happens.
+
+This is what proactive automation looks like for a household.
+
+---
+
+## HEARTBEAT.md — the household config
+
+OpenClaw has a special file called `HEARTBEAT.md` in your workspace. It's a standing instruction set — things your agent should always be tracking or doing, regardless of what you ask.
+
+Create `~/.openclaw/workspace/HEARTBEAT.md`:
+
+```markdown
+# Household Standing Instructions
+
+## Weekly reminders
+- Monday morning: remind me about the week's upcoming household tasks
+- Wednesday evening: check if grocery shopping is needed for the weekend
+- Thursday evening: remind about garbage collection day (our pickup is Friday)
+- Sunday evening: weekly review — what household things need attention next week?
+
+## Recurring logistics
+- When someone asks "what's for dinner?", check the meal plan in meal-plan.md if it exists, otherwise suggest something based on the day of the week
+- Track household tasks I mention in conversation and add them to tasks.md
+
+## Family context
+- Partner: [name]. They're on Telegram too — their username is [username]
+- Kids: [names and ages if relevant]
+- Our neighborhood: [city, relevant local info like recycling schedule, school pickup times]
+```
+
+---
+
+## Step 2 — Set up multi-person channels
+
+To message different family members, each person needs to pair with the agent.
+
+With Telegram (the easiest multi-person setup):
+
+1. Each person opens the bot and sends `/start`
+2. Run `openclaw channels pair` and approve each person
+3. Note each person's Telegram user ID (shown during pairing)
+
+Then configure routing:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "token": "YOUR_BOT_TOKEN",
+      "dmPolicy": "allowlist",
+      "allowlist": ["YOUR_USER_ID", "PARTNER_USER_ID", "KID_USER_ID"]
+    }
+  }
+}
+```
+
+---
+
+## Step 3 — Household automations
+
+Add these to your `automations` array:
+
+```json
+[
+  {
+    "id": "monday-briefing",
+    "schedule": "0 8 * * 1",
+    "prompt": "It's Monday. Based on HEARTBEAT.md, give a brief overview of this week's household priorities. Check meal-plan.md if it exists. 5-6 lines.",
+    "channel": "telegram"
+  },
+  {
+    "id": "grocery-check",
+    "schedule": "0 17 * * 3",
+    "prompt": "Wednesday check-in: remind about weekend grocery shopping. Check meal-plan.md for what's needed. Send a simple, friendly reminder.",
+    "channel": "telegram"
+  },
+  {
+    "id": "garbage-reminder",
+    "schedule": "0 20 * * 4",
+    "prompt": "Quick reminder: garbage day is tomorrow. Keep it to one sentence.",
+    "channel": "telegram"
+  }
+]
+```
+
+---
+
+## Step 4 — Shared task tracking
+
+Create `~/.openclaw/workspace/household-tasks.md` and tell your agent to use it:
+
+Add to SOUL.md:
+
+```markdown
+## Household task tracking
+When someone mentions a task that needs to be done (e.g. "we need to fix the leaky tap", "I should call the plumber"), add it to household-tasks.md with today's date and who mentioned it.
+When asked "what's on the household list?", read household-tasks.md and summarize.
+```
+
+Now anyone in the family can mention a task in conversation and it'll be logged.
+
+---
+
+## Restart and test
+
+```bash
+openclaw gateway restart
+openclaw cron run monday-briefing
+```
+
+Check that the message arrives. Adjust the prompts to fit your household's actual rhythm.
+

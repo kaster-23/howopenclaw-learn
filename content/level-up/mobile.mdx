@@ -1,0 +1,116 @@
+---
+title: "Mobile Nodes"
+description: "Run OpenClaw on your phone or use mobile-specific features for on-the-go access."
+---
+
+Read this when you want to use your agent from your phone without relying on a desktop machine.
+
+---
+
+## Mobile access options
+
+There are three ways to use OpenClaw on mobile:
+
+1. **Through a messaging app** (Telegram, WhatsApp, iMessage) — simplest, already set up if you've done the Foundation
+2. **OpenClaw mobile app** — native app for iOS and Android, connects to your Gateway
+3. **Mobile node** — run the OpenClaw agent directly on your phone
+
+Most people use option 1. Options 2 and 3 are for power users who want more.
+
+---
+
+## Option 1: Messaging apps (you probably already have this)
+
+If you've set up Telegram or WhatsApp, you already have mobile access. Open the app, message your agent, done.
+
+The experience is full-featured: your agent has all its tools, skills, memory, and SOUL.md config — the same as on desktop.
+
+---
+
+## Option 2: OpenClaw mobile app
+
+The OpenClaw mobile app is a dedicated interface that connects to your Gateway over your local network (or remotely if you've deployed to a server).
+
+**Setup:**
+
+1. Download from the App Store or Google Play
+2. Open the app → Settings → Gateway URL
+3. Enter your Gateway address:
+   - Local network: `http://[your Mac's IP]:18789`
+   - Remote server: `https://your-domain.com` (via reverse proxy)
+4. Enter your access token (from `openclaw devices`)
+
+The app includes:
+- Chat interface
+- Conversation history
+- File sharing (send files to your agent)
+- Voice input (press and hold)
+
+---
+
+## Getting your local IP
+
+```bash
+ifconfig | grep "inet " | grep -v 127.0.0.1
+```
+
+Or: System Preferences → Network → your connection → IP Address.
+
+For the mobile app on your home network, use this local IP. Outside your home network, you need a deployed server (see [Run It 24/7](/level-up/deployment)).
+
+---
+
+## Option 3: Mobile node
+
+A mobile node runs OpenClaw directly on your phone — useful when you're away from home and don't have a server.
+
+**iOS:**
+
+```bash
+# In the iOS app: Settings → Advanced → Enable Mobile Node
+```
+
+The mobile node runs a lightweight version of the Gateway using your phone's processing power. Responses are slower (limited by phone CPU for Whisper STT) but work offline for STT and use your mobile data for API calls.
+
+**Android:** Similar setup in the Android app settings.
+
+**Limitations of mobile nodes:**
+- No persistent skills (OAuth tokens don't sync automatically)
+- Voice works but is slower
+- Automations don't run (no background scheduling on iOS)
+- Config changes on mobile don't sync back to desktop automatically
+
+---
+
+## iOS Shortcuts integration
+
+iOS Shortcuts can trigger OpenClaw directly:
+
+**Shortcut: "Ask my agent"**
+
+1. New Shortcut → Ask for Input (text)
+2. Get Contents of URL: `http://[your-gateway-ip]:18789/webhook`
+3. Method: POST, Body: `{"action": "run_prompt", "prompt": "[Shortcut Input]", "channel": "telegram"}`
+4. Add to Home Screen
+
+Now you can send a message to your agent from anywhere with one tap.
+
+**Shortcut: "Voice note to agent"**
+
+1. Record Audio
+2. Transcribe with Whisper (via OpenClaw)
+3. POST to Gateway
+
+More complex — see [Voice Control](/goals/voice/setup) for the full voice setup.
+
+---
+
+## Location-based triggers (iOS)
+
+Use iOS Automation (in Shortcuts) to trigger your agent based on location:
+
+1. Shortcuts → Automation → New Automation → Location
+2. Set location (e.g. "When I arrive at office")
+3. Action: POST to Gateway with prompt "I just arrived at the office. Any reminders or morning prep?"
+
+Your agent responds on Telegram when you arrive.

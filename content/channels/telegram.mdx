@@ -1,0 +1,86 @@
+---
+title: "Telegram"
+description: "The easiest OpenClaw channel to set up. Create a bot with BotFather, add your token, and you're running in minutes."
+---
+
+Telegram is the easiest channel to set up and one of the most reliable to run. No Mac required, no unofficial APIs, no QR codes. Just a bot token from BotFather and you're running.
+
+## Create Your Bot
+
+1. Open Telegram and search for **@BotFather**
+2. Send `/newbot`
+3. Choose a display name for your bot (e.g., "My Assistant")
+4. Choose a username ending in `bot` (e.g., `myassistant_bot`)
+5. Copy the token BotFather provides
+
+Copy it — you'll need it in the next step.
+
+## Configuration
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_BOT_TOKEN_HERE",
+      "dmPolicy": "pairing",
+      "groupPolicy": "mention",
+      "requireMention": true,
+      "allowedUsers": [
+        123456789,
+        987654321
+      ],
+      "parseMode": "Markdown"
+    }
+  }
+}
+```
+
+Replace `YOUR_BOT_TOKEN_HERE` with the token from BotFather.
+
+## Finding Your Telegram User ID
+
+Your Telegram user ID is a number, not your @username. To find it:
+
+1. Message @userinfobot on Telegram
+2. It will reply with your numeric ID
+
+Use this ID in `allowedUsers` for allowlist-style access.
+
+## Important: Bots Are Publicly Discoverable
+
+Telegram bots are publicly searchable by their username. Anyone can find and message your bot. This is why `dmPolicy: pairing` is recommended — you'll be notified of new users and can approve or deny them before the agent responds.
+
+If you want a stricter setup, use `allowedUsers` with specific numeric IDs.
+
+## Group Chats
+
+To use your bot in a group:
+
+1. Add the bot to the group (search for its username)
+2. In BotFather, send `/setprivacy` and select your bot → disable privacy mode (required for group reading)
+3. Set `groupPolicy: mention` so it only responds when @mentioned
+
+With privacy mode disabled, the bot can read all messages in the group. With `requireMention: true`, it will only respond when explicitly addressed.
+
+## Why Telegram Is Reliable
+
+Unlike WhatsApp, Telegram provides an official Bot API. There's no session that expires, no QR code to re-scan, no unofficial protocol emulation. When the gateway is running, the Telegram channel is running.
+
+It also queues messages during disconnections — if your gateway restarts, it will receive all messages sent while it was offline.
+
+## Testing
+
+After saving your configuration and restarting the gateway:
+
+```bash
+openclaw gateway restart
+```
+
+Open Telegram, find your bot by username, and send it a message. It should respond within a few seconds.
+
+If it doesn't respond:
+
+```bash
+openclaw logs --filter telegram
+```

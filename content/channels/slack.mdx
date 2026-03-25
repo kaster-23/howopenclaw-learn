@@ -1,0 +1,98 @@
+---
+title: "Slack"
+description: "Connect OpenClaw to Slack for always-on agent deployment in your workspace. Works behind firewalls with Socket Mode."
+---
+
+Slack is the best channel for work contexts. Socket Mode keeps your agent connected without requiring a public URL, and it works reliably behind firewalls and corporate VPNs.
+
+## Creating Your Slack App
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) and click **Create New App**
+2. Choose **From scratch**
+3. Name it (something like "My Assistant") and select your workspace
+4. Under **Socket Mode**, enable it and generate an App-Level Token with `connections:write` scope
+5. Under **OAuth & Permissions**, add these Bot Token Scopes:
+   - `chat:write` — send messages
+   - `im:history` — read DMs
+   - `channels:history` — read channel messages (only channels you add the bot to)
+   - `app_mentions:read` — detect @mentions
+6. Install the app to your workspace and copy the Bot Token
+
+Save your tokens as environment variables:
+
+```bash
+export SLACK_BOT_TOKEN="xoxb-..."
+export SLACK_APP_TOKEN="xapp-..."
+export SLACK_SIGNING_SECRET="..."
+```
+
+## Configuration
+
+```json
+{
+  "channels": {
+    "slack": {
+      "enabled": true,
+      "mode": "socket",
+      "dmPolicy": "pairing",
+      "groupPolicy": "mention",
+      "requireMention": true,
+      "botToken": "${SLACK_BOT_TOKEN}",
+      "appToken": "${SLACK_APP_TOKEN}",
+      "signingSecret": "${SLACK_SIGNING_SECRET}",
+      "allowedChannels": [
+        "C0123456789"
+      ],
+      "threadReplies": true
+    }
+  }
+}
+```
+
+## Socket Mode vs. Events API
+
+### Socket Mode (Recommended)
+
+Creates a persistent WebSocket connection — no public URL required. Works behind firewalls. Automatically reconnects after interruptions.
+
+This is what most setups should use. Reliable enough to run continuously for weeks without issues.
+
+### Events API
+
+Requires a publicly accessible webhook URL. Slack sends event notifications to your URL when things happen. Use this only if your infrastructure can't support outbound WebSocket connections.
+
+## Security Recommendations
+
+**Restrict bot access to dedicated channels.** Don't add your agent bot to every channel in your workspace. Create a `#assistant` channel and invite the bot there.
+
+**Minimal scopes.** Only request the OAuth scopes you actually need. Avoid `channels:read` on all channels — be specific.
+
+**Separate workspaces.** If you're using this for personal purposes in a work Slack, consider creating a personal workspace instead of mixing them.
+
+**Store tokens in environment variables**, never directly in config files. Your `openclaw.json` should only reference `${SLACK_BOT_TOKEN}`, not the actual token value.
+
+## Threading
+
+With `threadReplies: true`, your agent responds in threads rather than the main channel. This keeps channels clean and makes it easy to track conversations.
+
+To start a fresh conversation, message the bot directly (DM) rather than in a channel.
+
+## Testing
+
+After setup, DM your bot:
+
+```
+Hey, are you there?
+```
+
+Or @mention it in your allowed channel:
+
+```
+@YourBot what's the weather today?
+```
+
+Check logs if it doesn't respond:
+
+```bash
+openclaw logs --follow | grep slack
+```

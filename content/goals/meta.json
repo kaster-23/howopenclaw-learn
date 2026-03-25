@@ -1,0 +1,13 @@
+{
+  "title": "Goals",
+  "icon": "Target",
+  "pages": [
+    "daily-briefing",
+    "personal-assistant",
+    "work-hub",
+    "research",
+    "life-ops",
+    "voice",
+    "finance"
+  ]
+}

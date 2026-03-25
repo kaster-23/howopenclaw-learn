@@ -1,0 +1,125 @@
+---
+title: "Price Alerts & Monitoring"
+description: "Set up price alerts and intraday monitoring so you never miss a move that matters."
+---
+
+By the end of this page, you'll have price alerts that trigger when your watchlist hits key levels, and an intraday check-in if you want one.
+
+**Time:** ~25 minutes
+
+---
+
+## How alerts work in OpenClaw
+
+OpenClaw doesn't run continuously watching prices — that would require constant API calls. Instead, you have two options:
+
+1. **Frequent cron** — check prices every 15-30 minutes during market hours and alert if a threshold is crossed
+2. **Webhook from external service** — a price alert service (TradingView, etc.) sends a webhook to your Gateway
+
+Both work. The cron approach is simpler. The webhook approach is more responsive.
+
+---
+
+## Option 1: Polling with a cron
+
+Check your watchlist every 15 minutes during market hours:
+
+```json
+{
+  "id": "price-check",
+  "schedule": "*/15 9-16 * * 1-5",
+  "prompt": "Quick price check. Fetch current prices for my watchlist (watchlist.md). Alert me only if: any position has moved more than 2% since yesterday's close, or VIX is above 25. If nothing notable, don't send anything. If there's something notable, send a 2-3 line alert.",
+  "channel": "telegram",
+  "suppressEmpty": true
+}
+```
+
+**`suppressEmpty: true`** tells OpenClaw not to send anything if the agent decides nothing is worth reporting. Without this, you'd get "nothing notable" messages every 15 minutes.
+
+---
+
+## Adjust the thresholds
+
+Edit the prompt to match your style:
+
+```
+Alert me if:
+- Any stock on my watchlist moves more than [X]% intraday
+- VIX crosses above [Y]
+- SPY drops more than [Z]% from open
+- Any of my tickers have breaking news
+```
+
+Lower thresholds = more alerts. Set them at levels where you'd actually want to act, not just be notified.
+
+---
+
+## Option 2: Webhook from TradingView
+
+If you already use TradingView, its alert system can POST to your Gateway.
+
+**1. Get your Gateway URL accessible externally** (this requires a static IP or a tunnel like ngrok). For home use, this is optional — see [Level Up: Run It 24/7](/level-up/deployment) for proper deployment.
+
+**2. Configure a TradingView alert:**
+- Set your alert condition (e.g. AAPL closes above $200)
+- Webhook URL: `http://YOUR_IP:18789/webhook`
+- Message format:
+```json
+{"action": "run_prompt", "prompt": "ALERT: {{ticker}} just hit {{close}}. Check watchlist.md for context and send a brief market alert.", "channel": "telegram"}
+```
+
+**3. TradingView fires → webhook hits Gateway → agent sends you a Telegram message.**
+
+---
+
+## Weekly portfolio review
+
+Add a Friday afternoon review:
+
+```json
+{
+  "id": "weekly-portfolio-review",
+  "schedule": "0 15 * * 5",
+  "prompt": "Weekly portfolio review. Check my watchlist (watchlist.md). Search for this week's performance of each ticker and any notable news. Summarize: what moved, why, and what I should watch next week. 8-10 lines.",
+  "channel": "telegram"
+}
+```
+
+---
+
+## Cost discipline
+
+Finance monitoring can get expensive if you're polling frequently with a capable model. Options:
+
+- Use `claude-haiku-4-5-20251001` for routine price checks — it's 10x cheaper and handles structured output well
+- Reserve `claude-sonnet-4-6` for the morning briefing and weekly review where quality matters
+- With Alpha Vantage free tier (500 calls/day), polling every 15 minutes for 7 hours = 28 calls/day — well within limits
+
+```json
+{
+  "id": "price-check",
+  "model": "claude-haiku-4-5-20251001",
+  "schedule": "*/15 9-16 * * 1-5",
+  ...
+}
+```
+
+---
+
+## Goal complete
+
+Your finance setup:
+- Pre-market briefing arrives every weekday morning automatically
+- Market close summary at 4:30pm
+- Price alerts fire when your thresholds are crossed
+- Weekly review on Friday afternoon
+- Cost-controlled with Haiku for routine checks
+
+---
+
+## Where to go next
+
+- [Level Up: Skills & ClawHub →](/level-up/skills) — financial data skills with better reliability
+- [Level Up: Run It 24/7 →](/level-up/deployment) — so alerts work even when your laptop is off
+- [Level Up: Security Fundamentals →](/foundation/security) — if you're exposing the Gateway for webhooks
+- [Pick another goal →](/foundation/set-your-goal)

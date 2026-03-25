@@ -1,0 +1,192 @@
+---
+title: "Fix It When It Breaks"
+description: "Diagnose and fix the most common OpenClaw problems."
+---
+
+Reference this page whenever something stops working. Start with logs.
+
+---
+
+## Always start here
+
+```bash
+openclaw logs --tail 100
+```
+
+Most issues are visible in the logs. Look for `ERROR` lines. The error message usually tells you exactly what's wrong.
+
+---
+
+## Gateway issues
+
+### Gateway won't start
+
+```bash
+openclaw gateway status
+```
+
+Common causes:
+
+| Error | Fix |
+|---|---|
+| `EADDRINUSE: address already in use` | Another process is on port 18789. Run `lsof -i :18789` to find it. Change the port in config or kill the conflicting process. |
+| `Cannot find module` | Node.js version too old. Run `node --version` — need 22.14+ (Node 24 recommended). Update via `nvm install 24`. |
+| `Invalid JSON` in config | Your `openclaw.json` has a syntax error. Run `cat ~/.openclaw/openclaw.json | python3 -m json.tool` to find it. |
+| `API key invalid` | Your AI provider key is wrong or expired. Check it at your provider's dashboard. |
+
+### Gateway keeps crashing
+
+```bash
+openclaw logs --filter error --tail 200
+```
+
+If it's crashing on startup with a channel error, try disabling all channels temporarily and re-enabling them one at a time to find the bad config.
+
+### Port conflict
+
+```bash
+openclaw config set gateway.port 18790
+openclaw gateway
+```
+
+---
+
+## Channel issues
+
+### Telegram not responding
+
+1. Check `openclaw gateway status` — is `telegram: connected`?
+2. Verify the bot token in config is correct (no extra spaces)
+3. Check if BotFather revoked the token — generate a new one if needed
+4. Make sure you sent `/start` to the bot before messaging
+
+### WhatsApp disconnected
+
+WhatsApp sessions expire if unused for too long.
+
+```bash
+openclaw channels login --channel whatsapp
+```
+
+Re-scan the QR code. The session will reconnect.
+
+If you see `Error: session store corrupted`:
+
+```bash
+rm -rf ~/.openclaw/sessions/whatsapp
+openclaw channels login --channel whatsapp
+```
+
+### Slack "not_in_channel" error
+
+Your bot isn't in the channel you're trying to post to. In Slack:
+
+```
+/invite @YourBotName
+```
+
+Also check the bot's OAuth scopes — it needs `chat:write` at minimum.
+
+### iMessage not responding
+
+iMessage requires macOS accessibility permissions. If they were revoked:
+
+```bash
+openclaw channels setup imessage
+```
+
+Re-grant permissions when prompted.
+
+---
+
+## Automation issues
+
+### Automations not firing
+
+```bash
+openclaw cron list
+openclaw cron status [automation-id]
+```
+
+Check:
+1. Is the schedule valid cron syntax? Test at [crontab.guru](https://crontab.guru)
+2. Is the Gateway running at the scheduled time? (Laptop sleeping breaks this — see [Run It 24/7](/level-up/deployment))
+3. Is the timezone correct? Add `"timezone": "America/New_York"` to the automation config if not specified
+
+### Test an automation manually
+
+```bash
+openclaw cron run [automation-id]
+```
+
+This runs it immediately regardless of schedule.
+
+### Automation runs but sends nothing
+
+If `suppressEmpty` is set, the agent may be deciding there's nothing worth sending. Test the prompt manually in WebChat to see what the agent produces:
+
+```bash
+openclaw dashboard
+```
+
+---
+
+## AI response issues
+
+### Slow responses
+
+- Check your AI provider's status page for outages
+- Try a smaller model: `"model": "claude-haiku-4-5-20251001"` for faster responses
+- Check your internet connection
+
+### Agent ignoring SOUL.md instructions
+
+- SOUL.md over 200 lines? The agent may be ignoring sections. Trim it.
+- Instructions too vague? "Be concise" is ignored. "Default to 2-3 sentences" works.
+- Restart the Gateway after editing SOUL.md: stop and re-run `openclaw gateway`
+
+### Tool not working
+
+```bash
+openclaw tools list
+```
+
+Check that the tool is enabled. If `web_search` isn't in the list, it's not in your config.
+
+---
+
+## Config issues
+
+### Finding your config
+
+```bash
+cat ~/.openclaw/openclaw.json
+```
+
+### Validating your config
+
+```bash
+openclaw config validate
+```
+
+This checks JSON syntax and required fields.
+
+### Resetting to defaults
+
+```bash
+openclaw config reset
+```
+
+This resets `openclaw.json` to defaults but doesn't touch SOUL.md, USER.md, or workspace files.
+
+---
+
+## Getting help
+
+If you can't fix it:
+
+1. **Official docs:** [docs.openclaw.ai/help/troubleshooting](https://docs.openclaw.ai/help/troubleshooting)
+2. **Discord:** The OpenClaw Discord has a `#help` channel with the community
+3. **GitHub issues:** [github.com/openclaw/openclaw/issues](https://github.com/openclaw/openclaw/issues)
+
+When asking for help, include the output of `openclaw logs --tail 50` and `openclaw gateway status`.

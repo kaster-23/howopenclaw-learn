@@ -1,0 +1,108 @@
+---
+title: "Signal"
+description: "The most private OpenClaw channel. Messages stay end-to-end encrypted. Setup is the most involved of any channel — plan 30-60 minutes."
+---
+
+Signal offers the strongest privacy guarantees of any OpenClaw channel. Messages remain end-to-end encrypted throughout. No metadata exposed to third parties, no unofficial API emulation.
+
+The tradeoff: setup is the most involved of any channel. Plan 30–60 minutes for your first attempt.
+
+## Before You Start: Use a Dedicated Number
+
+**Do not use your personal Signal account.** Signal links your account to your phone number, and using your personal number creates conflicts when the agent sends messages on your behalf.
+
+Get a separate number for your agent:
+- Google Voice (free, US only)
+- Twilio (+$1/month)
+- Prepaid SIM
+
+## Install signal-cli
+
+`signal-cli` is the command-line Signal client that OpenClaw uses.
+
+**macOS:**
+```bash
+brew install signal-cli
+```
+
+**Linux:**
+```bash
+# Download the latest release from GitHub
+wget https://github.com/AsamK/signal-cli/releases/latest/download/signal-cli-*.tar.gz
+tar -xzf signal-cli-*.tar.gz
+sudo mv signal-cli-*/bin/signal-cli /usr/local/bin/
+```
+
+Verify:
+```bash
+signal-cli --version
+```
+
+## Register Your Number
+
+```bash
+# Register with your dedicated number
+signal-cli -u +15559876543 register
+
+# You'll receive a verification code via SMS
+signal-cli -u +15559876543 verify 123456
+
+# Trust your own number
+signal-cli -u +15559876543 updateAccount
+```
+
+## Configuration
+
+```json
+{
+  "channels": {
+    "signal": {
+      "enabled": true,
+      "signalCliPath": "/usr/local/bin/signal-cli",
+      "phoneNumber": "+15559876543",
+      "dmPolicy": "allowlist",
+      "allowedContacts": [
+        "+15551234567",
+        "+15559999999"
+      ],
+      "groupPolicy": "never"
+    }
+  }
+}
+```
+
+## Testing
+
+Send a test message from your personal Signal account to the agent's number:
+
+```bash
+# Or watch logs as you send a test message
+openclaw logs --follow | grep signal
+```
+
+## Group Chat Limitations
+
+Signal groups work differently from other platforms, and the integration has less mature group support. Group messages may not route correctly in all configurations.
+
+For team use cases, **Slack or Telegram are more reliable choices**. Use Signal for one-on-one personal communication where privacy is the priority.
+
+## Why Signal Complexity Is Worth It
+
+For the right use case — private, sensitive communications — Signal's end-to-end encryption means:
+
+- Messages aren't readable by OpenClaw's infrastructure
+- No metadata exposed to Apple, Google, or Meta
+- No corporate server storing your conversation history
+
+If you're using your agent for anything sensitive (medical, legal, financial), Signal is the right channel.
+
+## Troubleshooting
+
+**Registration fails:** Check that your number is in E.164 format (`+15559876543`) and that you're receiving SMS.
+
+**Agent doesn't receive messages:** Verify `signalCliPath` points to your actual installation, and that the phone number in config matches your registered number exactly.
+
+**Session errors:** Re-register the number if signal-cli reports authentication failures:
+```bash
+signal-cli -u +15559876543 register --force
+```

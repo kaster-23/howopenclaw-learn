@@ -1,0 +1,57 @@
+---
+title: "OpenClaw vs ChatGPT: Self-Hosted Agent vs Hosted AI"
+description: "ChatGPT is a hosted AI chat interface from OpenAI. OpenClaw is a self-hosted AI agent you access through your own messaging apps. Here's which one to use and why."
+---
+
+ChatGPT is the most widely used AI interface in the world. OpenClaw is a self-hosted alternative that puts the agent on your own hardware and delivers it through messaging apps you already use. They serve different priorities.
+
+## At a Glance
+
+| | OpenClaw | ChatGPT |
+|---|---|---|
+| **Hosting** | Your machine (self-hosted) | OpenAI's servers |
+| **Access** | Telegram, WhatsApp, iMessage, browser | Web, iOS app, Android app |
+| **Data ownership** | Your data stays local | Conversations processed by OpenAI |
+| **AI model** | Your choice (Claude, GPT-4, Gemini) | GPT-4o (or earlier models) |
+| **Memory** | Persistent, in local files | Optional memory feature (limited) |
+| **Scheduled automations** | Yes (daily briefings, cron jobs) | No |
+| **Cost** | API usage costs only | Free tier + $20/mo Plus |
+| **Setup** | 15-minute install | Instant, no install |
+
+## What ChatGPT Does
+
+ChatGPT is a hosted conversational AI from OpenAI. You open a browser or app, type a message, and get a reply. It's general-purpose, capable, and requires zero setup. The free tier is available to anyone; Plus unlocks GPT-4o and longer context. OpenAI stores your conversations and may use them for model improvement (configurable in settings).
+
+ChatGPT's memory feature can persist facts across sessions, but it's limited and not tied to local files you control. There's no way to connect it to Telegram or have it send you a morning briefing unprompted.
+
+## What OpenClaw Does
+
+OpenClaw runs on your machine as a background daemon. It connects to messaging channels you already use — Telegram, WhatsApp, iMessage — and responds to messages there. It loads your personal context (SOUL.md, USER.md) on every conversation, maintaining a consistent understanding of who you are and what matters to you.
+
+You can configure it to use any AI provider, including OpenAI's GPT-4 models. The difference isn't which AI brain is powering it — it's where everything runs and how it's accessed.
+
+## Key Differences
+
+**Data privacy.** With OpenClaw, your conversations, your context files, and your memory all stay on your machine. Nothing is sent to a third-party server except the message payload to your chosen AI provider's API — and you choose that provider. With ChatGPT, your conversations are processed and stored by OpenAI.
+
+**Access method.** ChatGPT requires opening an app or browser. OpenClaw lives in your existing messaging apps. If you're already in Telegram or WhatsApp all day, the difference is real — you message your agent the same way you message people.
+
+**Proactive behavior.** ChatGPT only responds when you initiate. OpenClaw can send you things: a daily briefing at 7am, a reminder before a meeting, a summary you scheduled. This is configured via cron automations.
+
+**Persistence and context.** ChatGPT's memory is opt-in and limited. OpenClaw's MEMORY.md file grows over sessions, and you can edit it directly to correct or add to it. SOUL.md, USER.md, and HEARTBEAT.md give the agent standing context that's always loaded.
+
+**Model flexibility.** ChatGPT only uses OpenAI models. OpenClaw works with Anthropic (Claude), OpenAI (GPT-4), or Google (Gemini) — you pick in config.
+
+## Who Should Use ChatGPT
+
+You want something that works right now with no install. You don't have strong privacy requirements. You want a capable general-purpose AI and don't need messaging integration or scheduled automations. You're fine with your conversations being processed by OpenAI.
+
+## Who Should Use OpenClaw
+
+You want an AI that lives in your phone's messaging app. You care about data privacy and want conversations to stay on your hardware. You want persistent memory you control. You want the agent to send you things proactively (briefings, reminders). You're willing to spend 15 minutes on setup to get a fundamentally more personal experience.
+
+## Bottom Line
+
+ChatGPT wins on zero-friction access. OpenClaw wins on privacy, persistence, and integration into your daily messaging life. If you've been using ChatGPT but find yourself wishing it would just text you — that's exactly what OpenClaw is for.
+
+If that tradeoff makes sense for you, the [installation guide](/foundation/install) covers setup.

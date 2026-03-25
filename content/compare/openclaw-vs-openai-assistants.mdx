@@ -1,0 +1,58 @@
+---
+title: "OpenClaw vs OpenAI Assistants API: Ready-to-Run vs Build Your Own"
+description: "OpenAI Assistants API is a developer platform for building AI-powered apps. OpenClaw is a self-hosted AI agent that works out of the box. Here's the difference between building one and running one."
+---
+
+OpenAI Assistants API and OpenClaw solve related problems but at different levels. The Assistants API is a developer platform — you write code to build something with it. OpenClaw is a complete agent you configure and run — no code required.
+
+## At a Glance
+
+| | OpenClaw | OpenAI Assistants API |
+|---|---|---|
+| **Type** | Ready-to-run agent | Developer API / platform |
+| **Requires coding** | No | Yes |
+| **AI provider** | Any (Claude, GPT-4, Gemini) | OpenAI only |
+| **Hosting** | Your machine | OpenAI's cloud |
+| **Messaging channels** | Telegram, WhatsApp, iMessage, Slack | None (you build the UI) |
+| **Memory** | Persistent local files you control | Thread-based, managed by OpenAI |
+| **Cost** | API usage (model + tokens) | API usage + higher per-token costs |
+| **For whom** | Anyone who can follow a setup guide | Developers building apps |
+| **Time to first message** | 15 minutes | Hours to days (build time) |
+
+## What OpenAI Assistants API Does
+
+The Assistants API lets developers build AI assistants backed by OpenAI models. You create an assistant with a system prompt and capabilities (code interpreter, file search, function calling), then create threads and run messages against them. It handles conversation state and can retain context across messages in a thread.
+
+It's powerful and well-designed for what it is: a developer platform. To get anything useful out of it, you need to write code — a web app, a bot, an integration layer. The API doesn't connect to Telegram, it doesn't send you a morning briefing, it doesn't know who you are. You build all of that.
+
+## What OpenClaw Does
+
+OpenClaw is the assembled product. It runs a Gateway, connects to your messaging channels, loads your personal context files on every conversation, and responds through Telegram, WhatsApp, or whatever channel you configured. You install it with a one-line command, fill in a few config fields, and it works.
+
+Under the hood, it routes your conversations to an AI provider — which can be OpenAI (GPT-4), Anthropic (Claude), or Google (Gemini). You're not locked to one provider.
+
+## Key Differences
+
+**Coding requirement.** To get a working assistant from the OpenAI Assistants API, you need to build the application around it — authentication, user management, conversation flow, a UI, deployment. OpenClaw is already built. Configuration, not code.
+
+**Provider lock-in.** Assistants API only uses OpenAI models. OpenClaw works with any major provider and you can switch in config.
+
+**Messaging channels.** The Assistants API has no messaging channel integrations. If you want your assistant on Telegram, you write the Telegram bot integration yourself. OpenClaw has Telegram, WhatsApp, iMessage, Slack, Discord built in.
+
+**Data hosting.** Your conversations and files on the Assistants API are stored on OpenAI's infrastructure. OpenClaw's context files, memory, and conversation routing all happen on your hardware.
+
+**Memory model.** The Assistants API threads provide conversation history within a session. OpenClaw's MEMORY.md gives you persistent memory that grows across all sessions and is a plain-text file you can read and edit.
+
+## Who Should Use OpenAI Assistants API
+
+You're a developer building a product or tool for others to use. You need fine-grained control over the assistant's capabilities, access to code interpreter or file search. You're comfortable with API integration and writing application code. You want OpenAI's infrastructure to handle uptime and scale.
+
+## Who Should Use OpenClaw
+
+You want a personal AI agent that works right now — no coding, no deployment, no infrastructure. You want it on your phone's messaging apps. You want to choose your AI provider and keep your data local. You're setting this up for yourself, not building a product.
+
+## Bottom Line
+
+If you're a developer building an AI-powered product for other people, the OpenAI Assistants API is a strong foundation. If you want an AI assistant for your own daily use — available on your phone, knowing your context, sending you briefings — OpenClaw is the faster path and keeps you in control of your data.
+
+The [installation guide](/foundation/install) covers setup if you want to try it.

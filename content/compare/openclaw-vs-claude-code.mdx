@@ -1,0 +1,56 @@
+---
+title: "OpenClaw vs Claude Code: What's the Difference?"
+description: "OpenClaw and Claude Code sound similar but do completely different things. OpenClaw is a personal AI agent for messaging. Claude Code is a coding assistant for your terminal. Here's how to tell them apart."
+---
+
+OpenClaw and Claude Code are frequently confused because their names sound similar — "Claw" versus "Claude." They are different products for different purposes and are not in competition.
+
+## At a Glance
+
+| | OpenClaw | Claude Code |
+|---|---|---|
+| **What it is** | Self-hosted personal AI agent | AI coding assistant (CLI) |
+| **Who makes it** | Open source / community | Anthropic |
+| **Where you use it** | Telegram, WhatsApp, iMessage, browser | Terminal / IDE |
+| **Primary use case** | Daily life: briefings, reminders, tasks | Writing, explaining, and editing code |
+| **Requires coding** | No | No — but designed for developers |
+| **Self-hosted** | Yes — runs on your machine | Yes — runs locally via CLI |
+| **AI provider** | Any (Claude, GPT-4, Gemini) | Claude (Anthropic) |
+
+## What Claude Code Does
+
+Claude Code is Anthropic's official CLI tool for AI-assisted software development. You install it in your terminal, point it at a codebase, and ask it to read files, write functions, run tests, explain logic, or make refactors. It understands your project structure and can execute shell commands with your permission.
+
+It's a developer tool. Its value is in the quality of code it writes and its ability to navigate large codebases. It doesn't have a messaging interface, it doesn't run as a background daemon, and it doesn't know your schedule or personal context unless you tell it each session.
+
+## What OpenClaw Does
+
+OpenClaw is a self-hosted AI agent for personal productivity. It runs a Gateway process on your machine that stays connected to your messaging channels — Telegram, WhatsApp, iMessage, Slack, Discord. When you send it a message, it loads your personal context (SOUL.md, USER.md, HEARTBEAT.md), talks to your AI provider of choice, and replies in the same app.
+
+It's not a coding tool. Its value is in being always available, knowing who you are across sessions (memory), and running scheduled automations like daily briefings or reminders.
+
+## Key Differences
+
+**Purpose.** Claude Code helps you build software. OpenClaw helps you manage your life and work through conversation.
+
+**Interface.** Claude Code lives in your terminal, tied to a directory. OpenClaw lives in your phone's messaging apps and a local browser interface.
+
+**Context model.** Claude Code's context resets between sessions (unless you use CLAUDE.md files). OpenClaw maintains rolling memory in MEMORY.md and loads personal context files on every conversation.
+
+**AI provider.** Claude Code only uses Claude (Anthropic's models). OpenClaw works with any provider — Anthropic, OpenAI, Google — you pick in config.
+
+**Scope.** Claude Code is open in scope but developer-focused. OpenClaw has opinionated defaults around personal productivity (briefings, tasks, reminders, messaging).
+
+## Who Should Use Claude Code
+
+You're a developer. You spend most of your AI time writing, reviewing, or understanding code. You want something that integrates into your existing terminal workflow, understands your project files, and can make multi-file changes.
+
+## Who Should Use OpenClaw
+
+You want an AI you can message on Telegram at 7am and ask "what's on my plate today" — and get a real answer based on your actual context. You want something running in the background, not something you invoke manually in a terminal. You care about privacy and self-hosting.
+
+## Bottom Line
+
+These tools don't compete. Use Claude Code if you write code. Use OpenClaw if you want a personal AI agent accessible through your everyday messaging apps. Many people use both — Claude Code for development work, OpenClaw for everything else.
+
+If OpenClaw fits your use case, the [installation guide](/foundation/install) walks through setup.

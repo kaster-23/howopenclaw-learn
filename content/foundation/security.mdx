@@ -41,7 +41,7 @@ The `dmPolicy` setting controls who can message your agent. For any setup where 
 
 Telegram user IDs are numbers, not strings. To find yours, message **@userinfobot** on Telegram — it replies with your numeric ID.
 
-Never use `"open"` in production. Anyone who finds your bot's username can then send it messages, which costs you money and potentially gives strangers access to your tools.
+Never set `dmPolicy` to `"open"` in production. Anyone who finds your bot's username can then message it — which costs you API money and potentially gives strangers access to your tools.
 
 ---
 
@@ -106,7 +106,7 @@ server {
 
 **Option 2: Tailscale or VPN (officially recommended)**
 
-The officially recommended approach for remote access is Tailscale or another VPN. This keeps your Gateway off the public internet entirely — only devices on your private network can reach it.
+[Tailscale](https://tailscale.com) is a free tool that creates a private network between your devices — your phone, laptop, and server can all talk to each other securely without exposing anything to the internet. This is the cleanest approach for remote access: your Gateway stays completely off the public internet, only reachable from devices you've added to your Tailscale network.
 
 ```bash
 # With Tailscale installed, your Gateway is accessible at your Tailscale IP

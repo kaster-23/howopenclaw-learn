@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { source } from "@/lib/source"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://clawdocs.com"
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
 
   return [
     {

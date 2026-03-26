@@ -61,7 +61,7 @@ openclaw onboard --install-daemon
 
 The wizard walks you through four things:
 
-1. **Your AI provider** — Choose Anthropic (Claude), OpenAI (GPT), or Google (Gemini) and enter your API key. If you don't have a key yet, get one from your provider's dashboard — this is required.
+1. **Your AI provider** — Choose Anthropic (Claude), OpenAI (GPT), or Google (Gemini) and enter your API key. If you don't have one yet: get it from [Anthropic](https://console.anthropic.com), [OpenAI](https://platform.openai.com), or [Google Gemini](https://aistudio.google.com) — create an account, go to API Keys, and copy it. This is required to continue.
 
 2. **Your workspace** — Where files the agent creates will live. The default (`~/.openclaw/workspace`) is fine.
 
@@ -75,7 +75,9 @@ When the wizard finishes, your config lives at `~/.openclaw/openclaw.json`.
 
 ## Step 3 — Start the Gateway
 
-If the daemon wasn't installed in Step 2, start the Gateway manually:
+If the wizard completed successfully and you said yes to the daemon, the Gateway is already running — skip to the check below.
+
+If you're not sure, or the wizard didn't finish cleanly, start it manually:
 
 ```bash
 openclaw gateway

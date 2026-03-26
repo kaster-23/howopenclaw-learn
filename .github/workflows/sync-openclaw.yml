@@ -1,0 +1,53 @@
+name: Sync OpenClaw docs
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # Daily at 9am UTC
+  workflow_dispatch:     # Manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run docs sync
+        id: sync
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm tsx scripts/sync-openclaw.ts
+
+      - name: Create pull request
+        if: steps.sync.outputs.updated == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
+          branch: "docs/sync-openclaw-${{ steps.sync.outputs.version }}"
+          title: "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
+          body: |
+            Auto-generated documentation update for OpenClaw release `${{ steps.sync.outputs.version }}`.
+
+            **What changed:**
+            ${{ steps.sync.outputs.release_notes }}
+
+            > Please review the diff before merging. Claude may have missed things or made minor errors — a human review pass is recommended.
+          labels: "documentation,automated"
+          delete-branch: true

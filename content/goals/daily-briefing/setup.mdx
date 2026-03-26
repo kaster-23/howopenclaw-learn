@@ -1,6 +1,12 @@
 ---
 title: "Your First Cron Job"
 description: "Schedule your agent to send you an automatic morning briefing every day."
+howToSteps:
+  - "Open ~/.openclaw/openclaw.json in your text editor"
+  - "Add an `automations` array with your cron job: set `id`, `schedule` (cron expression), `prompt`, and `channel`"
+  - "Restart the Gateway with `openclaw gateway restart` to load the new automation"
+  - "Verify the job loaded with `openclaw cron list` — you should see it with its next run time"
+  - "Test immediately without waiting by running `openclaw cron run morning-briefing`"
 ---
 
 By the end of this page, you'll have a working cron job that sends you a daily briefing at a time you choose — no manual trigger required.
@@ -72,6 +78,10 @@ The `"channel": "telegram"` value must match the channel name in your config. If
 | `0 18 * * *` | Every day at 6:00pm |
 
 Schedules run in your system timezone by default. To set a timezone explicitly, add `"timezone": "America/New_York"` to the automation object.
+
+<Callout type="warn" title="Running on a server or VPS?">
+Servers typically run in UTC. If your 7am briefing is arriving at noon, your system clock is UTC. Always set the timezone explicitly when running on a remote machine: `"timezone": "America/New_York"` (or your local timezone).
+</Callout>
 
 ---
 

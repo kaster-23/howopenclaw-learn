@@ -1,6 +1,12 @@
 ---
 title: "Write Your SOUL.md"
 description: "Configure your agent's personality, communication style, and values using SOUL.md."
+howToSteps:
+  - "Open ~/.openclaw/SOUL.md in your text editor — e.g. `code ~/.openclaw/SOUL.md` for VS Code"
+  - "Define your agent's role in 2–3 sentences: what it does, who it serves, and its overall purpose"
+  - "Specify communication style: tone (casual, formal, direct), response length, and formatting preferences"
+  - "Add domain expertise or personal context relevant to your use case (job, timezone, preferred tools)"
+  - "Save the file and restart the Gateway with `openclaw gateway restart` to apply changes"
 ---
 
 By the end of this page, your agent will respond in a way that feels intentional — not like a generic assistant.
@@ -21,11 +27,17 @@ Every OpenClaw agent reads two core files when it starts:
 Both files live at `~/.openclaw/`. To open them:
 
 ```bash
-open -e ~/.openclaw/SOUL.md   # macOS — opens in TextEdit
-open -e ~/.openclaw/USER.md
+# macOS — opens in TextEdit
+open -e ~/.openclaw/SOUL.md
+
+# Windows (WSL2) — opens in Notepad
+notepad.exe ~/.openclaw/SOUL.md
+
+# Any platform — if you have VS Code
+code ~/.openclaw/SOUL.md
 ```
 
-Or use any editor you prefer: VS Code (`code ~/.openclaw/SOUL.md`), nano (`nano ~/.openclaw/SOUL.md`), etc.
+Or use any editor you prefer: nano (`nano ~/.openclaw/SOUL.md`), vim, etc.
 
 ---
 

@@ -13,7 +13,7 @@ export function LandingHeader() {
           className="flex items-center gap-2 font-semibold text-sm text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-2 rounded-sm"
         >
           <Image src="/clawlogo.png" alt="" width={20} height={20} />
-          ClawDocs
+          HowOpenClaw
         </Link>
         <div className="flex items-center gap-1">
           <Link

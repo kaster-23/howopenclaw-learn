@@ -101,7 +101,7 @@ const levelUpItems: LevelUpItem[] = [
     Icon: Layers,
     title: "Multi-Channel",
     description: "Reach it from Slack, iMessage, Telegram, and more — all at once.",
-    href: "/level-up/channels",
+    href: "/channels/overview",
   },
   {
     Icon: Wrench,
@@ -163,7 +163,7 @@ function SectionConnector({
         transition={{ duration: prefersReducedMotion ? 0 : 0.35, ease: "easeOut" }}
       />
       <m.span
-        className="text-[11px] font-medium text-zinc-500 dark:text-zinc-500 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60"
+        className="text-sm font-medium text-zinc-500 dark:text-zinc-500 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60"
         initial={{ opacity: prefersReducedMotion ? 1 : 0, scale: prefersReducedMotion ? 1 : 0.92 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
@@ -221,6 +221,7 @@ export function LandingContent() {
                 alt="OpenClaw"
                 width={125}
                 height={125}
+                priority
                 className="mx-auto w-[90px] sm:w-[125px] h-auto drop-shadow-[0_0_24px_hsl(0_100%_65%/0.25)]"
               />
             </m.div>
@@ -239,7 +240,7 @@ export function LandingContent() {
                 className="text-[var(--color-fd-primary)]"
                 style={{ textShadow: "0 0 40px hsl(0 100% 65% / 0.35)" }}
               >
-                AI assistant
+                OpenClaw
               </span>
               <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-b from-zinc-900 to-zinc-600 dark:from-zinc-50 dark:to-zinc-400">
@@ -269,7 +270,7 @@ export function LandingContent() {
               >
                 <Link
                   href="/foundation/what-is-openclaw"
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[var(--color-fd-primary)] text-white text-sm font-medium hover:bg-[var(--color-fd-primary-hover)] ring-2 ring-[var(--color-fd-primary)]/0 hover:ring-[var(--color-fd-primary)]/30 transition-colors duration-200 shadow-sm focus-visible:outline-none focus-visible:ring-[var(--color-fd-primary)]/70"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[hsl(0,100%,45%)] text-white text-sm font-medium hover:bg-[hsl(0,100%,40%)] ring-2 ring-[var(--color-fd-primary)]/0 hover:ring-[var(--color-fd-primary)]/30 transition-colors duration-200 shadow-sm focus-visible:outline-none focus-visible:ring-[var(--color-fd-primary)]/70"
                 >
                   Start Level 1
                   <ArrowRight />
@@ -299,16 +300,21 @@ export function LandingContent() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, ease }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold font-mono tracking-widest text-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 px-2 py-1 rounded">Level 1</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <span className="text-sm font-bold font-mono tracking-widest text-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 px-2 py-1 rounded self-start">Level 1</span>
                 <div>
                   <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Get set up</h2>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Start here — everyone does this first · ~1 hour total</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Start here — everyone does this first · ~1 hour total</p>
                 </div>
               </div>
-              <span className="hidden sm:inline-flex text-[11px] font-medium px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/60">
-                Required
-              </span>
+              <Link
+                href="/foundation"
+                aria-label="View all Foundation topics"
+                className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors px-3 py-3.5 -mx-3 -my-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1 rounded"
+              >
+                View all
+                <ArrowRight />
+              </Link>
             </m.div>
 
             <m.div
@@ -331,10 +337,10 @@ export function LandingContent() {
                     aria-label={`Step ${step.n}: ${step.label}`}
                     className="group flex flex-col gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700/70 bg-white dark:bg-zinc-900/60 shadow-[0_1px_3px_0_rgb(0,0,0,0.06)] hover:border-[var(--color-fd-primary)]/40 hover:shadow-[0_4px_16px_hsl(0_100%_65%/0.08)] transition-colors duration-200 h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-2"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 flex items-center justify-center text-[var(--color-fd-primary)] text-xs font-bold">
+                    <div className="w-7 h-7 rounded-lg bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 flex items-center justify-center text-[var(--color-fd-primary)] text-sm font-bold">
                       {step.n}
                     </div>
-                    <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 leading-snug group-hover:text-[var(--color-fd-primary)] transition-colors duration-200">{step.label}</span>
+                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-snug group-hover:text-[var(--color-fd-primary)] transition-colors duration-200">{step.label}</span>
                   </Link>
                 </m.div>
               ))}
@@ -352,13 +358,21 @@ export function LandingContent() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, ease }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold font-mono tracking-widest text-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 px-2 py-1 rounded">Level 2</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <span className="text-sm font-bold font-mono tracking-widest text-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 px-2 py-1 rounded self-start">Level 2</span>
                 <div>
                   <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Build something</h2>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Pick one goal · Follow the path · Have something running by the end</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Pick one goal · Follow the path · Have something running by the end</p>
                 </div>
               </div>
+              <Link
+                href="/goals"
+                aria-label="View all Goals"
+                className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors px-3 py-3.5 -mx-3 -my-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1 rounded"
+              >
+                View all
+                <ArrowRight />
+              </Link>
             </m.div>
 
             <m.div
@@ -384,7 +398,7 @@ export function LandingContent() {
                       <div className="w-8 h-8 rounded-lg bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 flex items-center justify-center text-[var(--color-fd-primary)]">
                         <goal.Icon size={16} strokeWidth={1.75} />
                       </div>
-                      <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${
+                      <span className={`text-sm font-medium px-2 py-0.5 rounded-full border ${
                         goal.label === "Beginner"
                           ? "bg-emerald-500/[0.07] dark:bg-emerald-500/[0.08] text-emerald-600/80 dark:text-emerald-400/70 border-emerald-500/15 dark:border-emerald-500/20"
                           : "bg-amber-500/[0.07] dark:bg-amber-500/[0.08] text-amber-600/80 dark:text-amber-400/70 border-amber-500/15 dark:border-amber-500/20"
@@ -396,11 +410,11 @@ export function LandingContent() {
                       <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-[var(--color-fd-primary)] transition-colors duration-200 leading-snug">
                         {goal.title}
                       </h3>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                         {goal.description}
                       </p>
                     </div>
-                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400">
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 text-sm text-zinc-500 dark:text-zinc-400">
                       {goal.time}
                     </div>
                   </Link>
@@ -420,17 +434,17 @@ export function LandingContent() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, ease }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold font-mono tracking-widest text-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 px-2 py-1 rounded">Level 3</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <span className="text-sm font-bold font-mono tracking-widest text-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]/8 dark:bg-[var(--color-fd-primary)]/10 px-2 py-1 rounded self-start">Level 3</span>
                 <div>
                   <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Go further</h2>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Once your agent is running — make it smarter, faster, and always on</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Once your agent is running — make it smarter, faster, and always on</p>
                 </div>
               </div>
               <Link
                 href="/level-up"
                 aria-label="View all Level Up topics"
-                className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors px-3 py-3.5 -mx-3 -my-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1 rounded"
+                className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors px-3 py-3.5 -mx-3 -my-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1 rounded"
               >
                 View all
                 <ArrowRight />
@@ -460,8 +474,8 @@ export function LandingContent() {
                       <item.Icon size={14} strokeWidth={1.75} />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-[var(--color-fd-primary)] transition-colors duration-200">{item.title}</span>
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-500 leading-relaxed">{item.description}</p>
+                      <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-[var(--color-fd-primary)] transition-colors duration-200">{item.title}</span>
+                      <p className="text-sm text-zinc-500 dark:text-zinc-500 leading-relaxed">{item.description}</p>
                     </div>
                   </Link>
                 </m.div>

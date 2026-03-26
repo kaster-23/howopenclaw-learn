@@ -4,15 +4,15 @@ import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import "./globals.css"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://clawdocs.com"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
 const siteDescription =
   "Community documentation for OpenClaw — the open-source self-hosted AI assistant. Installation, security, channels, automation, and more."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "ClawDocs",
-    template: "%s – ClawDocs",
+    default: "HowOpenClaw",
+    template: "%s – HowOpenClaw",
   },
   description: siteDescription,
   icons: {
@@ -21,22 +21,22 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "ClawDocs",
+    siteName: "HowOpenClaw",
     url: "/",
-    title: "ClawDocs",
+    title: "HowOpenClaw",
     description: siteDescription,
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "ClawDocs — Community documentation for OpenClaw",
+        alt: "HowOpenClaw — Community documentation for OpenClaw",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClawDocs",
+    title: "HowOpenClaw",
     description: siteDescription,
     images: ["/opengraph-image"],
   },
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "ClawDocs",
+  name: "HowOpenClaw",
   url: siteUrl,
   description: siteDescription,
   potentialAction: {
@@ -59,6 +59,15 @@ const websiteJsonLd = {
     },
     "query-input": "required name=search_term_string",
   },
+}
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "OpenClaw",
+  url: siteUrl,
+  logo: `${siteUrl}/openclaw.svg`,
+  sameAs: ["https://github.com/openclaw"],
 }
 
 export default function RootLayout({
@@ -77,12 +86,16 @@ export default function RootLayout({
         <a href="#main-content" className="skip-nav">
           Skip to main content
         </a>
-        <RootProvider>
+        <RootProvider theme={{ defaultTheme: "system" }}>
 {children}
         </RootProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </body>
     </html>

@@ -5,10 +5,10 @@ const description =
   "Practical, goal-driven guides for building your personal AI assistant with OpenClaw. Pick a goal. Follow the path. Ship something real."
 
 export const metadata: Metadata = {
-  title: "ClawDocs — Learn OpenClaw Step by Step",
+  title: "HowOpenClaw — Learn OpenClaw Step by Step",
   description,
   openGraph: {
-    title: "ClawDocs — Learn OpenClaw Step by Step",
+    title: "HowOpenClaw — Learn OpenClaw Step by Step",
     description,
     url: "/",
     images: [
@@ -16,13 +16,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "ClawDocs — Learn OpenClaw Step by Step",
+        alt: "HowOpenClaw — Learn OpenClaw Step by Step",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClawDocs — Learn OpenClaw Step by Step",
+    title: "HowOpenClaw — Learn OpenClaw Step by Step",
     description,
     images: ["/opengraph-image"],
   },

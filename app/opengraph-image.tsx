@@ -65,7 +65,7 @@ export default function OgImage() {
               letterSpacing: "-0.5px",
             }}
           >
-            ClawDocs
+            HowOpenClaw
           </span>
         </div>
 
@@ -120,7 +120,7 @@ export default function OgImage() {
               letterSpacing: "2px",
             }}
           >
-            clawdocs.com
+            howopenclaw.com
           </span>
         </div>
       </div>

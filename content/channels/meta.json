@@ -1,0 +1,5 @@
+{
+  "title": "Channels",
+  "icon": "Radio",
+  "pages": ["overview", "slack", "telegram", "discord", "whatsapp", "signal", "imessage", "webchat"]
+}

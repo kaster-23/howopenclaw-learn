@@ -56,15 +56,8 @@ const nextConfig: NextConfig = {
       // Troubleshooting → Reference (moved from Level Up)
       { source: "/level-up/troubleshooting", destination: "/reference/troubleshooting", permanent: true },
 
-      // Channels → Level Up
-      { source: "/channels/overview", destination: "/level-up/channels", permanent: true },
-      { source: "/channels/imessage", destination: "/goals/personal-assistant/channel", permanent: true },
-      { source: "/channels/slack", destination: "/goals/work-hub/slack", permanent: true },
-      { source: "/channels/whatsapp", destination: "/goals/personal-assistant/channel", permanent: true },
-      { source: "/channels/telegram", destination: "/foundation/first-channel", permanent: true },
-      { source: "/channels/discord", destination: "/level-up/channels", permanent: true },
-      { source: "/channels/signal", destination: "/level-up/channels", permanent: true },
-      { source: "/channels/webchat", destination: "/foundation/install", permanent: true },
+      // Channels (previously under level-up, now top-level reference)
+      { source: '/level-up/channels/:path*', destination: '/channels/:path*', permanent: true },
 
       // Advanced → Level Up / Goals
       { source: "/advanced/sub-agents", destination: "/level-up/sub-agents", permanent: true },

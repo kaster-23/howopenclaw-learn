@@ -52,6 +52,22 @@ OpenClaw supports 24 official channels. They're grouped below by category.
 | Voice Call | Medium | Medium | Phone-based voice interaction |
 | WebChat | High | None | Testing and local access |
 
+## Setup Guides
+
+Step-by-step setup instructions are available for the most popular channels:
+
+| Channel | Setup Guide |
+|---|---|
+| Slack | [Set up Slack](/channels/slack) |
+| Telegram | [Set up Telegram](/channels/telegram) |
+| Discord | [Set up Discord](/channels/discord) |
+| WhatsApp | [Set up WhatsApp](/channels/whatsapp) |
+| Signal | [Set up Signal](/channels/signal) |
+| iMessage (legacy) | [Set up iMessage](/channels/imessage) |
+| WebChat | [Set up WebChat](/channels/webchat) |
+
+---
+
 ## Message Routing
 
 The `MESSAGING.md` file controls how your agent handles incoming messages across all channels. Write it in plain English — your agent reads it as natural language instructions.
@@ -94,3 +110,42 @@ Review your DM policy and tool permissions separately for each channel you conne
 
 **Latency:** If responses are slow, check whether you're using the right model tier for the channel. Consider a faster, cheaper model for simple channel messages.
 
+
+## BlueBubbles (recommended for iMessage)
+
+The recommended way to connect iMessage. BlueBubbles bridges iMessage to OpenClaw via the BlueBubbles macOS server REST API.
+
+```json
+{
+  "channels": {
+    "bluebubbles": {
+      "dmPolicy": "allowlist",
+      "allowlist": ["your.email@icloud.com", "+1234567890"]
+    }
+  }
+}
+```
+
+```bash
+openclaw channels setup bluebubbles
+```
+
+You'll need the BlueBubbles server running on a Mac. Follow the permission prompts. Works with iPhone's Messages app and iMessage on Mac. Not compatible with Android SMS.
+
+---
+
+## Running Multiple Channels Simultaneously
+
+You can run all channels at once. Each channel has its own pairing/allowlist. The agent maintains separate conversation contexts per channel but shares SOUL.md, USER.md, and MEMORY.md.
+
+```json
+{
+  "channels": {
+    "telegram": { "..." },
+    "slack": { "..." },
+    "whatsapp": { "..." }
+  }
+}
+```
+
+For routing specific automations to specific channels, use the `channel` field in each automation config. See [MESSAGING.md & Routing](/level-up/multi-channel) for advanced routing rules.

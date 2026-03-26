@@ -1,6 +1,17 @@
 ---
 title: "CLI Cheatsheet"
 description: "Every OpenClaw command you'll actually use, in one place."
+faqs:
+  - q: "How do I start the OpenClaw gateway?"
+    a: "Run `openclaw gateway` to start in the foreground, or `openclaw gateway install` to set it up as a system daemon that auto-starts on boot."
+  - q: "How do I check which channels are connected?"
+    a: "Run `openclaw gateway status` — it shows all channels and their current connection status in one view."
+  - q: "How do I add a new user to my OpenClaw agent?"
+    a: "Run `openclaw channels pair` to review and approve pending pairing requests from new contacts."
+  - q: "How do I view OpenClaw logs?"
+    a: "Run `openclaw logs` for all logs, `openclaw logs --tail 50` for the last 50 lines, or `openclaw logs --filter error` to see only errors."
+  - q: "How do I test an automation without waiting for the scheduled time?"
+    a: "Run `openclaw cron run [id]` — this triggers the job immediately and sends the result to your configured channel."
 ---
 
 Copy-paste reference. For full options, run `openclaw [command] --help`.

@@ -51,14 +51,14 @@ interface PageProps {
   params: Promise<{ slug: string[] }>
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://clawdocs.com"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const page = source.getPage(slug)
   if (!page) return {}
 
-  const pageTitle = `${page.data.title} – ClawDocs`
+  const pageTitle = `${page.data.title} – HowOpenClaw`
   const description = page.data.description ?? "Community documentation for OpenClaw — the open-source self-hosted AI assistant."
 
   return {
@@ -92,7 +92,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 function buildBreadcrumbList(slug: string[], pageTitle: string) {
   const items: { "@type": string; position: number; name: string; item: string }[] = [
-    { "@type": "ListItem", position: 1, name: "ClawDocs", item: siteUrl },
+    { "@type": "ListItem", position: 1, name: "HowOpenClaw", item: siteUrl },
   ]
   let pos = 2
   for (let i = 0; i < slug.length - 1; i++) {
@@ -118,9 +118,9 @@ export default async function Page({ params }: PageProps) {
     headline: page.data.title,
     description: page.data.description,
     url: `${siteUrl}${page.url}`,
-    publisher: { "@type": "Organization", name: "ClawDocs", url: siteUrl },
-    author: { "@type": "Organization", name: "ClawDocs Community" },
-    isPartOf: { "@type": "WebSite", name: "ClawDocs", url: siteUrl },
+    publisher: { "@type": "Organization", name: "HowOpenClaw", url: siteUrl },
+    author: { "@type": "Organization", name: "HowOpenClaw Community" },
+    isPartOf: { "@type": "WebSite", name: "HowOpenClaw", url: siteUrl },
   }
 
   const breadcrumbJsonLd = buildBreadcrumbList(slug, page.data.title)

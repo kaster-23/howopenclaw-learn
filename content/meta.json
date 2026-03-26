@@ -1,3 +1,15 @@
 {
-  "pages": ["foundation", "goals", "level-up", "---", "reference", "compare"]
+  "pages": [
+    "foundation",
+    "---",
+    "goals",
+    "---",
+    "level-up",
+    "---",
+    "channels",
+    "---",
+    "reference",
+    "---",
+    "compare"
+  ]
 }

@@ -3,7 +3,6 @@
   "icon": "Zap",
   "pages": [
     "memory",
-    "channels",
     "models",
     "skills",
     "sub-agents",

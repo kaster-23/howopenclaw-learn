@@ -6,9 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest"
+    "test": "vitest",
+    "sync-docs": "tsx scripts/sync-openclaw.ts"
   },
   "dependencies": {
     "@types/mdx": "^2.0.13",
@@ -26,7 +27,13 @@
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
+  "pnpm": {
+    "overrides": {
+      "esbuild": ">=0.25.0"
+    }
+  },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/react": "^16",
     "@testing-library/user-event": "^14",
@@ -37,7 +44,8 @@
     "eslint-config-next": "16.2.1",
     "prettier": "^3",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^2"
+    "vitest": "^4.1.1"
   }
 }

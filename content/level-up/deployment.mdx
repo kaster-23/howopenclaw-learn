@@ -77,6 +77,33 @@ ssh user@your-server "openclaw gateway status"
 
 ---
 
+## Option 3: Docker
+
+Run OpenClaw in a Docker or Podman container for portable, isolated deployments.
+
+Once the container is running, use `--container` (or set `OPENCLAW_CONTAINER`) to run CLI commands inside it:
+
+```bash
+openclaw --container gateway status
+openclaw --container logs --tail 50
+openclaw --container config validate
+```
+
+Or set the environment variable so all commands route automatically:
+
+```bash
+export OPENCLAW_CONTAINER=1
+openclaw gateway status
+```
+
+This works with both Docker and Podman. The CLI auto-detects the running OpenClaw container.
+
+<Callout type="info" title="Docker fresh install fix (v2026.3.24)">
+Fresh Docker installs no longer fail during setup. Previously, the pre-start onboard/config step could loop when trying to reach the CLI before the gateway was up. Setup-time writes now route through the gateway process directly, so `openclaw onboard` works reliably in containers from the first run.
+</Callout>
+
+---
+
 ## Using systemd directly
 
 If you prefer to manage the service yourself:

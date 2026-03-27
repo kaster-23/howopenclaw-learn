@@ -42,6 +42,10 @@ openclaw logs --filter error --tail 200
 
 If it's crashing on startup with a channel error, try disabling all channels temporarily and re-enabling them one at a time to find the bad config.
 
+<Callout type="info" title="Channel isolation (v2026.3.24)">
+Channel startup failures are now isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed; the rest will continue to operate normally.
+</Callout>
+
 ### Port conflict
 
 ```bash
@@ -97,6 +101,10 @@ openclaw channels setup imessage
 
 Re-grant permissions when prompted.
 
+### Docker fresh install fails
+
+If `openclaw onboard` loops or fails in a fresh Docker container, update to v2026.3.24 or later. Earlier versions had a startup race condition where setup-time writes tried to reach the CLI before the gateway was up. This is now fixed — setup routes through the gateway process directly.
+
 ---
 
 ## Automation issues
@@ -151,7 +159,7 @@ openclaw dashboard
 openclaw tools list
 ```
 
-Check that the tool is enabled. If `web_search` isn't in the list, it's not in your config.
+Check that the tool is enabled and available to the current agent. If `web_search` isn't in the list, it's not in your config or not available to this agent's profile.
 
 ---
 
@@ -178,6 +186,24 @@ openclaw config reset
 ```
 
 This resets `openclaw.json` to defaults but doesn't touch SOUL.md, USER.md, or workspace files.
+
+---
+
+## Update issues
+
+### Update fails with Node version error
+
+As of v2026.3.24, `openclaw update` preflights the target release's Node.js requirements. If your Node runtime is too old, you'll see a clear upgrade message. Update Node first:
+
+```bash
+nvm install 24
+```
+
+Then retry the update:
+
+```bash
+openclaw update
+```
 
 ---
 

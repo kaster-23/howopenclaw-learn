@@ -85,6 +85,14 @@ By default, `read` and `write` only access `~/.openclaw/workspace/`. Don't expan
 }
 ```
 
+## Media access scope
+
+Outbound media access follows the configured filesystem policy. When `workspaceOnly` is off, host-local files and inbound-media paths can be sent as attachments. When `workspaceOnly` is on (strict workspace-only agents), outbound media is sandboxed to the workspace directory.
+
+<Callout type="warn" title="Media sandbox bypass closed (v2026.3.24)">
+A `mediaUrl`/`fileUrl` alias bypass that allowed outbound tool and message actions to escape media-root restrictions has been closed. If you relied on sending files outside the media root via URL aliases, those paths are now enforced. Update your workflows to reference files within the allowed media directories.
+</Callout>
+
 ---
 
 ## Exposing the Gateway (for webhooks and remote access)

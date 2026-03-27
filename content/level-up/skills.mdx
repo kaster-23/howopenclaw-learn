@@ -60,6 +60,24 @@ Restart the Gateway:
 openclaw gateway restart
 ```
 
+### One-click install for bundled skills
+
+As of v2026.3.24, bundled skills — `coding-agent`, `gh-issues`, `openai-whisper-api`, `session-logs`, `tmux`, `trello`, and `weather` — include install recipes. When requirements are missing, both the CLI and Control UI offer to install dependencies for you automatically. Run `openclaw skills info [skill-name]` to see what's needed and get guided setup instructions, including where to get API keys and how to save them.
+
+---
+
+## Skill status in the Control UI
+
+The Control UI now shows skill status with filter tabs: **All**, **Ready**, **Needs Setup**, and **Disabled** — each with a count. Click any skill to open a detail dialog showing:
+
+- Requirements and whether they're met
+- Enable/disable toggle
+- Install action (for bundled skills with install recipes)
+- API key entry
+- Source metadata and homepage link
+
+Skills that are missing dependencies or API keys are labeled **Needs Setup** (not "missing").
+
 ---
 
 ## Popular skills

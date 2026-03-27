@@ -52,6 +52,18 @@ OpenClaw supports 24 official channels. They're grouped below by category.
 | Voice Call | Medium | Medium | Phone-based voice interaction |
 | WebChat | High | None | Testing and local access |
 
+## What's New in Channels (v2026.3.24)
+
+**Microsoft Teams** now uses the official Teams SDK, with AI-agent UX best practices: streaming 1:1 replies, welcome cards with prompt starters, feedback/reflection, informative status updates, typing indicators, and native AI labeling. Message edit and delete support has also been added for sent messages, including in-thread fallbacks.
+
+**Slack** interactive replies now have full rich reply parity for direct deliveries. Simple trailing `Options:` lines auto-render as buttons or select menus.
+
+**Discord** adds optional `autoThreadName: "generated"` for LLM-generated thread titles, improved gateway error supervision, and visible timeout replies.
+
+**Telegram** now handles `#General` forum topic routing reliably, preflights photo dimensions (falling back to document sends), and stops retrying permanently failed chats.
+
+**WhatsApp** group echo suppression is smarter — owner commands are no longer incorrectly filtered, and reply-to-bot detection works with linked accounts.
+
 ## Setup Guides
 
 Step-by-step setup instructions are available for the most popular channels:
@@ -110,6 +122,7 @@ Review your DM policy and tool permissions separately for each channel you conne
 
 **Latency:** If responses are slow, check whether you're using the right model tier for the channel. Consider a faster, cheaper model for simple channel messages.
 
+**One channel blocks startup:** As of v2026.3.24, channel startup failures are isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed.
 
 ## BlueBubbles (recommended for iMessage)
 

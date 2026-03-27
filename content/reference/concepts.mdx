@@ -41,7 +41,7 @@ Quick reference. Terms are listed in the order you'll encounter them.
 
 ## Core components
 
-**Gateway** — The central process that runs on your machine. An HTTP + WebSocket server listening on port `18789`. Manages all channels, runs automations, routes messages to your AI provider, hosts canvas interfaces, serves OpenAI-compatible API endpoints (`/v1/models`, `/v1/chat/completions`, `/v1/responses`), and handles device pairing. Everything flows through the Gateway.
+**Gateway** — The central process that runs on your machine. An HTTP + WebSocket server listening on port `18789`. Manages all channels, runs automations, routes messages to your AI provider, hosts canvas interfaces, serves OpenAI-compatible API endpoints (`/v1/models`, `/v1/chat/completions`, `/v1/responses`, `/v1/embeddings`), and handles device pairing. Explicit model overrides are forwarded through `/v1/chat/completions` and `/v1/responses` for broader client and RAG compatibility. Everything flows through the Gateway.
 
 *In practice: When you send a message on Telegram, it arrives at the Gateway first. The Gateway routes it to your AI model and sends the response back.*
 
@@ -53,11 +53,11 @@ Quick reference. Terms are listed in the order you'll encounter them.
 
 *In practice: You might read replies in Telegram but send daily alerts to Slack — same agent, two channels.*
 
-**Skill** — A purpose-built integration for a specific service (Gmail, Calendar, GitHub, etc.). Gives your agent structured access to that service's API. Installed from ClawHub or configured manually.
+**Skill** — A purpose-built integration for a specific service (Gmail, Calendar, GitHub, etc.). Gives your agent structured access to that service's API. Installed from ClawHub or configured manually. Bundled skills (coding-agent, gh-issues, openai-whisper-api, session-logs, tmux, trello, weather) include one-click install recipes so the CLI and Control UI can offer dependency installation when requirements are missing.
 
 *In practice: Add the Gmail skill and your agent can read, send, and search your email on demand.*
 
-**Tool** — A general-purpose built-in capability. `web_fetch`, `web_search`, `read`, `write`, `edit`, `apply_patch`, and `exec` are core tools. Additional tools include `browser`, `message`, `canvas`, `nodes`, `cron`, `gateway`, `image`, `image_generate`, `sessions_*`, and `agents_list`. Tools are organized into profiles (full, coding, messaging, minimal) and can be grouped for easier management. Enabled in config, not installed separately.
+**Tool** — A general-purpose built-in capability. `web_fetch`, `web_search`, `read`, `write`, `edit`, `apply_patch`, and `exec` are core tools. Additional tools include `browser`, `message`, `canvas`, `nodes`, `cron`, `gateway`, `image`, `image_generate`, `sessions_*`, and `agents_list`. Tools are organized into profiles (full, coding, messaging, minimal) and can be grouped for easier management. Enabled in config, not installed separately. The `/tools` endpoint and `openclaw tools list` show only the tools the current agent can actually use right now.
 
 *In practice: `web_search` lets your agent look up current information; `exec` lets it run shell commands on your machine.*
 
@@ -105,9 +105,9 @@ Quick reference. Terms are listed in the order you'll encounter them.
 
 **Cron schedule** — A 5-field expression defining when an automation runs: `minute hour day month weekday`. Example: `0 7 * * 1-5` = 7am on weekdays. Test expressions at [crontab.guru](https://crontab.guru).
 
-**Hook** — A command that runs in response to an event. `session_end` hook runs after each conversation. Used for automatic memory writes and post-session summaries.
+**Hook** — A command that runs in response to an event. `session_end` hook runs after each conversation. Used for automatic memory writes and post-session summaries. The `before_dispatch` hook fires before message dispatch with canonical inbound metadata, and routes handled replies through the normal final-delivery path (preserving TTS and routed delivery semantics).
 
-*In practice: A `session_end` hook that writes key decisions to MEMORY.md runs automatically every time you finish a conversation.*
+*In practice: A `session_end` hook that writes key decisions to MEMORY.md runs automatically every time you finish a conversation. A `before_dispatch` hook can inspect or transform inbound messages before the agent processes them.*
 
 **Sub-agent** — A separate agent instance your main agent can delegate tasks to. Useful for parallel research, specialized roles, or isolating tool permissions.
 

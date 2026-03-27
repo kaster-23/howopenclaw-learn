@@ -76,6 +76,10 @@ openclaw update --channel stable    # Switch back to stable
 openclaw uninstall                  # Uninstall OpenClaw
 ```
 
+<Callout type="info" title="Update preflight (v2026.3.24)">
+`openclaw update` now checks the target release's Node.js engine requirements before installing. If your Node runtime is too old for the target version, the update fails with a clear upgrade message instead of installing an unsupported release.
+</Callout>
+
 ---
 
 ## Channels
@@ -112,10 +116,16 @@ Use when adding new capabilities. Skills connect to external services (Gmail, Gi
 
 ```bash
 openclaw skills list                   # List installed skills
+openclaw skills info [skill-name]      # Show skill details, requirements, and API key setup guidance
 openclaw skills install [package]      # Install a skill from npm
 openclaw skills auth [skill-name]      # Authenticate a skill (OAuth)
-openclaw tools list                    # List enabled tools
+openclaw tools list                    # List tools the current agent can use right now (compact view)
+openclaw tools list --detailed         # Show full tool details including parameters
 ```
+
+`openclaw skills info` shows whether a skill's dependencies are met, where to get required API keys, the CLI command to save them, and the storage path. Skills that are missing requirements are labeled "needs setup" (not "missing").
+
+`openclaw tools list` shows a compact view of tools available to the current agent by default. Use `--detailed` for full parameter information.
 
 ---
 
@@ -158,10 +168,32 @@ openclaw secrets                       # Manage stored credentials and API keys
 
 ---
 
+## Running Inside Containers
+
+If OpenClaw is running in a Docker or Podman container, use `--container` (or set the `OPENCLAW_CONTAINER` environment variable) to route CLI commands into the running container:
+
+```bash
+openclaw --container gateway status          # Check gateway status inside the container
+openclaw --container logs --tail 50          # View logs from the containerized instance
+openclaw --container config validate         # Validate config inside the container
+```
+
+Or set the environment variable so all commands route automatically:
+
+```bash
+export OPENCLAW_CONTAINER=1
+openclaw gateway status                      # Runs inside the container
+```
+
+This works with both Docker and Podman. The CLI detects the running OpenClaw container automatically.
+
+---
+
 ## Useful flags
 
 ```bash
 --config [path]    # Use a different config file
+--container        # Run command inside a running Docker/Podman container
 --verbose          # More detailed output
 --json             # Output as JSON (for scripting)
 --dev              # Run in development mode

@@ -130,6 +130,21 @@ Then in automations or skill config, reference `"provider": "smart"` for tasks w
 
 ---
 
+## OpenAI-compatible API
+
+The Gateway exposes OpenAI-compatible endpoints so external tools, IDE plugins, and RAG pipelines can use your OpenClaw agent as a drop-in OpenAI replacement:
+
+| Endpoint | Purpose |
+|---|---|
+| `/v1/chat/completions` | Chat completions (streaming supported) |
+| `/v1/responses` | Response generation |
+| `/v1/models` | List available models |
+| `/v1/embeddings` | Generate embeddings |
+
+Point any OpenAI-compatible client at `http://localhost:18789` as the base URL. Explicit model overrides sent through `/v1/chat/completions` and `/v1/responses` are forwarded to the underlying provider, so clients that specify a model (e.g., a RAG pipeline requesting a specific embedding or completion model) work correctly.
+
+---
+
 ## Local models via Ollama
 
 For offline use or privacy-sensitive tasks, run a local model with Ollama.

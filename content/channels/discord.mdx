@@ -48,9 +48,30 @@ export DISCORD_BOT_TOKEN="your-bot-token-here"
 
 To find IDs: enable Developer Mode in Discord settings (Appearance → Advanced → Developer Mode), then right-click any server or channel to copy its ID.
 
+## Auto Threads
+
+When `threadReplies: true` is enabled, OpenClaw auto-creates threads for new conversations. By default, thread names are based on the triggering message content.
+
+As of v2026.3.24, you can set `autoThreadName: "generated"` to have threads renamed asynchronously with concise LLM-generated titles:
+
+```json
+{
+  "channels": {
+    "discord": {
+      "threadReplies": true,
+      "autoThreadName": "generated"
+    }
+  }
+}
+```
+
+When set to `"generated"`, the thread is created immediately (so replies aren't delayed) and then renamed in the background once the LLM produces a short title. The default message-based naming remains if you omit this setting.
+
 ## Stability Considerations
 
 Discord's WebSocket gateway can experience crashes, zombie connections, and rate limiting during high traffic. A zombie connection is when the bot appears online but isn't receiving events — the worst kind of failure because it's silent.
+
+OpenClaw centralizes Discord gateway error handling behind a lifetime-owned supervisor, so early, active, and late-teardown errors are classified consistently and no longer surface as process-killing crashes.
 
 Enable reconnection logic in your config:
 
@@ -66,6 +87,10 @@ Enable reconnection logic in your config:
 ```
 
 This automatically detects and recovers from dropped connections.
+
+## Timeouts
+
+If the inbound Discord worker times out before a final reply starts, OpenClaw now sends a visible timeout reply to the user — including in auto-created threads and queued runs. Previously, timeouts could result in silent failures with no feedback in the channel.
 
 ## Security Recommendations
 

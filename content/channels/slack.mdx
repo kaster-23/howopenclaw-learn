@@ -61,6 +61,23 @@ This is what most setups should use. Reliable enough to run continuously for wee
 
 Requires a publicly accessible webhook URL. Slack sends event notifications to your URL when things happen. Use this only if your infrastructure can't support outbound WebSocket connections.
 
+## Interactive Replies
+
+As of v2026.3.24, Slack replies have full rich reply parity for direct deliveries. If your agent's response ends with a simple `Options:` block, OpenClaw auto-renders those options as interactive buttons or select menus in Slack — no extra configuration needed.
+
+Example agent output:
+
+```
+Here are three approaches for the migration:
+
+Options:
+- Run the migration now
+- Schedule for tonight
+- Skip this cycle
+```
+
+This renders as clickable buttons in Slack. Interactive setup defaults have also been improved and reply controls are isolated from plugin interactive handlers, so custom plugins won't interfere with standard reply buttons.
+
 ## Security Recommendations
 
 **Restrict bot access to dedicated channels.** Don't add your agent bot to every channel in your workspace. Create a `#assistant` channel and invite the bot there.

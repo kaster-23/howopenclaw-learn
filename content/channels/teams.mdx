@@ -1,0 +1,179 @@
+---
+title: "Microsoft Teams"
+description: "Connect OpenClaw to Microsoft Teams using the official Teams SDK. Stream replies in 1:1 chats, send welcome cards, and manage messages with full edit/delete support."
+---
+
+Microsoft Teams integration uses the official Teams SDK for enterprise-grade reliability. It provides AI-agent best practices including streaming replies, welcome cards with prompt starters, status updates, and native AI labeling.
+
+## Create Your Teams Bot
+
+1. Go to [portal.azure.com](https://portal.azure.com) and sign in with your Microsoft account
+2. Click **Create a resource** → search for **Azure Bot Service** → click **Create**
+3. Fill in:
+   - Resource name (e.g., "my-assistant-bot")
+   - Subscription and resource group
+   - Pricing tier (Free tier works for development)
+4. Choose **Multi Tenant** for standard Teams bots
+5. Click **Create**
+6. Go to **Settings** → **Configuration** → copy the **Microsoft App ID**
+7. Click **Manage Password** next to the App ID → **New client secret** → copy the secret value
+
+Save these as environment variables:
+
+```bash
+export TEAMS_APP_ID="your-app-id"
+export TEAMS_APP_PASSWORD="your-app-secret"
+```
+
+## Register the Bot with Teams
+
+1. In the Azure Bot Service, go to **Channels** → **Microsoft Teams**
+2. Accept the terms and **Configure**
+3. You'll get a messaging endpoint URL (`https://your-domain.com/api/messages`)
+
+Copy your `TEAMS_APP_ID` and `TEAMS_APP_PASSWORD` — you'll need them in the next step.
+
+## Configuration
+
+```json
+{
+  "channels": {
+    "teams": {
+      "enabled": true,
+      "appId": "${TEAMS_APP_ID}",
+      "appPassword": "${TEAMS_APP_PASSWORD}",
+      "dmPolicy": "pairing",
+      "groupPolicy": "mention",
+      "requireMention": true
+    }
+  }
+}
+```
+
+## Streaming Replies
+
+As of v2026.3.24, OpenClaw streams 1:1 replies in real time. Users see your agent's response appear gradually as it's generated, providing better feedback than waiting for a complete response.
+
+Enable streaming in your agent config:
+
+```json
+{
+  "channels": {
+    "teams": {
+      "streaming": true
+    }
+  }
+}
+```
+
+## Welcome Cards & Prompt Starters
+
+When a user starts a conversation with your bot, they see a welcome card with suggested prompt starters. Configure these:
+
+```json
+{
+  "channels": {
+    "teams": {
+      "welcomeCard": {
+        "title": "Welcome to My Assistant",
+        "subtitle": "I'm here to help with your daily tasks",
+        "promptStarters": [
+          "What's on my calendar today?",
+          "Summarize my recent emails",
+          "Help me draft a response"
+        ]
+      }
+    }
+  }
+}
+```
+
+## Message Editing & Deletion
+
+As of v2026.3.24, you can edit or delete messages your agent has sent. This includes in-thread fallbacks when no explicit target is provided.
+
+```json
+{
+  "channels": {
+    "teams": {
+      "allowMessageEdit": true,
+      "allowMessageDelete": true
+    }
+  }
+}
+```
+
+These settings are enabled by default.
+
+## Typing Indicators
+
+Your agent sends typing indicators while processing, so users know it's working. This is enabled by default and provides better UX during longer operations.
+
+## Status Updates
+
+The agent sends informative status updates during task execution:
+
+- Processing request...
+- Fetching calendar...
+- Composing reply...
+
+These appear as the agent works, giving users visibility into what's happening.
+
+## AI Labeling
+
+Teams natively labels messages from AI agents. Your agent will appear with an "AI" badge in the chat, making it clear to users that they're interacting with an assistant rather than a person.
+
+## Group Chats
+
+To use your bot in a Teams group:
+
+1. Click **...** on the group chat
+2. Choose **@mentions** and select your bot
+3. Start a conversation with `@YourBot`
+
+Set `groupPolicy` to control how the bot behaves in groups:
+
+```json
+{
+  "channels": {
+    "teams": {
+      "groupPolicy": "mention"  // Respond only when mentioned
+    }
+  }
+}
+```
+
+## Security Recommendations
+
+**Restrict bot access.** Don't add your bot to every team and channel. Start with a pilot group.
+
+**Use Azure AD groups.** For enterprise deployments, use Azure AD for access control rather than allowlists.
+
+**Store secrets in Azure Key Vault.** Never commit `appPassword` to version control. Use environment variables or Azure Key Vault.
+
+**Enable message validation.** Teams validates all incoming messages with a cryptographic signature. OpenClaw verifies this automatically.
+
+## Testing
+
+After configuration and restart:
+
+```bash
+openclaw gateway restart
+openclaw logs --filter teams
+```
+
+In a Teams chat, @mention your bot:
+
+```
+@YourBot are you there?
+```
+
+It should respond with a streaming reply. Watch logs if it doesn't:
+
+```bash
+openclaw logs --follow | grep teams
+```
+
+---
+
+[← All Channels](/channels/overview)

@@ -202,9 +202,8 @@ Steps:
   // Cap at 25 iterations to prevent runaway loops
   for (let i = 0; i < 25; i++) {
     const response = await client.messages.create({
-      model: "claude-opus-4-6",
+      model: "claude-sonnet-4-6",
       max_tokens: 8096,
-      thinking: { type: "adaptive" },
       system,
       tools,
       messages,

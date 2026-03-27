@@ -1,0 +1,1 @@
+[![Sync OpenClaw docs](https://github.com/kaster-23/howopenclaw-learn/actions/workflows/sync-openclaw.yml/badge.svg)](https://github.com/kaster-23/howopenclaw-learn/actions/workflows/sync-openclaw.yml)

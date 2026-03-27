@@ -268,7 +268,7 @@ export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
               transition={{ duration: 0.5, ease }}
               className="text-lg text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed max-w-xl mx-auto"
             >
-              No config rabbit holes. No overwhelming docs. A clear path from install to your first real result — built around what you want to build, not how OpenClaw works internally.
+              Pick a goal. Follow the path. Have a working AI agent by tonight.
             </m.p>
 
             {/* CTAs */}
@@ -296,10 +296,10 @@ export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 <Link
-                  href="/foundation/set-your-goal"
+                  href="/reference/concepts"
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-2"
                 >
-                  Pick a goal first
+                  Browse docs
                 </Link>
               </m.div>
             </m.div>

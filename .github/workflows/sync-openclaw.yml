@@ -34,6 +34,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm tsx scripts/sync-openclaw.ts
 
+      - name: Commit version file to main
+        if: steps.sync.outputs.updated == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .openclaw-last-version
+          git commit -m "chore: track OpenClaw ${{ steps.sync.outputs.version }}"
+          git push
+
       - name: Create pull request
         if: steps.sync.outputs.updated == 'true'
         uses: peter-evans/create-pull-request@v6

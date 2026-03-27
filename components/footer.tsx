@@ -1,7 +1,18 @@
 import Image from "next/image"
 import Link from "next/link"
+import fs from "fs"
+import path from "path"
+
+function getSyncedVersion(): string {
+  try {
+    return fs.readFileSync(path.resolve(process.cwd(), ".openclaw-last-version"), "utf8").trim()
+  } catch {
+    return ""
+  }
+}
 
 export function Footer() {
+  const syncedVersion = getSyncedVersion()
   return (
     <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto px-6 py-12">
@@ -67,6 +78,17 @@ export function Footer() {
           <p className="text-sm text-zinc-500 dark:text-zinc-500">
             © {new Date().getFullYear()} HowOpenClaw · Community project · Not affiliated with OpenClaw
           </p>
+          {syncedVersion && (
+            <a
+              href="https://github.com/openclaw/openclaw/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+            >
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Synced with OpenClaw {syncedVersion}
+            </a>
+          )}
         </div>
       </div>
     </footer>

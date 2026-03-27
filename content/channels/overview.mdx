@@ -56,13 +56,13 @@ OpenClaw supports 24 official channels. They're grouped below by category.
 
 **Microsoft Teams** now uses the official Teams SDK, with AI-agent UX best practices: streaming 1:1 replies, welcome cards with prompt starters, feedback/reflection, informative status updates, typing indicators, and native AI labeling. Message edit and delete support has also been added for sent messages, including in-thread fallbacks.
 
-**Slack** interactive replies now have full rich reply parity for direct deliveries. Simple trailing `Options:` lines auto-render as buttons or select menus.
+**Slack** interactive replies now have full rich reply parity for direct deliveries. Simple trailing `Options:` lines auto-render as buttons or select menus. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers.
 
-**Discord** adds optional `autoThreadName: "generated"` for LLM-generated thread titles, improved gateway error supervision, and visible timeout replies.
+**Discord** adds optional `autoThreadName: "generated"` for LLM-generated thread titles, improved gateway error supervision that prevents process-killing crashes, and visible timeout replies when the worker times out before a final reply starts.
 
-**Telegram** now handles `#General` forum topic routing reliably, preflights photo dimensions (falling back to document sends), and stops retrying permanently failed chats.
+**Telegram** now handles `#General` forum topic routing reliably (including native commands, interactive callbacks, and fallback error replies), preflights photo dimensions (falling back to document sends when invalid), and stops retrying permanently failed chats (membership/block/kick).
 
-**WhatsApp** group echo suppression is smarter — owner commands are no longer incorrectly filtered, and reply-to-bot detection works with linked accounts.
+**WhatsApp** group echo suppression is smarter — only matching message IDs are suppressed, preserving owner commands like `/status` and `/new`. Reply-to-bot detection works reliably with linked accounts by unwrapping `botInvokeMessage` payloads.
 
 ## Setup Guides
 
@@ -73,6 +73,7 @@ Step-by-step setup instructions are available for the most popular channels:
 | Slack | [Set up Slack](/channels/slack) |
 | Telegram | [Set up Telegram](/channels/telegram) |
 | Discord | [Set up Discord](/channels/discord) |
+| Microsoft Teams | [Set up Microsoft Teams](/channels/teams) |
 | WhatsApp | [Set up WhatsApp](/channels/whatsapp) |
 | Signal | [Set up Signal](/channels/signal) |
 | iMessage (legacy) | [Set up iMessage](/channels/imessage) |

@@ -74,7 +74,20 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-zinc-100 dark:border-zinc-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="mt-10 pt-6 border-t border-zinc-100 dark:border-zinc-800/60 flex flex-col gap-3">
+          <p className="text-sm text-zinc-500 dark:text-zinc-500">
+            Created by{" "}
+            <a
+              href="https://x.com/imfrancoierace"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors font-medium"
+            >
+              Franco Ierace
+            </a>
+            {" "}· Agentic systems. AI-native products. Shipping in public.
+          </p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <p className="text-sm text-zinc-500 dark:text-zinc-500">
             © {new Date().getFullYear()} HowOpenClaw · Community project · Not affiliated with OpenClaw
           </p>
@@ -89,6 +102,7 @@ export function Footer() {
               Synced with OpenClaw {syncedVersion}
             </a>
           )}
+          </div>
         </div>
       </div>
     </footer>

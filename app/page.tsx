@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { LandingContent } from "@/components/landing-content"
+import { Footer } from "@/components/footer"
 
 const description =
   "Practical, goal-driven guides for building your personal AI assistant with OpenClaw. Pick a goal. Follow the path. Ship something real."
@@ -32,5 +33,10 @@ export const metadata: Metadata = {
 }
 
 export default function LandingPage() {
-  return <LandingContent />
+  return (
+    <>
+      <LandingContent />
+      <Footer />
+    </>
+  )
 }

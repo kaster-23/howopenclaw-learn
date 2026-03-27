@@ -5,7 +5,6 @@ import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react"
 import { Sunrise, Bot, Building2, BookOpen, Home, Mic, TrendingUp, Brain, Layers, Wrench, Server } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { LandingHeader } from "@/components/landing-header"
-import { Footer } from "@/components/footer"
 
 interface Goal {
   Icon: LucideIcon
@@ -483,7 +482,6 @@ export function LandingContent() {
             </m.div>
           </section>
         </main>
-        <Footer />
       </div>
     </LazyMotion>
   )

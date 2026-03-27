@@ -181,7 +181,7 @@ function SectionConnector({
   )
 }
 
-export function LandingContent() {
+export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
   const prefersReducedMotion = useReducedMotion() ?? false
   const motionFadeUp = prefersReducedMotion ? fadeUpReduced : fadeUp
   const motionStagger = prefersReducedMotion ? staggerReduced : stagger
@@ -209,6 +209,21 @@ export function LandingContent() {
             initial="hidden"
             animate="visible"
           >
+            {/* Synced badge */}
+            {syncedVersion && (
+              <m.div variants={motionFadeUp} transition={{ duration: 0.4, ease }} className="mb-6">
+                <a
+                  href="https://github.com/openclaw/openclaw/releases"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors backdrop-blur-sm"
+                >
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Synced with OpenClaw {syncedVersion}
+                </a>
+              </m.div>
+            )}
+
             {/* Logo */}
             <m.div
               variants={motionFadeUp}

@@ -1,6 +1,16 @@
 import type { Metadata } from "next"
+import fs from "fs"
+import path from "path"
 import { LandingContent } from "@/components/landing-content"
 import { Footer } from "@/components/footer"
+
+function getSyncedVersion(): string {
+  try {
+    return fs.readFileSync(path.resolve(process.cwd(), ".openclaw-last-version"), "utf8").trim()
+  } catch {
+    return ""
+  }
+}
 
 const description =
   "Practical, goal-driven guides for building your personal AI assistant with OpenClaw. Pick a goal. Follow the path. Ship something real."
@@ -33,9 +43,10 @@ export const metadata: Metadata = {
 }
 
 export default function LandingPage() {
+  const syncedVersion = getSyncedVersion()
   return (
     <>
-      <LandingContent />
+      <LandingContent syncedVersion={syncedVersion} />
       <Footer />
     </>
   )

@@ -137,6 +137,7 @@ function executeTool(name: string, input: Record<string, string>): string {
     case "read_file":
       return safeRead(input.path)
     case "write_file":
+      if (!input.content) return "Error: content is required for write_file"
       return safeWrite(input.path, input.content)
     default:
       return `Unknown tool: ${name}`

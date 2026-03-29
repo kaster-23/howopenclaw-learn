@@ -79,7 +79,7 @@ Formatting errors are the leading cause of allowlist failures.
 
 ## Group Chats
 
-As of v2026.3.24, group echo suppression is smarter: OpenClaw tracks recent gateway-sent message IDs and only suppresses matching echoes. This means owner commands like `/status`, `/new`, and `/activation` from linked-account `fromMe` traffic are preserved and no longer incorrectly filtered.
+WhatsApp group echo suppression is intelligent: OpenClaw tracks recent gateway-sent message IDs and only suppresses matching echoes. This means owner commands like `/status`, `/new`, and `/activation` from linked-account `fromMe` traffic are preserved and no longer incorrectly filtered.
 
 Reply-to-bot detection in groups also works reliably with linked accounts. OpenClaw unwraps `botInvokeMessage` payloads and reads `selfLid` from `creds.json`, so reply-based mentions reach the bot again in linked-account group chats.
 

@@ -52,7 +52,7 @@ To find IDs: enable Developer Mode in Discord settings (Appearance → Advanced 
 
 When `threadReplies: true` is enabled, OpenClaw auto-creates threads for new conversations. By default, thread names are based on the triggering message content.
 
-As of v2026.3.24, you can set `autoThreadName: "generated"` to have threads renamed asynchronously with concise LLM-generated titles:
+You can set `autoThreadName: "generated"` to have threads renamed asynchronously with concise LLM-generated titles:
 
 ```json
 {
@@ -67,13 +67,17 @@ As of v2026.3.24, you can set `autoThreadName: "generated"` to have threads rena
 
 When set to `"generated"`, the thread is created immediately (so replies aren't delayed) and then renamed in the background once the LLM produces a short title. The default message-based naming remains if you omit this setting.
 
-## Stability Considerations
+## Stability & Gateway Recovery
 
 Discord's WebSocket gateway can experience crashes, zombie connections, and rate limiting during high traffic. A zombie connection is when the bot appears online but isn't receiving events — the worst kind of failure because it's silent.
 
-OpenClaw centralizes Discord gateway error handling behind a lifetime-owned supervisor, so early, active, and late-teardown errors are classified consistently and no longer surface as process-killing crashes.
+OpenClaw now handles Discord gateway failures robustly:
 
-Enable reconnection logic in your config:
+- **Centralized error handling** — Early, active, and late-teardown errors are classified consistently and no longer surface as process-killing crashes
+- **Stale socket draining** — Poisoned resume state is cleared before forced fresh reconnects, preventing infinite reconnection loops
+- **Clean shutdown** — Expected reconnect-exhausted events during intentional lifecycle stop are treated as clean shutdowns instead of failures
+
+Enable reconnection logic in your config for automatic recovery:
 
 ```json
 {
@@ -85,8 +89,6 @@ Enable reconnection logic in your config:
   }
 }
 ```
-
-This automatically detects and recovers from dropped connections.
 
 ## Timeouts
 

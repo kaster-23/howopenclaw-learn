@@ -65,7 +65,7 @@ With privacy mode disabled, the bot can read all messages in the group. With `re
 
 ## Forum Topics
 
-If you use Telegram groups with **Topics** enabled (forum-style groups), OpenClaw routes messages to the correct topic. As of v2026.3.24, the `#General` topic (topic ID `1`) is handled reliably even when Telegram omits forum metadata — native commands, interactive callbacks, inbound message context, and fallback error replies all route correctly.
+If you use Telegram groups with **Topics** enabled (forum-style groups), OpenClaw routes messages to the correct topic automatically. Native commands like `/new` and `/reset` stay routed to the active topic, and the `#General` topic (topic ID `1`) is handled reliably even when Telegram omits forum metadata.
 
 No special configuration is needed. Topic routing works automatically when Topics are enabled in the group.
 

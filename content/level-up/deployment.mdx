@@ -77,7 +77,7 @@ ssh user@your-server "openclaw gateway status"
 
 ---
 
-## Option 3: Docker
+## Option 3: Docker & Podman
 
 Run OpenClaw in a Docker or Podman container for portable, isolated deployments.
 
@@ -98,9 +98,7 @@ openclaw gateway status
 
 This works with both Docker and Podman. The CLI auto-detects the running OpenClaw container.
 
-<Callout type="info" title="Docker fresh install fix (v2026.3.24)">
-Fresh Docker installs no longer fail during setup. Previously, the pre-start onboard/config step could loop when trying to reach the CLI before the gateway was up. Setup-time writes now route through the gateway process directly, so `openclaw onboard` works reliably in containers from the first run.
-</Callout>
+As of v2026.3.28, **Podman setup is simplified** around the current rootless user. The launch helper installs under `~/.local/bin`, and the host-CLI `openclaw --container <name>` workflow is the standard way to interact with containerized instances.
 
 ---
 

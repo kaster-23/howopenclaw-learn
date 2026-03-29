@@ -64,6 +64,10 @@ Recommended group policies by use case:
 - **Dedicated work group:** `groupPolicy: always` — always respond
 - **Social groups:** `groupPolicy: never` — don't respond at all
 
+## Reply Tag Handling
+
+As of v2026.3.28, iMessage properly strips inline `[[reply_to:...]]` directive tags from outbound messages and sends reply context as RPC metadata instead. This prevents reply tags from leaking into delivered text while preserving full reply context.
+
 ## Testing the Connection
 
 After configuration, send yourself a test message from another Apple device:

@@ -16,6 +16,7 @@ Slack is the best channel for work contexts. Socket Mode keeps your agent connec
    - `im:history` — read DMs
    - `channels:history` — read channel messages (only channels you add the bot to)
    - `app_mentions:read` — detect @mentions
+   - `files:write` — upload files (required for file uploads)
 6. Install the app to your workspace and copy the Bot Token
 
 Save your tokens as environment variables:
@@ -63,7 +64,7 @@ Requires a publicly accessible webhook URL. Slack sends event notifications to y
 
 ## Interactive Replies
 
-As of v2026.3.24, Slack replies have full rich reply parity for direct deliveries. If your agent's response ends with a simple `Options:` block, OpenClaw auto-renders those options as interactive buttons or select menus in Slack — no extra configuration needed.
+Slack replies have full rich reply parity for direct deliveries. If your agent's response ends with a simple `Options:` block, OpenClaw auto-renders those options as interactive buttons or select menus in Slack — no extra configuration needed.
 
 Example agent output:
 
@@ -77,6 +78,23 @@ Options:
 ```
 
 This renders as clickable buttons in Slack. Interactive setup defaults have also been improved and reply controls are isolated from plugin interactive handlers, so custom plugins won't interfere with standard reply buttons.
+
+## File Uploads
+
+As of v2026.3.28, there's an explicit `upload-file` Slack action that routes file uploads through the dedicated Slack upload transport. You can optionally override filename, title, and comment metadata:
+
+```json
+{
+  "channels": {
+    "slack": {
+      "fileUploadDefaults": {
+        "title": "OpenClaw Upload",
+        "comment": "Uploaded via OpenClaw"
+      }
+    }
+  }
+}
+```
 
 ## Security Recommendations
 

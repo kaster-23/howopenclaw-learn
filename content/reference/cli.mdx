@@ -67,6 +67,7 @@ openclaw config get [key]           # Get a config value
 openclaw config set [key] [value]   # Set a config value
 openclaw config unset [key]         # Remove a config value
 openclaw config validate            # Check config for errors
+openclaw config schema              # Print the generated JSON schema for openclaw.json
 openclaw config audit               # List all enabled tools, skills, channels
 openclaw config reset               # Reset openclaw.json to defaults
 openclaw doctor                     # Diagnose issues (risky DM policies, missing deps)
@@ -76,8 +77,12 @@ openclaw update --channel stable    # Switch back to stable
 openclaw uninstall                  # Uninstall OpenClaw
 ```
 
-<Callout type="info" title="Update preflight (v2026.3.24)">
+<Callout type="info" title="Update preflight checks">
 `openclaw update` now checks the target release's Node.js engine requirements before installing. If your Node runtime is too old for the target version, the update fails with a clear upgrade message instead of installing an unsupported release.
+</Callout>
+
+<Callout type="info" title="Config schema inspection (v2026.3.28)">
+`openclaw config schema` prints the generated JSON schema for `openclaw.json`. Useful for understanding valid config structures and available options.
 </Callout>
 
 ---
@@ -185,7 +190,7 @@ export OPENCLAW_CONTAINER=1
 openclaw gateway status                      # Runs inside the container
 ```
 
-This works with both Docker and Podman. The CLI detects the running OpenClaw container automatically.
+This works with both Docker and Podman. The CLI detects the running OpenClaw container automatically. As of v2026.3.28, the Podman setup is simplified around the current rootless user, with the launch helper installed under `~/.local/bin`, and the host-CLI `openclaw --container <name>` workflow is the standard way to interact with containerized instances.
 
 ---
 

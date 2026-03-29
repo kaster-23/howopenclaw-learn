@@ -22,7 +22,7 @@ OpenClaw supports 35+ providers. Here are the most commonly used, followed by th
 | DeepSeek | DeepSeek-V3, DeepSeek-R1 |
 | Groq | Fast inference for open models |
 | OpenRouter | Aggregated access to many models |
-| xAI | Grok models |
+| xAI (Grok) | Grok models with integrated web search |
 
 ### All official providers
 
@@ -142,6 +142,63 @@ The Gateway exposes OpenAI-compatible endpoints so external tools, IDE plugins, 
 | `/v1/embeddings` | Generate embeddings |
 
 Point any OpenAI-compatible client at `http://localhost:18789` as the base URL. Explicit model overrides sent through `/v1/chat/completions` and `/v1/responses` are forwarded to the underlying provider, so clients that specify a model (e.g., a RAG pipeline requesting a specific embedding or completion model) work correctly.
+
+---
+
+## xAI / Grok Web Search
+
+As of v2026.3.28, the bundled xAI provider includes first-class `x_search` web search integration. During `openclaw onboard` and `openclaw configure --section web`, the bundled Grok web-search plugin offers optional `x_search` setup, including a model picker with the shared xAI key.
+
+To enable xAI web search in your config:
+
+```json
+{
+  "web": {
+    "provider": "x_search",
+    "model": "grok-3"
+  }
+}
+```
+
+Web search is auto-enabled when you have xAI configured and bundled web-search tools enabled.
+
+---
+
+## MiniMax Image Generation
+
+As of v2026.3.28, MiniMax supports image generation via the `image-01` model. This enables both image generation and image-to-image editing with aspect ratio control:
+
+```json
+{
+  "ai": {
+    "model": "minimax/image-01"
+  }
+}
+```
+
+MiniMax model catalog has been trimmed to M2.7 only. Older models (M2, M2.1, M2.5, and VL-01) are no longer supported.
+
+---
+
+## Qwen Authentication Changes
+
+As of v2026.3.28, the deprecated `qwen-portal-auth` OAuth integration for `portal.qwen.ai` has been removed. If you were using Qwen via portal.qwen.ai, migrate to Model Studio with:
+
+```bash
+openclaw onboard --auth-choice modelstudio-api-key
+```
+
+Or manually update your config to use Model Studio API keys:
+
+```json
+{
+  "ai": {
+    "model": "qwen/qwen-vl-plus",
+    "provider": "model-studio",
+    "apiKey": "YOUR_MODEL_STUDIO_API_KEY"
+  }
+}
+```
 
 ---
 

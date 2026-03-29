@@ -52,15 +52,27 @@ OpenClaw supports 24 official channels. They're grouped below by category.
 | Voice Call | Medium | Medium | Phone-based voice interaction |
 | WebChat | High | None | Testing and local access |
 
-## What's New in Channels (v2026.3.24)
+## What's New in Channels (v2026.3.28)
 
-**Microsoft Teams** now uses the official Teams SDK, with AI-agent UX best practices: streaming 1:1 replies, welcome cards with prompt starters, feedback/reflection, informative status updates, typing indicators, and native AI labeling. Message edit and delete support has also been added for sent messages, including in-thread fallbacks.
+**Microsoft Teams** config schema now correctly validates existing settings like `welcomeCard`, `groupWelcomeCard`, `promptStarters`, and feedback/reflection keys that were previously failing validation checks.
 
-**Slack** interactive replies now have full rich reply parity for direct deliveries. Simple trailing `Options:` lines auto-render as buttons or select menus. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers.
+**Slack** now has explicit `upload-file` action for file uploads through the dedicated Slack upload transport, with optional filename, title, and comment overrides.
+
+**Discord** gateway stability is significantly improved: early, active, and late-teardown errors are classified consistently; stale sockets are drained before reconnects; poisoned resume state is cleared to prevent infinite loops; and expected reconnect-exhausted events during intentional shutdown are treated as clean exits.
+
+**Telegram** native commands like `/new` and `/reset` stay correctly routed to the active forum topic. Message splitting now uses verified HTML-length search instead of proportional estimates, splitting at word boundaries instead of mid-word.
+
+**iMessage** reply tag handling is improved: reply context is sent as RPC metadata, and inline `[[reply_to:...]]` directive tags are stripped from outbound messages to prevent them from leaking into delivered text.
+
+## Previous Changes (v2026.3.24)
+
+**Microsoft Teams** uses the official Teams SDK, with AI-agent UX best practices: streaming 1:1 replies, welcome cards with prompt starters, feedback/reflection, informative status updates, typing indicators, and native AI labeling. Message edit and delete support is available for sent messages, including in-thread fallbacks.
+
+**Slack** interactive replies have full rich reply parity for direct deliveries. Simple trailing `Options:` lines auto-render as buttons or select menus. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers.
 
 **Discord** adds optional `autoThreadName: "generated"` for LLM-generated thread titles, improved gateway error supervision that prevents process-killing crashes, and visible timeout replies when the worker times out before a final reply starts.
 
-**Telegram** now handles `#General` forum topic routing reliably (including native commands, interactive callbacks, and fallback error replies), preflights photo dimensions (falling back to document sends when invalid), and stops retrying permanently failed chats (membership/block/kick).
+**Telegram** handles `#General` forum topic routing reliably (including native commands, interactive callbacks, and fallback error replies), preflights photo dimensions (falling back to document sends when invalid), and stops retrying permanently failed chats (membership/block/kick).
 
 **WhatsApp** group echo suppression is smarter — only matching message IDs are suppressed, preserving owner commands like `/status` and `/new`. Reply-to-bot detection works reliably with linked accounts by unwrapping `botInvokeMessage` payloads.
 
@@ -123,7 +135,7 @@ Review your DM policy and tool permissions separately for each channel you conne
 
 **Latency:** If responses are slow, check whether you're using the right model tier for the channel. Consider a faster, cheaper model for simple channel messages.
 
-**One channel blocks startup:** As of v2026.3.24, channel startup failures are isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed.
+**One channel blocks startup:** Channel startup failures are isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed.
 
 ## BlueBubbles (recommended for iMessage)
 

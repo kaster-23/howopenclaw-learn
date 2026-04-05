@@ -9,6 +9,14 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/api/"],
       },
+      // Explicitly allow known LLM crawlers
+      { userAgent: "GPTBot", allow: "/" },
+      { userAgent: "ClaudeBot", allow: "/" },
+      { userAgent: "anthropic-ai", allow: "/" },
+      { userAgent: "PerplexityBot", allow: "/" },
+      { userAgent: "Google-Extended", allow: "/" },
+      { userAgent: "cohere-ai", allow: "/" },
+      { userAgent: "Amazonbot", allow: "/" },
     ],
     sitemap: `${base}/sitemap.xml`,
   }

@@ -59,14 +59,19 @@ import {
 import type { Metadata } from "next"
 
 interface PageProps {
-  params: Promise<{ slug: string[] }>
+  params: Promise<{ slug?: string[] }>
 }
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
 
+function getFullSlug(slug: string[] | undefined): string[] {
+  return slug && slug.length > 0 ? ["course", ...slug] : ["course"]
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const page = source.getPage(slug)
+  const fullSlug = getFullSlug(slug)
+  const page = source.getPage(fullSlug)
   if (!page) return {}
 
   const pageTitle = `${page.data.title} – HowOpenClaw`
@@ -117,7 +122,8 @@ function buildBreadcrumbList(slug: string[], pageTitle: string) {
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params
-  const page = source.getPage(slug)
+  const fullSlug = getFullSlug(slug)
+  const page = source.getPage(fullSlug)
   if (!page) notFound()
 
   const MDX = page.data.body
@@ -133,7 +139,7 @@ export default async function Page({ params }: PageProps) {
     isPartOf: { "@type": "WebSite", name: "HowOpenClaw", url: siteUrl },
   }
 
-  const breadcrumbJsonLd = buildBreadcrumbList(slug, page.data.title)
+  const breadcrumbJsonLd = buildBreadcrumbList(fullSlug, page.data.title)
 
   const faqJsonLd = page.data.faqs?.length
     ? {
@@ -171,12 +177,13 @@ export default async function Page({ params }: PageProps) {
         toc={page.data.toc}
         full={false}
         footer={{ enabled: false }}
-        breadcrumb={{ enabled: false }}
+        breadcrumb={{ enabled: true, includeRoot: false, includePage: false }}
         tableOfContent={{ style: "clerk" }}
       >
         <DocsTitle>{page.data.title}</DocsTitle>
         <DocsDescription>{page.data.description}</DocsDescription>
         <DocsBody>
+          <CourseProgress />
           <MDX
             components={{
               ...defaultMdxComponents,
@@ -230,7 +237,7 @@ export default async function Page({ params }: PageProps) {
               User,
               Volume2,
               Wrench,
-              // Legacy gamification stubs (old MDX files still reference these)
+              // Legacy gamification stubs
               ClaimXP: Noop,
               MissionProgress: Noop,
               Fireworks: Noop,
@@ -246,5 +253,6 @@ export default async function Page({ params }: PageProps) {
 
 export async function generateStaticParams() {
   return source.generateParams()
-    .filter((p: { slug: string[] }) => p.slug.length === 0 || p.slug[0] !== "course")
+    .filter((p: { slug: string[] }) => p.slug.length > 0 && p.slug[0] === "course")
+    .map((p: { slug: string[] }) => ({ slug: p.slug.slice(1) }))
 }

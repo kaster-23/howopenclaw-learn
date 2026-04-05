@@ -13,6 +13,10 @@ howToSteps:
   - "Check your Node.js version (Node 24 recommended, 22.16+ minimum)"
   - "Install OpenClaw globally via npm: npm install -g openclaw@latest"
   - "Run the onboarding wizard: openclaw onboard --install-daemon"
+  - "Choose your AI provider: OpenAI, Anthropic, or Ollama (local)"
+  - "Enter your API key (get it from platform.openai.com or console.anthropic.com)"
+  - "Select a model (gpt-4o or claude-sonnet-4-5 recommended for starters)"
+  - "Accept the default workspace location and let the daemon install"
   - "Open the dashboard and send your first message"
 ---
 
@@ -79,15 +83,96 @@ The wizard walks you through initial configuration. It takes about two minutes:
 openclaw onboard --install-daemon
 ```
 
-Follow the prompts. It will:
-- Set up your workspace directory
-- Install the background process (daemon)
-- Ask which AI model provider you want to use
+The wizard has four steps. Here is exactly what you will see:
 
-<Callout type="info" title="Which AI model should I pick?">
-If you are unsure, start with **OpenAI (GPT-4o)**. It is fast, capable, and
-widely supported. You can switch models at any time without losing data.
+---
+
+### Step 1 — Choose your AI provider
+
+```
+? Which AI provider do you want to use?
+❯ OpenAI        (GPT-4o, GPT-4o mini)
+  Anthropic     (Claude Sonnet, Claude Haiku)
+  Ollama        (local — no API key required)
+  Other / Skip
+```
+
+<Callout type="info" title="Which provider should I pick?">
+**OpenAI (GPT-4o)** is the easiest starting point — widely supported, fast, and
+great at following instructions. **Anthropic (Claude)** is excellent for long
+conversations and nuanced tasks. **Ollama** runs models locally with no API key
+and no cost, but requires more RAM (8 GB minimum, 16 GB recommended).
 </Callout>
+
+---
+
+### Step 2 — Enter your API key
+
+If you chose OpenAI or Anthropic, the wizard will ask for your API key:
+
+```
+? Paste your OpenAI API key (starts with sk-):
+```
+
+**Where to get your key:**
+
+- **OpenAI:** [platform.openai.com/api-keys](https://platform.openai.com/api-keys) → Create new secret key
+- **Anthropic:** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys) → Create key
+
+Your key is stored locally in `~/.openclaw/openclaw.json` — it never leaves your machine. OpenClaw only sends it to your chosen provider when making AI requests.
+
+If you chose **Ollama**, skip this step — no key needed. The wizard will ask you to make sure Ollama is running (`ollama serve`).
+
+---
+
+### Step 3 — Choose your model
+
+```
+? Which model do you want to use?
+❯ gpt-4o          (recommended — best balance of speed and quality)
+  gpt-4o-mini     (faster and cheaper — good for simple tasks)
+  gpt-4-turbo     (older, higher cost)
+```
+
+For Anthropic:
+```
+❯ claude-sonnet-4-5   (recommended)
+  claude-haiku-4-5    (faster, lower cost)
+```
+
+For Ollama:
+```
+❯ llama3.2     (general purpose, 8 GB RAM)
+  mistral      (fast, good for instructions)
+  phi3         (small — works on 4 GB RAM)
+```
+
+<Callout type="info" title="You can change this any time">
+Run `openclaw configure` to re-run the wizard and switch providers or models
+without losing any of your data, channels, or skills.
+</Callout>
+
+---
+
+### Step 4 — Set up your workspace
+
+```
+? Where should OpenClaw store your workspace? (~/.openclaw/workspace)
+  Press Enter to accept the default
+```
+
+Hit **Enter** to use the default (`~/.openclaw/workspace`). This is where your agent's files, memory, and SOUL.md will live. You can explore this folder after setup — it is just plain Markdown files.
+
+The wizard then installs the background daemon and confirms:
+
+```
+✓ Config saved
+✓ Workspace created at ~/.openclaw/workspace
+✓ Daemon installed (auto-starts on login)
+✓ Gateway started
+
+OpenClaw is running. Open the dashboard with: openclaw dashboard
+```
 
 ## Open the dashboard
 

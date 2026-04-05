@@ -1,5 +1,5 @@
 {
   "title": "Channels",
   "icon": "Radio",
-  "pages": ["overview", "slack", "telegram", "discord", "whatsapp", "signal", "imessage", "webchat"]
+  "pages": ["index", "slack", "telegram", "discord", "whatsapp", "signal", "imessage", "webchat"]
 }

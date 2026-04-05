@@ -3,7 +3,6 @@ import { source } from "@/lib/source"
 import Image from "next/image"
 import type { ReactNode } from "react"
 import { SidebarFolderWithTooltip, SidebarSeparatorItem } from "@/components/sidebar-folder"
-import { Footer } from "@/components/footer"
 
 async function getLatestVersion(): Promise<string> {
   try {
@@ -50,7 +49,6 @@ export default async function CourseLayout({ children }: { children: ReactNode }
           {children}
         </div>
       </DocsLayout>
-      <Footer />
     </>
   )
 }

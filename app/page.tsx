@@ -16,13 +16,18 @@ function getSyncedVersion(): string {
 const description =
   "Practical, goal-driven guides for building your personal AI assistant with OpenClaw. Pick a goal. Follow the path. Ship something real."
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
+
 export const metadata: Metadata = {
   title: "HowOpenClaw — Learn OpenClaw Step by Step",
   description,
   openGraph: {
+    type: "website",
+    siteName: "HowOpenClaw",
+    locale: "en_US",
     title: "HowOpenClaw — Learn OpenClaw Step by Step",
     description,
-    url: "/",
+    url: siteUrl,
     images: [
       {
         url: "/opengraph-image",
@@ -36,10 +41,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "HowOpenClaw — Learn OpenClaw Step by Step",
     description,
+    creator: "@imfrancoierace",
     images: ["/opengraph-image"],
   },
   alternates: {
-    canonical: "/",
+    canonical: siteUrl,
   },
 }
 

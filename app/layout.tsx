@@ -15,14 +15,31 @@ export const metadata: Metadata = {
     template: "%s – HowOpenClaw",
   },
   description: siteDescription,
+  keywords: [
+    "OpenClaw",
+    "self-hosted AI assistant",
+    "open-source AI",
+    "local AI",
+    "personal AI assistant",
+    "AI automation",
+    "Telegram bot",
+    "OpenClaw tutorial",
+    "OpenClaw documentation",
+  ],
+  authors: [{ name: "HowOpenClaw Community", url: siteUrl }],
   icons: {
     icon: "/clawlogofav.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
   openGraph: {
     type: "website",
     locale: "en_US",
     siteName: "HowOpenClaw",
-    url: "/",
+    url: siteUrl,
     title: "HowOpenClaw",
     description: siteDescription,
     images: [
@@ -38,10 +55,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "HowOpenClaw",
     description: siteDescription,
+    creator: "@imfrancoierace",
     images: ["/opengraph-image"],
   },
   alternates: {
-    canonical: "/",
+    canonical: siteUrl,
   },
 }
 
@@ -64,10 +82,13 @@ const websiteJsonLd = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "OpenClaw",
+  name: "HowOpenClaw",
   url: siteUrl,
-  logo: `${siteUrl}/openclaw.svg`,
-  sameAs: ["https://github.com/openclaw"],
+  logo: `${siteUrl}/clawlogo.png`,
+  sameAs: [
+    "https://github.com/kaster-23/howopenclaw-learn",
+    "https://x.com/imfrancoierace",
+  ],
 }
 
 export default function RootLayout({

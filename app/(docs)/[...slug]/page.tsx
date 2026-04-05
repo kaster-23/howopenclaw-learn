@@ -69,20 +69,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: page.data.title,
     description,
+    authors: [{ name: "HowOpenClaw Community", url: siteUrl }],
     openGraph: {
       title: pageTitle,
       description,
-      url: page.url,
+      url: `${siteUrl}${page.url}`,
       type: "article",
+      siteName: "HowOpenClaw",
+      locale: "en_US",
       images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: pageTitle }],
     },
     twitter: {
       card: "summary_large_image",
       title: pageTitle,
       description,
+      creator: "@imfrancoierace",
       images: ["/opengraph-image"],
     },
-    alternates: { canonical: page.url },
+    alternates: { canonical: `${siteUrl}${page.url}` },
   }
 }
 

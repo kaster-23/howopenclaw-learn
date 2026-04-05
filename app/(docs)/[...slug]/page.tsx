@@ -1,21 +1,11 @@
 import { source } from "@/lib/source"
-import { DocsPage, DocsTitle, DocsDescription, DocsBody } from "fumadocs-ui/page"
 import defaultMdxComponents from "fumadocs-ui/mdx"
 import { Callout } from "fumadocs-ui/components/callout"
 import { Steps, Step } from "fumadocs-ui/components/steps"
 import { Card, Cards } from "fumadocs-ui/components/card"
 import { Tab, Tabs } from "fumadocs-ui/components/tabs"
-import { ReadTime } from "@/components/course/read-time"
-import { LearningObjectives } from "@/components/course/learning-objectives"
-import { ModuleNav } from "@/components/course/module-nav"
-import { CourseProgress } from "@/components/course/course-progress"
-import { MarkComplete } from "@/components/course/mark-complete"
-import { VideoEmbed } from "@/components/course/video-embed"
 import { Mermaid } from "@/components/mdx/mermaid"
 import { notFound } from "next/navigation"
-
-// No-op stubs for legacy gamification components still referenced in old MDX files
-function Noop() { return null }
 
 import {
   ArrowRightLeft,
@@ -70,7 +60,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!page) return {}
 
   const pageTitle = `${page.data.title} – HowOpenClaw`
-  const description = page.data.description ?? "Community documentation for OpenClaw — the open-source self-hosted AI assistant."
+  const description =
+    page.data.description ??
+    "Community documentation for OpenClaw — the open-source self-hosted AI assistant."
 
   return {
     title: page.data.title,
@@ -80,14 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: page.url,
       type: "article",
-      images: [
-        {
-          url: "/opengraph-image",
-          width: 1200,
-          height: 630,
-          alt: pageTitle,
-        },
-      ],
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: pageTitle }],
     },
     twitter: {
       card: "summary_large_image",
@@ -95,9 +80,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       images: ["/opengraph-image"],
     },
-    alternates: {
-      canonical: page.url,
-    },
+    alternates: { canonical: page.url },
   }
 }
 
@@ -108,11 +91,71 @@ function buildBreadcrumbList(slug: string[], pageTitle: string) {
   let pos = 2
   for (let i = 0; i < slug.length - 1; i++) {
     const parent = source.getPage(slug.slice(0, i + 1))
-    const name = parent?.data.title ?? slug[i].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    items.push({ "@type": "ListItem", position: pos++, name, item: `${siteUrl}/${slug.slice(0, i + 1).join("/")}` })
+    const name =
+      parent?.data.title ??
+      slug[i].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    items.push({
+      "@type": "ListItem",
+      position: pos++,
+      name,
+      item: `${siteUrl}/${slug.slice(0, i + 1).join("/")}`,
+    })
   }
-  items.push({ "@type": "ListItem", position: pos, name: pageTitle, item: `${siteUrl}/${slug.join("/")}` })
+  items.push({
+    "@type": "ListItem",
+    position: pos,
+    name: pageTitle,
+    item: `${siteUrl}/${slug.join("/")}`,
+  })
   return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items }
+}
+
+const mdxComponents = {
+  ...defaultMdxComponents,
+  Callout,
+  Steps,
+  Step,
+  Card,
+  Cards,
+  Tab,
+  Tabs,
+  Mermaid,
+  ArrowRightLeft,
+  BarChart2,
+  Bell,
+  BookMarked,
+  BookOpen,
+  Brain,
+  Briefcase,
+  CheckSquare,
+  Clock,
+  Cpu,
+  Database,
+  FileText,
+  GitBranch,
+  Globe,
+  Hash,
+  Heart,
+  Home,
+  Layers,
+  MessageCircle,
+  MessageSquare,
+  Mic,
+  Package,
+  RefreshCw,
+  Search,
+  Server,
+  Shield,
+  Smartphone,
+  Sparkles,
+  Sun,
+  Target,
+  Terminal,
+  Timer,
+  TrendingUp,
+  User,
+  Volume2,
+  Wrench,
 }
 
 export default async function Page({ params }: PageProps) {
@@ -163,88 +206,48 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
-      {howToJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }} />}
-      <DocsPage
-        toc={page.data.toc}
-        full={false}
-        footer={{ enabled: false }}
-        breadcrumb={{ enabled: false }}
-        tableOfContent={{ style: "clerk" }}
-      >
-        <DocsTitle>{page.data.title}</DocsTitle>
-        <DocsDescription>{page.data.description}</DocsDescription>
-        <DocsBody>
-          <MDX
-            components={{
-              ...defaultMdxComponents,
-              Callout,
-              Steps,
-              Step,
-              Card,
-              Cards,
-              Tab,
-              Tabs,
-              ReadTime,
-              LearningObjectives,
-              ModuleNav,
-              CourseProgress,
-              MarkComplete,
-              VideoEmbed,
-              Mermaid,
-              ArrowRightLeft,
-              BarChart2,
-              Bell,
-              BookMarked,
-              BookOpen,
-              Brain,
-              Briefcase,
-              CheckSquare,
-              Clock,
-              Cpu,
-              Database,
-              FileText,
-              GitBranch,
-              Globe,
-              Hash,
-              Heart,
-              Home,
-              Layers,
-              MessageCircle,
-              MessageSquare,
-              Mic,
-              Package,
-              RefreshCw,
-              Search,
-              Server,
-              Shield,
-              Smartphone,
-              Sparkles,
-              Sun,
-              Target,
-              Terminal,
-              Timer,
-              TrendingUp,
-              User,
-              Volume2,
-              Wrench,
-              // Legacy gamification stubs (old MDX files still reference these)
-              ClaimXP: Noop,
-              MissionProgress: Noop,
-              Fireworks: Noop,
-              ChallengeProgress: Noop,
-              ChallengeClaimXP: Noop,
-            }}
-          />
-        </DocsBody>
-      </DocsPage>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      {howToJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        />
+      )}
+
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        <header className="mb-10 pb-8 border-b border-fd-border">
+          <h1 className="text-3xl font-bold tracking-tight text-fd-foreground mb-3">
+            {page.data.title}
+          </h1>
+          {page.data.description && (
+            <p className="text-lg text-fd-muted-foreground leading-relaxed max-w-2xl">
+              {page.data.description}
+            </p>
+          )}
+        </header>
+        <div className="prose dark:prose-invert max-w-none">
+          <MDX components={mdxComponents} />
+        </div>
+      </div>
     </>
   )
 }
 
 export async function generateStaticParams() {
-  return source.generateParams()
-    .filter((p: { slug: string[] }) => p.slug.length === 0 || p.slug[0] !== "course")
+  return source.generateParams().filter(
+    (p: { slug: string[] }) => p.slug.length === 0 || p.slug[0] !== "course",
+  )
 }

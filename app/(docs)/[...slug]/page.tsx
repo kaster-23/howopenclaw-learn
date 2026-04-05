@@ -55,7 +55,7 @@ import {
   Volume2,
   Wrench,
 } from "lucide-react"
-import { findNeighbour } from "fumadocs-core/page-tree"
+
 import type { Metadata } from "next"
 
 interface PageProps {
@@ -121,7 +121,6 @@ export default async function Page({ params }: PageProps) {
   if (!page) notFound()
 
   const MDX = page.data.body
-  const neighbour = findNeighbour(source.pageTree, page.url)
 
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -171,7 +170,7 @@ export default async function Page({ params }: PageProps) {
       <DocsPage
         toc={page.data.toc}
         full={false}
-        footer={{ items: neighbour, className: "mt-16" }}
+
         breadcrumb={{ enabled: true, includeRoot: false, includePage: false }}
         tableOfContent={{ style: "clerk" }}
       >

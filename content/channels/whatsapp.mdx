@@ -1,7 +1,14 @@
 ---
 title: "WhatsApp"
 description: "Connect OpenClaw to WhatsApp via Baileys (unofficial API). Scan a QR code to authenticate. Expect occasional re-authentication."
+howToSteps:
+  - "Create the session directory: run `mkdir -p ~/.openclaw/sessions/whatsapp`"
+  - "Add the WhatsApp channel config to openclaw.json with your allowed contacts in E.164 format (e.g. +15551234567)"
+  - "Restart the gateway and watch logs: `openclaw gateway restart && openclaw logs --filter whatsapp`"
+  - "Scan the QR code that appears in your terminal using WhatsApp on your phone: Settings → Linked Devices → Link a Device"
+  - "Test by sending a message from an allowed contact — the agent should reply"
 ---
+
 
 WhatsApp integration uses **Baileys**, an unofficial WhatsApp Web API library. It works by emulating a web session — the same way WhatsApp Web works in your browser. This means it's more fragile than official integrations and will occasionally require re-authentication.
 
@@ -83,6 +90,12 @@ As of v2026.3.24, group echo suppression is smarter: OpenClaw tracks recent gate
 
 Reply-to-bot detection in groups also works reliably with linked accounts. OpenClaw unwraps `botInvokeMessage` payloads and reads `selfLid` from `creds.json`, so reply-based mentions reach the bot again in linked-account group chats.
 
+## Related channels
+
+**Want an official API instead of an unofficial one?** [Telegram](/channels/telegram) uses Telegram's official Bot API — no QR codes, no session expiry, more reliable.
+
+**Privacy-critical communications?** [Signal](/channels/signal) keeps messages end-to-end encrypted with no unofficial protocol emulation.
+
 ## Important Limitations
 
 **Unofficial API.** WhatsApp doesn't provide an official API for this type of integration. Baileys reverse-engineers the web protocol, which means:
@@ -109,4 +122,7 @@ openclaw logs --filter whatsapp
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

@@ -12,6 +12,8 @@ import {
   BarChart2,
   Bell,
   BookMarked,
+  CircleDollarSign,
+  Monitor,
   BookOpen,
   Brain,
   Briefcase,
@@ -125,6 +127,8 @@ const mdxComponents = {
   Bell,
   BookMarked,
   BookOpen,
+  CircleDollarSign,
+  Monitor,
   Brain,
   Briefcase,
   CheckSquare,
@@ -227,7 +231,7 @@ export default async function Page({ params }: PageProps) {
         />
       )}
 
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <article>
         <header className="mb-10 pb-8 border-b border-fd-border">
           <h1 className="text-3xl font-bold tracking-tight text-fd-foreground mb-3">
             {page.data.title}
@@ -241,7 +245,7 @@ export default async function Page({ params }: PageProps) {
         <div className="prose dark:prose-invert max-w-none">
           <MDX components={mdxComponents} />
         </div>
-      </div>
+      </article>
     </>
   )
 }

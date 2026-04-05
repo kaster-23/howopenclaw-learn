@@ -1,7 +1,15 @@
 ---
 title: "OpenClaw vs Flowise: Personal AI Agent vs LLM Flow Builder"
 description: "Flowise is a visual tool for building LLM-powered workflows and chatbots. OpenClaw is a self-hosted AI agent for personal use via messaging apps. Both run locally — here's the difference."
+faqs:
+  - q: "Is OpenClaw built on Flowise?"
+    a: "No. OpenClaw and Flowise are independent tools. Both are self-hosted Node.js applications that use LLMs, but they're built separately. Flowise is built on LangChain; OpenClaw has its own architecture."
+  - q: "Can OpenClaw run local AI models like Ollama?"
+    a: "Not currently. OpenClaw supports hosted providers: Anthropic (Claude), OpenAI (GPT-4), and Google (Gemini). Flowise supports 50+ LLM integrations including Ollama and llama.cpp for local inference, making it more flexible if local model execution is a requirement."
+  - q: "Is OpenClaw or Flowise faster to set up for personal use?"
+    a: "OpenClaw. It's configured and running in 15 minutes with a one-line installer and a few config fields. Flowise starts quickly but requires designing flows in its visual editor before you get a working assistant — which adds time for anything beyond a basic chatbot."
 ---
+
 
 Flowise and OpenClaw are both self-hosted Node.js tools that bring LLMs to your own hardware. The similarity stops there. Flowise is a builder — you design AI workflows visually. OpenClaw is a configured agent — you run it and talk to it through messaging apps.
 
@@ -56,4 +64,4 @@ You want a personal AI agent configured for you, running on your machine, access
 
 Flowise is the better choice if you're building LLM-powered tools for specific use cases or integrating AI into internal systems. OpenClaw is the better choice if you want a personal AI assistant configured to know you, running on your own hardware, accessible from your everyday messaging apps with no visual editor required.
 
-The [installation guide](/foundation/install) covers setup if you want to try it.
+The [installation guide](/course/0-setup) covers setup if you want to try it.

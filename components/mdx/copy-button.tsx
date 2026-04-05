@@ -34,7 +34,7 @@ export function CopyButton({ text }: CopyButtonProps) {
     <button
       type="button"
       onClick={copy}
-      className="absolute right-2 top-2 flex items-center gap-1.5 rounded-md border border-fd-border bg-fd-background/80 px-2 py-1 text-xs text-fd-muted-foreground backdrop-blur-sm transition-colors hover:bg-fd-accent hover:text-fd-foreground"
+      className="absolute right-2 top-2 flex items-center gap-1.5 rounded-md border border-fd-border bg-fd-background/80 px-3 py-2.5 text-xs text-fd-muted-foreground backdrop-blur-sm transition-colors hover:bg-fd-accent hover:text-fd-foreground min-h-[44px]"
       aria-label={copied ? "Copied" : "Copy code"}
     >
       {copied ? (

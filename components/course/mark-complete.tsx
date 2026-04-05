@@ -52,10 +52,10 @@ export function MarkComplete({ moduleId }: MarkCompleteProps) {
         type="button"
         onClick={toggle}
         aria-pressed={done}
-        className={`mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-150 ${
+        className={`mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-200 ${
           done
-            ? "bg-emerald-600 text-white"
-            : "border border-zinc-300 bg-zinc-100 text-zinc-800 hover:bg-[var(--color-fd-primary)] hover:border-[var(--color-fd-primary)] hover:text-white dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-[var(--color-fd-primary)] dark:hover:border-[var(--color-fd-primary)]"
+            ? "bg-emerald-600 border border-emerald-600 text-white"
+            : "border border-zinc-300 bg-zinc-100 text-zinc-600 hover:bg-emerald-500/10 hover:border-emerald-500/50 hover:text-emerald-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-emerald-500/15 dark:hover:border-emerald-500/40 dark:hover:text-emerald-400"
         }`}
       >
         <span

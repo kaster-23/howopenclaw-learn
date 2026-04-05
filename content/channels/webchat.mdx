@@ -3,6 +3,7 @@ title: "WebChat"
 description: "The built-in browser interface for OpenClaw. No setup required. Available at http://localhost:3000 as soon as the gateway is running."
 ---
 
+
 WebChat is the built-in browser interface for OpenClaw. It requires no installation, no configuration, no accounts. If the gateway is running, WebChat is available.
 
 **Access it at:** `http://localhost:3000`
@@ -42,7 +43,16 @@ This isolation makes debugging much faster.
 - **Group support:** Not available
 - **Authentication:** None (local access only)
 
-WebChat only listens on localhost. It's not accessible from other devices on your network unless you've explicitly configured remote access (see [Network Security](/foundation/security)).
+WebChat only listens on localhost. It's not accessible from other devices on your network unless you've explicitly configured remote access.
+
+## Ready to connect a real channel?
+
+WebChat is for testing. When your agent is working correctly, connect an external channel:
+
+- **[Telegram](/channels/telegram)** — easiest external channel, works on iOS and Android
+- **[iMessage](/channels/imessage)** — native Messages app experience on iPhone (requires Mac)
+
+---
 
 ## Limitations
 
@@ -50,11 +60,14 @@ WebChat only listens on localhost. It's not accessible from other devices on you
 
 **Local only.** Can't use WebChat from your phone or other devices without additional configuration.
 
-**No persistent history.** Conversation history isn't persisted between sessions in WebChat. For persistent memory, see the [Memory System](/level-up/memory) guide.
+**No persistent history.** Conversation history isn't persisted between sessions in WebChat. For persistent memory, see [Module 5: Memory & Personality](/course/5-memory-personality).
 
 **No channel-specific behavior.** MESSAGING.md routing rules don't apply in WebChat. It uses your default configuration directly.
 
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="WebChat not loading?">
+  WebChat requires the gateway to be running. If `http://localhost:3000` is unreachable, check that `openclaw gateway` is active. See the [troubleshooting guide](/reference/troubleshooting) for gateway startup issues.
+</Callout>

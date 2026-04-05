@@ -3,6 +3,13 @@ title: "Module 5: Memory & Personality"
 description: "Customize who your agent is and what it remembers between conversations."
 readTime: 8
 moduleNumber: 5
+faqs:
+  - q: "What is SOUL.md in OpenClaw?"
+    a: "SOUL.md is the personality file that defines your agent's tone, role, and behavior. It is loaded at the start of every conversation. You write it in plain Markdown — there is no special syntax. Think of it as a standing instruction set: 'You are a concise assistant. Always ask before taking irreversible actions.'"
+  - q: "What is the difference between SOUL.md and MEMORY.md?"
+    a: "SOUL.md is static — you write it manually and it defines who the agent is. MEMORY.md is dynamic — the agent writes to it automatically during conversations to remember facts, preferences, and context. SOUL.md changes rarely; MEMORY.md grows over time."
+  - q: "Does OpenClaw remember past conversations?"
+    a: "Yes, if MEMORY.md is configured. The agent saves important facts to this file during conversations, and reads it back at the start of each new one. Without it, every conversation starts with no memory of previous interactions. Setup takes about 5 minutes and is covered in this module."
 learningObjectives:
   - "Write an effective SOUL.md that shapes your agent's personality"
   - "Configure USER.md so the agent knows who you are"
@@ -232,6 +239,8 @@ Then test through your dashboard or messaging app:
 2. Ask a question with a strong opinion — should match your SOUL.md personality
 3. Say "Remember that I prefer morning meetings" — should write to MEMORY.md
 4. Start a new conversation and ask about morning meetings — should recall it
+
+The [Key Concepts reference](/reference/concepts) has precise definitions for SOUL.md, USER.md, MEMORY.md, and how they interact with the agent's context window.
 
 <MarkComplete moduleId="5-memory-personality" />
 

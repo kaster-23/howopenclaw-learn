@@ -167,7 +167,7 @@ export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
             >
               The beginner-friendly guide to your own AI assistant.
               <br className="hidden sm:block" />
-              10 modules. ~1 hour. No experience needed.
+              10 modules. ~1 hour. No coding. Your data stays local.
             </m.p>
 
             <m.div variants={motionFadeUp} transition={{ duration: 0.5, ease }} className="max-w-md mx-auto mb-10">
@@ -259,11 +259,12 @@ export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
               <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
                 Additional resources
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                  { title: "Reference", description: "CLI commands, concepts, troubleshooting", href: "/reference" },
+                  { title: "Reference", description: "CLI commands, concepts, troubleshooting, pricing", href: "/reference" },
                   { title: "Channels", description: "Setup guides for every messaging platform", href: "/channels" },
                   { title: "Compare", description: "OpenClaw vs ChatGPT, n8n, Zapier, and more", href: "/compare" },
+                  { title: "Real-World Projects", description: "Daily briefing, personal assistant, research tool, and more", href: "/course/7-projects" },
                 ].map((item) => (
                   <Link
                     key={item.href}

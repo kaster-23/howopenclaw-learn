@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getProgressPercent, getCompleted, TOTAL_MODULES, STORAGE_KEY } from "@/lib/course/progress"
+import { getProgressPercent, getValidCompletedCount, TOTAL_MODULES, STORAGE_KEY } from "@/lib/course/progress"
 
 export function CourseProgress() {
   const [percent, setPercent] = useState(0)
@@ -10,13 +10,13 @@ export function CourseProgress() {
   useEffect(() => {
     function update() {
       setPercent(getProgressPercent())
-      setCompleted(getCompleted().length)
+      setCompleted(getValidCompletedCount())
     }
 
     update()
 
     function handleStorage(e: StorageEvent) {
-      if (e.key === STORAGE_KEY || e.key === null) update()
+      if (e.key === STORAGE_KEY) update()
     }
 
     window.addEventListener("storage", handleStorage)

@@ -1,165 +1,82 @@
 ---
-title: "Channels Overview"
-description: "OpenClaw meets you where you already are. Connect it to BlueBubbles, Slack, WhatsApp, Telegram, Discord, Signal, and 18 more channels — 24 in total."
+title: "Channels"
+description: "OpenClaw meets you where you already are. Connect it to Slack, Telegram, WhatsApp, Discord, Signal, iMessage, WebChat, Microsoft Teams, and more."
 ---
 
-Channels are how you communicate with your agent. Rather than forcing you into a dedicated app, OpenClaw meets you where you already are — your existing messaging apps, team tools, and communication platforms.
+Channels are how you communicate with your agent. Rather than forcing you into a dedicated app, OpenClaw meets you in the messaging tools you already use — your phone, your workspace, your community.
 
-## Channel Comparison
+Each channel has its own setup guide with step-by-step instructions.
 
-OpenClaw supports 24 official channels. They're grouped below by category.
+## Pick your channel
 
-### Messaging
+<Cards>
+  <Card
+    title="Slack"
+    description="Best for work and team contexts. Socket Mode keeps your agent connected behind firewalls and corporate VPNs — no public URL required."
+    href="/channels/slack"
+  />
+  <Card
+    title="Telegram"
+    description="The easiest channel to start with. Create a bot in 2 minutes and message it from any device, anywhere in the world."
+    href="/channels/telegram"
+  />
+  <Card
+    title="Discord"
+    description="Great for communities and casual use. Works across servers with per-channel routing and optional auto-generated thread names."
+    href="/channels/discord"
+  />
+  <Card
+    title="WhatsApp"
+    description="Use your existing WhatsApp number. Unofficial API — ideal for personal use rather than business accounts."
+    href="/channels/whatsapp"
+  />
+  <Card
+    title="Signal"
+    description="Maximum privacy. End-to-end encrypted by default. Best for sensitive use cases where data confidentiality matters."
+    href="/channels/signal"
+  />
+  <Card
+    title="iMessage"
+    description="Connect via BlueBubbles for reliable iMessage integration. Requires a Mac running the BlueBubbles server."
+    href="/channels/imessage"
+  />
+  <Card
+    title="WebChat"
+    description="Zero setup — the fastest way to test OpenClaw locally. No account needed. Start here before connecting other channels."
+    href="/channels/webchat"
+  />
+  <Card
+    title="Microsoft Teams"
+    description="Enterprise-grade deployment with the official Teams SDK. Streaming replies, welcome cards, typing indicators, and native AI labeling."
+    href="/channels/teams"
+  />
+</Cards>
 
-| Channel | Stability | Setup Difficulty | Best For |
-|---|---|---|---|
-| BlueBubbles | High | Medium | iMessage integration (recommended) — uses BlueBubbles macOS server REST API |
-| iMessage (legacy) | Medium | Medium | Personal use on Apple devices — superseded by BlueBubbles |
-| LINE | High | Medium | Users in Japan, Taiwan, Thailand |
-| Signal | High | Hard | Privacy-first use cases |
-| Telegram | High | Easy | Public bots, international users |
-| WhatsApp | Medium | Medium | Personal (unofficial API) |
-| Zalo | Medium | Medium | Users in Vietnam (official account) |
-| Zalo Personal | Medium | Medium | Personal Zalo messaging |
+Not sure which channel to pick? See the [channel decision guide](/channels/choosing-a-channel).
 
-### Workplace
+## Starting strategy
 
-| Channel | Stability | Setup Difficulty | Best For |
-|---|---|---|---|
-| Google Chat | High | Medium | Google Workspace teams |
-| Mattermost | High | Medium | Self-hosted team collaboration |
-| Microsoft Teams | High | Medium | Enterprise / Microsoft 365 teams |
-| Nextcloud Talk | High | Medium | Self-hosted Nextcloud environments |
-| Slack | High | Easy | Work and team contexts |
-| Synology Chat | High | Medium | Synology NAS users |
+**Don't connect everything at once.** The most common mistake is setting up five channels simultaneously and ending up with five unstable connections and no idea which config is the problem.
 
-### Social & Community
+**Recommended starting order:**
+1. **WebChat** — zero setup, perfect for testing your agent locally
+2. **Telegram** or **Slack** — whichever fits your primary daily context
+3. Add more channels once the first two are stable
 
-| Channel | Stability | Setup Difficulty | Best For |
-|---|---|---|---|
-| Discord | Medium | Easy | Communities, casual use |
-| IRC | High | Medium | Developer communities, open source |
-| Matrix | High | Medium | Decentralized, privacy-focused communities |
-| Nostr | Medium | Medium | Decentralized social networking |
-| Tlon | Medium | Medium | Urbit-based communities |
-| Twitch | Medium | Medium | Live streaming interaction |
+## Security is per-channel
 
-### Other
+A critical point: **security settings are per-channel.** An allowlist on iMessage doesn't automatically apply to Telegram. An open DM policy on WebChat doesn't affect Slack.
 
-| Channel | Stability | Setup Difficulty | Best For |
-|---|---|---|---|
-| Feishu | High | Medium | Lark / Feishu (ByteDance) workspace users |
-| Voice Call | Medium | Medium | Phone-based voice interaction |
-| WebChat | High | None | Testing and local access |
+Review DM policy and tool permissions separately for each channel you connect. Start restrictive and loosen as needed.
 
-## What's New in Channels (v2026.3.24)
-
-**Microsoft Teams** now uses the official Teams SDK, with AI-agent UX best practices: streaming 1:1 replies, welcome cards with prompt starters, feedback/reflection, informative status updates, typing indicators, and native AI labeling. Message edit and delete support has also been added for sent messages, including in-thread fallbacks.
-
-**Slack** interactive replies now have full rich reply parity for direct deliveries. Simple trailing `Options:` lines auto-render as buttons or select menus. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers.
-
-**Discord** adds optional `autoThreadName: "generated"` for LLM-generated thread titles, improved gateway error supervision that prevents process-killing crashes, and visible timeout replies when the worker times out before a final reply starts.
-
-**Telegram** now handles `#General` forum topic routing reliably (including native commands, interactive callbacks, and fallback error replies), preflights photo dimensions (falling back to document sends when invalid), and stops retrying permanently failed chats (membership/block/kick).
-
-**WhatsApp** group echo suppression is smarter — only matching message IDs are suppressed, preserving owner commands like `/status` and `/new`. Reply-to-bot detection works reliably with linked accounts by unwrapping `botInvokeMessage` payloads.
-
-## Setup Guides
-
-Step-by-step setup instructions are available for the most popular channels:
-
-| Channel | Setup Guide |
-|---|---|
-| Slack | [Set up Slack](/channels/slack) |
-| Telegram | [Set up Telegram](/channels/telegram) |
-| Discord | [Set up Discord](/channels/discord) |
-| Microsoft Teams | [Set up Microsoft Teams](/channels/teams) |
-| WhatsApp | [Set up WhatsApp](/channels/whatsapp) |
-| Signal | [Set up Signal](/channels/signal) |
-| iMessage (legacy) | [Set up iMessage](/channels/imessage) |
-| WebChat | [Set up WebChat](/channels/webchat) |
-
----
-
-## Message Routing
+## Message routing
 
 The `MESSAGING.md` file controls how your agent handles incoming messages across all channels. Write it in plain English — your agent reads it as natural language instructions.
-
-Example routing rules:
 
 ```
 Route all work-related requests from Slack to my work assistant mode.
 For iMessage, use a casual conversational tone.
-If someone messages me on Telegram about technical questions, be more formal.
-Priority messages that require immediate attention should trigger a response even during quiet hours.
+Priority messages that require immediate attention should respond even during quiet hours.
 ```
 
-As the guide notes: "Your agent reads MESSAGING.md as natural language instructions, so you can write routing rules conversationally."
-
-## Starting Strategy
-
-**Don't connect everything at once.** The most common mistake is setting up five channels simultaneously, ending up with five unstable channels and no idea which configuration is causing problems.
-
-**Recommended starting setup:**
-1. WebChat — zero setup, perfect for testing
-2. BlueBubbles (macOS / iMessage users) or Slack (work-focused) — your primary daily channel
-3. Second channel once the first is stable
-
-Get one channel working well. Understand how DM policies and tool permissions interact on it. Then expand.
-
-## Security Is Per-Channel
-
-A critical point: **security settings are per-channel.** An allowlist on iMessage doesn't automatically apply to Telegram. An open DM policy on WebChat doesn't affect Slack.
-
-Review your DM policy and tool permissions separately for each channel you connect. Start restrictive and loosen as needed.
-
-## Common Troubleshooting
-
-**Non-responsive channel:** Check if the gateway is running (`openclaw status`) and that the channel is enabled in your config.
-
-**Message routing errors:** Review MESSAGING.md for conflicting rules. The agent processes rules top-to-bottom and stops at the first match.
-
-**Disconnections:** Some channels (especially WhatsApp) require reconnection after extended periods. Configure auto-reconnect where available.
-
-**Latency:** If responses are slow, check whether you're using the right model tier for the channel. Consider a faster, cheaper model for simple channel messages.
-
-**One channel blocks startup:** As of v2026.3.24, channel startup failures are isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed.
-
-## BlueBubbles (recommended for iMessage)
-
-The recommended way to connect iMessage. BlueBubbles bridges iMessage to OpenClaw via the BlueBubbles macOS server REST API.
-
-```json
-{
-  "channels": {
-    "bluebubbles": {
-      "dmPolicy": "allowlist",
-      "allowlist": ["your.email@icloud.com", "+1234567890"]
-    }
-  }
-}
-```
-
-```bash
-openclaw channels setup bluebubbles
-```
-
-You'll need the BlueBubbles server running on a Mac. Follow the permission prompts. Works with iPhone's Messages app and iMessage on Mac. Not compatible with Android SMS.
-
----
-
-## Running Multiple Channels Simultaneously
-
-You can run all channels at once. Each channel has its own pairing/allowlist. The agent maintains separate conversation contexts per channel but shares SOUL.md, USER.md, and MEMORY.md.
-
-```json
-{
-  "channels": {
-    "telegram": { "..." },
-    "slack": { "..." },
-    "whatsapp": { "..." }
-  }
-}
-```
-
-For routing specific automations to specific channels, use the `channel` field in each automation config. See [MESSAGING.md & Routing](/level-up/multi-channel) for advanced routing rules.
+For advanced multi-channel routing, see [Module 2: Connecting Apps](/course/2-connecting-apps).

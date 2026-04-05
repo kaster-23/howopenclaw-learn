@@ -1,7 +1,14 @@
 ---
 title: "Discord"
 description: "Connect OpenClaw to Discord. Create a bot in the Developer Portal, invite it to your server, and configure channel access."
+howToSteps:
+  - "Go to discord.com/developers/applications, click New Application, give it a name"
+  - "Go to the Bot tab, click Add Bot, enable the Message Content Intent, and copy the bot token"
+  - "Go to OAuth2 → URL Generator with scopes 'bot' and 'applications.commands', add Send Messages and Read Message History permissions, then open the generated URL to invite the bot to your server"
+  - "Store the bot token as an environment variable and add the Discord channel config to openclaw.json with your guild and channel IDs"
+  - "Restart the gateway with `openclaw gateway restart` and @mention your bot in an allowed channel to test"
 ---
+
 
 Discord works well for community-facing use cases and casual personal use. The setup requires creating a bot application in Discord's Developer Portal — slightly more involved than Telegram, but well-documented.
 
@@ -92,6 +99,13 @@ This automatically detects and recovers from dropped connections.
 
 If the inbound Discord worker times out before a final reply starts, OpenClaw now sends a visible timeout reply to the user — including in auto-created threads and queued runs. Previously, timeouts could result in silent failures with no feedback in the channel.
 
+## Related channels
+
+- **[Telegram](/channels/telegram)** — simpler setup, better for personal 1:1 use
+- **[Slack](/channels/slack)** — better for work teams with existing Slack workspaces
+
+---
+
 ## Security Recommendations
 
 **Never grant Administrator permissions.** Your bot only needs to read and send messages in specific channels.
@@ -128,4 +142,7 @@ openclaw logs --filter discord
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

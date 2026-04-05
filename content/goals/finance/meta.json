@@ -1,8 +1,0 @@
-{
-  "title": "Finance Alerts",
-  "icon": "TrendingUp",
-  "pages": [
-    "setup",
-    "alerts"
-  ]
-}

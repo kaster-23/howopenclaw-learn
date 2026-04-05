@@ -65,27 +65,28 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link
-                  href="/reference"
-                  className="text-zinc-400 hover:text-zinc-100 transition-colors"
-                >
+                <Link href="/reference" className="text-zinc-400 hover:text-zinc-100 transition-colors">
                   Reference
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/channels"
-                  className="text-zinc-400 hover:text-zinc-100 transition-colors"
-                >
+                <Link href="/channels" className="text-zinc-400 hover:text-zinc-100 transition-colors">
                   Channels
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/compare"
-                  className="text-zinc-400 hover:text-zinc-100 transition-colors"
-                >
+                <Link href="/compare" className="text-zinc-400 hover:text-zinc-100 transition-colors">
                   Compare
+                </Link>
+              </li>
+              <li>
+                <Link href="/reference/pricing" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link href="/reference/system-requirements" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+                  System Requirements
                 </Link>
               </li>
             </ul>

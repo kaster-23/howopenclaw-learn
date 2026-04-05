@@ -173,6 +173,20 @@ NEXT_PUBLIC_SITE_URL=
 DATABASE_URL=
 ```
 
+## Content ↔ UI Sync Rule
+
+**Any change to course content must be reflected in all UI surfaces that reference it — and vice versa.**
+
+When you change something in `content/`, check and update these if relevant:
+- `components/landing-content.tsx` — module list, read times, module count in hero copy ("10 modules. ~1 hour.")
+- `lib/course/progress.ts` — `TOTAL_MODULES`, `MODULE_IDS`
+- `content/course/index.mdx` — course module cards and descriptions
+- `next.config.ts` — redirects if a page slug changes
+
+When you change a number (module count, time estimate) in one place, grep for that number across all files and update every occurrence. Never let the landing page, course index, and progress tracker disagree.
+
+---
+
 ## Key Decisions
 
 - **App Router only** — No Pages Router patterns (`getServerSideProps`, `getStaticProps`)

@@ -1,0 +1,83 @@
+---
+title: "Choosing a Channel"
+description: "Which messaging channel should you connect first? This guide helps you pick the right one based on your device, use case, and privacy requirements."
+faqs:
+  - q: "Which OpenClaw channel should I start with?"
+    a: "Start with WebChat to verify your setup works, then add Telegram. Telegram is the easiest external channel — official API, no QR codes, no session expiry, works on any device. Most users only ever need Telegram."
+  - q: "Which OpenClaw channel is most private?"
+    a: "Signal offers the strongest privacy — end-to-end encrypted by default, no unofficial API emulation. For most personal use cases, Telegram is private enough since conversations stay on your hardware; only the message payload goes to your AI provider."
+  - q: "Does OpenClaw work on Android?"
+    a: "Yes. Telegram, WhatsApp, Signal, Slack, and Discord all work on Android. iMessage is macOS-only on the agent side, but any Android user can still message an OpenClaw agent through any of the other channels."
+---
+
+
+You don't need to connect every channel. Most setups work perfectly with one or two.
+
+## Quick decision guide
+
+**Start here — pick the situation that matches yours:**
+
+---
+
+### I want to test OpenClaw before connecting anything
+→ **[WebChat](/channels/webchat)** — zero setup, available the moment the gateway starts at `localhost:3000`
+
+---
+
+### I want to text my agent from my phone
+→ **[Telegram](/channels/telegram)** — easiest to set up, most reliable to run, works on iOS and Android
+
+---
+
+### I'm on iPhone and want it to feel native
+→ **[iMessage](/channels/imessage)** — your agent shows up as a contact, responds in the Messages app. Requires a Mac running the agent.
+
+---
+
+### I use WhatsApp as my main messaging app
+→ **[WhatsApp](/channels/whatsapp)** — works, but uses an unofficial API and needs occasional re-authentication. Good for personal use on a number you control.
+
+---
+
+### I want to use it at work with my team
+→ **[Slack](/channels/slack)** — best for team workspaces. Socket Mode works behind corporate VPNs, no public URL required.
+
+→ **[Microsoft Teams](/channels/teams)** — enterprise-grade deployment with the official Teams SDK, streaming replies, and Azure access control.
+
+---
+
+### My organization runs on Microsoft Teams
+→ **[Microsoft Teams](/channels/teams)** — official SDK, native AI labeling, Azure AD integration for enterprise access control.
+
+---
+
+### I want maximum privacy (medical, legal, financial use)
+→ **[Signal](/channels/signal)** — end-to-end encrypted, no unofficial protocol emulation. Most involved setup (~30–60 minutes). Requires a dedicated phone number.
+
+---
+
+### I run a community or public Discord server
+→ **[Discord](/channels/discord)** — thread-based conversations, per-server and per-channel restrictions, auto-generated thread names.
+
+---
+
+## At a glance
+
+| Channel | Setup time | Reliability | Privacy | Best for |
+|---|---|---|---|---|
+| WebChat | Instant | High | Local only | Testing |
+| Telegram | 5 min | High | Good | Personal daily use |
+| iMessage | 10 min | High | Good | iPhone users on Mac |
+| WhatsApp | 15 min | Medium | Good | WhatsApp-first users |
+| Slack | 15 min | High | Good | Work teams |
+| Teams | 30 min | High | Good | Enterprise / Microsoft orgs |
+| Discord | 15 min | Medium | Good | Communities |
+| Signal | 45 min | Medium | Excellent | Privacy-critical use |
+
+## How many channels should I run?
+
+**One is usually enough.** Pick the channel you already use most and start there. The agent behaves identically across all channels — there's no feature advantage to running more.
+
+The only reason to run multiple channels is if you genuinely use different apps for different contexts (e.g., Slack for work, Telegram for personal). In that case, run two and configure `MESSAGING.md` to handle routing between them.
+
+Running five channels simultaneously with unstable configs is a common mistake. Master one first.

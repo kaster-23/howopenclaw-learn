@@ -4,6 +4,8 @@
   "pages": [
     "cli",
     "concepts",
-    "troubleshooting"
+    "troubleshooting",
+    "pricing",
+    "system-requirements"
   ]
 }

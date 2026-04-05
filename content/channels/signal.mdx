@@ -1,7 +1,14 @@
 ---
 title: "Signal"
 description: "The most private OpenClaw channel. Messages stay end-to-end encrypted. Setup is the most involved of any channel — plan 30-60 minutes."
+howToSteps:
+  - "Get a dedicated phone number for the agent (Google Voice, Twilio, or prepaid SIM) — do not use your personal Signal number"
+  - "Install signal-cli: `brew install signal-cli` on macOS, or download from GitHub on Linux"
+  - "Register the dedicated number: `signal-cli -u +15559876543 register` then verify with the SMS code: `signal-cli -u +15559876543 verify 123456`"
+  - "Add the Signal channel config to openclaw.json with the registered phone number and your allowed contacts"
+  - "Restart the gateway with `openclaw gateway restart` and test by messaging the agent number from your personal Signal account"
 ---
+
 
 Signal offers the strongest privacy guarantees of any OpenClaw channel. Messages remain end-to-end encrypted throughout. No metadata exposed to third parties, no unofficial API emulation.
 
@@ -84,7 +91,7 @@ openclaw logs --follow | grep signal
 
 Signal groups work differently from other platforms, and the integration has less mature group support. Group messages may not route correctly in all configurations.
 
-For team use cases, **Slack or Telegram are more reliable choices**. Use Signal for one-on-one personal communication where privacy is the priority.
+For team use cases, [Slack](/channels/slack) or [Telegram](/channels/telegram) are more reliable choices. Use Signal for one-on-one personal communication where privacy is the priority.
 
 ## Why Signal Complexity Is Worth It
 
@@ -109,4 +116,7 @@ signal-cli -u +15559876543 register --force
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

@@ -1,7 +1,15 @@
 ---
 title: "Slack"
 description: "Connect OpenClaw to Slack for always-on agent deployment in your workspace. Works behind firewalls with Socket Mode."
+howToSteps:
+  - "Go to api.slack.com/apps, click Create New App → From scratch, name it, and select your workspace"
+  - "Under Socket Mode, enable it and generate an App-Level Token with the connections:write scope"
+  - "Under OAuth & Permissions, add Bot Token Scopes: chat:write, im:history, channels:history, app_mentions:read"
+  - "Install the app to your workspace and copy the Bot Token"
+  - "Store your tokens as environment variables and add the Slack channel config to openclaw.json"
+  - "Restart the gateway with `openclaw gateway restart` and test by DMing your bot or @mentioning it in an allowed channel"
 ---
+
 
 Slack is the best channel for work contexts. Socket Mode keeps your agent connected without requiring a public URL, and it works reliably behind firewalls and corporate VPNs.
 
@@ -88,6 +96,12 @@ This renders as clickable buttons in Slack. Interactive setup defaults have also
 
 **Store tokens in environment variables**, never directly in config files. Your `openclaw.json` should only reference `${SLACK_BOT_TOKEN}`, not the actual token value.
 
+## Related channels
+
+**Personal use on your phone?** [Telegram](/channels/telegram) or [iMessage](/channels/imessage) are simpler to set up for personal daily-use without workspace management.
+
+**Enterprise and need Microsoft?** [Microsoft Teams](/channels/teams) uses the official Teams SDK with full enterprise access controls.
+
 ## Threading
 
 With `threadReplies: true`, your agent responds in threads rather than the main channel. This keeps channels clean and makes it easy to track conversations.
@@ -116,4 +130,7 @@ openclaw logs --follow | grep slack
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

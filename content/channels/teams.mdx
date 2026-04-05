@@ -1,7 +1,14 @@
 ---
 title: "Microsoft Teams"
 description: "Connect OpenClaw to Microsoft Teams using the official Teams SDK. Stream replies in 1:1 chats, send welcome cards, and manage messages with full edit/delete support."
+howToSteps:
+  - "Sign in to portal.azure.com and create an Azure Bot Service resource (Free tier works for development)"
+  - "Copy the Microsoft App ID from Settings → Configuration, then create a client secret via Manage Password → New client secret"
+  - "In the Azure Bot Service, go to Channels → Microsoft Teams and configure to register the bot"
+  - "Store your App ID and secret as environment variables and add the Teams channel config to openclaw.json"
+  - "Restart the gateway with `openclaw gateway restart` and @mention your bot in a Teams chat to test"
 ---
+
 
 Microsoft Teams integration uses the official Teams SDK for enterprise-grade reliability. It provides AI-agent best practices including streaming replies, welcome cards with prompt starters, status updates, and native AI labeling.
 
@@ -143,6 +150,13 @@ Set `groupPolicy` to control how the bot behaves in groups:
 }
 ```
 
+## Related channels
+
+- **[Slack](/channels/slack)** — easier setup for smaller teams not on Microsoft infrastructure
+- **[Discord](/channels/discord)** — better for communities and open servers
+
+---
+
 ## Security Recommendations
 
 **Restrict bot access.** Don't add your bot to every team and channel. Start with a pilot group.
@@ -176,4 +190,7 @@ openclaw logs --follow | grep teams
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

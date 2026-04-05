@@ -1,7 +1,14 @@
 ---
 title: "Telegram"
 description: "The easiest OpenClaw channel to set up. Create a bot with BotFather, add your token, and you're running in minutes."
+howToSteps:
+  - "Open Telegram and search for @BotFather, send /newbot, choose a display name and a username ending in 'bot'"
+  - "Copy the token BotFather provides"
+  - "Add the Telegram channel config to openclaw.json with your bot token and allowed user IDs"
+  - "Restart the gateway with `openclaw gateway restart`"
+  - "Find your bot by username in Telegram and send it a message — it should reply within seconds"
 ---
+
 
 Telegram is the easiest channel to set up and one of the most reliable to run. No Mac required, no unofficial APIs, no QR codes. Just a bot token from BotFather and you're running.
 
@@ -73,6 +80,12 @@ No special configuration is needed. Topic routing works automatically when Topic
 
 When your agent sends images, OpenClaw preflights Telegram's photo dimension and aspect-ratio rules. If an image doesn't meet Telegram's requirements (or metadata is unavailable), it automatically falls back to sending as a document — so photo uploads no longer fail with `PHOTO_INVALID_DIMENSIONS`.
 
+## Related channels
+
+**Using Telegram for work?** [Slack](/channels/slack) is better for team workspaces — it has dedicated channel controls, thread replies, and enterprise access management.
+
+**Privacy-first use case?** [Signal](/channels/signal) offers end-to-end encrypted messaging if confidentiality is a requirement.
+
 ## Why Telegram Is Reliable
 
 Unlike WhatsApp, Telegram provides an official Bot API. There's no session that expires, no QR code to re-scan, no unofficial protocol emulation. When the gateway is running, the Telegram channel is running.
@@ -99,4 +112,7 @@ openclaw logs --filter telegram
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

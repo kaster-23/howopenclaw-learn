@@ -1,0 +1,84 @@
+---
+title: "Is OpenClaw Free?"
+description: "OpenClaw is free and open source. You pay only for AI API usage. Here's what that means in practice and how much it costs to run."
+faqs:
+  - q: "Is OpenClaw free?"
+    a: "OpenClaw itself is free and open source. There is no subscription, no license fee, and no usage cap. You pay only for the AI API calls you make to your chosen provider (OpenAI, Anthropic, or Google). Typical personal use costs $1–10 per month."
+  - q: "How much does OpenClaw cost per month?"
+    a: "Costs depend on your AI provider and how much you use it. Light use (a few conversations per day) typically runs $1–5/month. Heavy use with daily briefings and frequent messaging typically runs $5–20/month. All costs go directly to your AI provider — OpenClaw itself charges nothing."
+  - q: "Does OpenClaw have a subscription?"
+    a: "No. OpenClaw has no subscription, no free tier, no pro tier, no account required. You install it, configure an API key from your chosen AI provider, and that's it. The only recurring cost is your AI provider's API usage."
+---
+
+
+OpenClaw is free and open source. There is no subscription, no license fee, no account required, and no usage limits imposed by OpenClaw itself.
+
+**You pay only for AI API calls** — the requests OpenClaw makes to your chosen AI provider (OpenAI, Anthropic, or Google) on your behalf.
+
+---
+
+## Typical monthly costs
+
+These are rough estimates based on personal use patterns:
+
+| Use pattern | Estimated cost |
+|---|---|
+| Light: a few messages per day, no automations | $1–3/month |
+| Moderate: daily briefing + regular messaging | $5–10/month |
+| Heavy: multiple automations, frequent use | $10–25/month |
+
+Costs vary based on:
+- **Model choice** — GPT-4o costs more per token than Claude Haiku; use a smaller model to reduce costs
+- **Context length** — longer SOUL.md and MEMORY.md files cost more per request
+- **Automation frequency** — daily briefings and cron jobs add to your total
+
+---
+
+## Which AI provider is cheapest?
+
+| Provider | Model | Relative cost |
+|---|---|---|
+| Anthropic | claude-haiku-4-5 | Low |
+| OpenAI | gpt-4o-mini | Low |
+| Anthropic | claude-sonnet-4-6 | Medium |
+| OpenAI | gpt-4o | Medium–High |
+| Anthropic | claude-opus-4-6 | High |
+
+For personal daily use, Claude Haiku or GPT-4o-mini provides a good balance of quality and cost. The quality difference for everyday tasks (briefings, reminders, questions) is minimal.
+
+---
+
+## How to keep costs low
+
+**Use a smaller model for routine tasks.** Set `"model": "claude-haiku-4-5-20251001"` in your config for everyday conversations and reserve larger models for when you need them.
+
+**Keep SOUL.md concise.** Every conversation loads your SOUL.md as context. A 300-line SOUL.md costs significantly more per request than a 50-line one.
+
+**Trim MEMORY.md periodically.** As MEMORY.md grows, so does the context loaded on each request. Review it monthly and remove entries that are no longer relevant.
+
+**Use `suppressEmpty` for automations.** If an automation has nothing useful to say (no new emails, no calendar events), `suppressEmpty: true` skips the AI call entirely.
+
+---
+
+## Compared to alternatives
+
+| Tool | Cost |
+|---|---|
+| OpenClaw | $0 + AI API usage ($1–20/month) |
+| ChatGPT Plus | $20/month |
+| Zapier Starter | $19.99/month |
+| n8n Cloud | $20/month |
+| OpenAI Assistants | API usage only (similar to OpenClaw) |
+
+OpenClaw's cost model is similar to building with the OpenAI Assistants API — you pay for tokens, not for the platform.
+
+---
+
+## No account, no tracking
+
+OpenClaw doesn't require an account, doesn't track usage, and doesn't have telemetry. The only external connections your installation makes are:
+
+1. **To your AI provider's API** — when you send a message or an automation fires
+2. **To messaging platform APIs** — when sending or receiving messages on Telegram, Slack, etc.
+
+Nothing else leaves your machine.

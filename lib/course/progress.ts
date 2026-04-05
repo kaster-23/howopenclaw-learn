@@ -1,6 +1,6 @@
 export const STORAGE_KEY = "openclaw-course-progress"
 
-export const TOTAL_MODULES = 14 // 10 modules + 4 project sub-pages
+export const TOTAL_MODULES = 10
 
 export const MODULE_IDS = [
   "0-setup",
@@ -11,10 +11,6 @@ export const MODULE_IDS = [
   "5-memory-personality",
   "6-autonomous-tasks",
   "7-projects",
-  "7-daily-briefing",
-  "7-personal-assistant",
-  "7-research-companion",
-  "7-content-creator",
   "8-security-ethics",
   "9-next-steps",
 ] as const
@@ -51,5 +47,11 @@ export function markIncomplete(moduleId: string): string[] {
 
 export function getProgressPercent(): number {
   const completed = getCompleted()
-  return Math.round((completed.length / TOTAL_MODULES) * 100)
+  const validCount = completed.filter((id) => (MODULE_IDS as readonly string[]).includes(id)).length
+  return Math.round((validCount / TOTAL_MODULES) * 100)
+}
+
+export function getValidCompletedCount(): number {
+  const completed = getCompleted()
+  return completed.filter((id) => (MODULE_IDS as readonly string[]).includes(id)).length
 }

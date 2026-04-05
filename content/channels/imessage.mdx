@@ -1,7 +1,14 @@
 ---
 title: "iMessage"
 description: "Connect OpenClaw to iMessage on macOS. Requires a Mac running the agent — uses the macOS Messages framework."
+howToSteps:
+  - "Ensure you are on macOS 13 Ventura or later with an Apple ID signed into the Messages app"
+  - "Add the iMessage channel config to openclaw.json with your allowed contacts in E.164 format (e.g. +15551234567)"
+  - "Restart the gateway: `openclaw gateway restart`"
+  - "Send a test iMessage from another Apple device — your agent should reply within a few seconds"
+  - "If it doesn't respond, check logs with `openclaw logs --filter imessage` for permission or formatting errors"
 ---
+
 
 iMessage integration requires a Mac running the agent because it relies on the macOS Messages framework. You can't run the iMessage channel on Linux or Windows — even in a VM, the Messages framework won't be available.
 
@@ -80,6 +87,13 @@ openclaw logs --filter imessage
 
 Common issues: Messages app not signed in, Mac in sleep mode, phone number format errors in allowedContacts.
 
+## Related channels
+
+- **[WhatsApp](/channels/whatsapp)** — Android users or those without a Mac running the agent
+- **[Telegram](/channels/telegram)** — cross-platform alternative that doesn't require macOS
+
+---
+
 ## Tips for Daily Use
 
 **Set a response delay.** A 2–3 second delay (`responseDelay: 2500`) makes responses feel more conversational and less robotic. The instant response of a chatbot is actually jarring in a personal messaging context.
@@ -90,4 +104,7 @@ Common issues: Messages app not signed in, Mac in sleep mode, phone number forma
 
 ---
 
-[← All Channels](/channels/overview)
+
+<Callout type="info" title="Something not working?">
+  Check the [troubleshooting guide](/reference/troubleshooting) for common issues with gateway startup, channel connections, and automations.
+</Callout>

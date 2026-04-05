@@ -1,7 +1,15 @@
 ---
 title: "OpenClaw vs AutoGPT: Autonomous Agent vs Conversational Agent"
 description: "AutoGPT runs tasks autonomously with minimal input. OpenClaw is a conversational AI agent you interact with through messaging apps. Both are 'AI agents' — but they're designed for very different situations."
+faqs:
+  - q: "Is OpenClaw an autonomous AI agent like AutoGPT?"
+    a: "No. OpenClaw is a conversational agent — you control every exchange via messaging. AutoGPT is an autonomous agent that pursues a goal through self-directed steps with minimal human involvement. OpenClaw's bounded model is more reliable for daily personal use."
+  - q: "Does OpenClaw run in the background like a daemon?"
+    a: "Yes. OpenClaw runs as a persistent background process (the Gateway) that stays connected to your messaging channels. It's always listening and ready to respond. AutoGPT, by contrast, runs per-task — you start it, it runs, it stops."
+  - q: "Which is easier to set up, OpenClaw or AutoGPT?"
+    a: "OpenClaw installs in about 15 minutes via a one-line installer. AutoGPT's setup involves Docker, multiple API keys, and more complex configuration. For personal daily use, OpenClaw's setup is significantly simpler."
 ---
+
 
 "AI agent" means different things to different tools. AutoGPT is built for autonomous, long-running task execution with minimal human intervention. OpenClaw is built for responsive, daily-use conversation through messaging apps. The word "agent" applies to both, but the intended use case is different.
 
@@ -55,4 +63,4 @@ You want an AI that's always available, knows who you are, and responds instantl
 
 AutoGPT is for complex autonomous tasks where you want the AI to do most of the driving. OpenClaw is for daily personal use where you want a responsive, context-aware AI that you control. They address different problems — if you need both, you can run both.
 
-The [installation guide](/foundation/install) covers setup if you want to try it.
+The [installation guide](/course/0-setup) covers setup if you want to try it.

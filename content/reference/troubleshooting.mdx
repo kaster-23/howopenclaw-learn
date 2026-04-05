@@ -1,7 +1,17 @@
 ---
 title: "Fix It When It Breaks"
 description: "Diagnose and fix the most common OpenClaw problems."
+faqs:
+  - q: "What should I check first when OpenClaw stops working?"
+    a: "Always start with the logs: run `openclaw logs --tail 100` and look for ERROR lines. The error message usually identifies the exact problem. From there, check gateway status with `openclaw gateway status`."
+  - q: "Why is my Telegram bot not responding?"
+    a: "Check that the gateway shows `telegram: connected` in `openclaw gateway status`. Verify the bot token in config has no extra spaces. Make sure you sent `/start` to the bot before messaging it. Also confirm BotFather hasn't revoked the token."
+  - q: "How do I fix a WhatsApp disconnection in OpenClaw?"
+    a: "Run `openclaw channels login --channel whatsapp` and re-scan the QR code. If the session store is corrupted, delete it first with `rm -rf ~/.openclaw/sessions/whatsapp` then run the login command again."
+  - q: "Why are my automations not firing?"
+    a: "Run `openclaw cron list` to check they exist, then verify the cron schedule syntax is valid (test at crontab.guru). Make sure the Gateway was running at the scheduled time — a sleeping laptop will miss scheduled jobs. Also check the timezone setting in your automation config."
 ---
+
 
 Reference this page whenever something stops working. Start with logs.
 
@@ -118,7 +128,7 @@ openclaw cron status [automation-id]
 
 Check:
 1. Is the schedule valid cron syntax? Test at [crontab.guru](https://crontab.guru)
-2. Is the Gateway running at the scheduled time? (Laptop sleeping breaks this — see [Run It 24/7](/level-up/deployment))
+2. Is the Gateway running at the scheduled time? (Laptop sleeping breaks this — see [Module 6: Autonomous Tasks](/course/6-autonomous-tasks))
 3. Is the timezone correct? Add `"timezone": "America/New_York"` to the automation config if not specified
 
 ### Test an automation manually

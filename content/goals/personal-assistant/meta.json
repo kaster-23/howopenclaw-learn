@@ -1,9 +1,0 @@
-{
-  "title": "Personal Assistant",
-  "icon": "Bot",
-  "pages": [
-    "channel",
-    "soul-md",
-    "tasks"
-  ]
-}

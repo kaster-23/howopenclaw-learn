@@ -114,6 +114,8 @@ const nextConfig: NextConfig = {
       { source: "/level-up/sub-agents", destination: "/course/6-autonomous-tasks", permanent: true },
       { source: "/level-up/models", destination: "/course/1-architecture", permanent: true },
       { source: "/level-up/deployment", destination: "/course/6-autonomous-tasks", permanent: true },
+      { source: "/level-up/multi-channel", destination: "/course/2-connecting-apps", permanent: true },
+      { source: "/level-up/mobile", destination: "/course/9-next-steps", permanent: true },
     ]
   },
 }

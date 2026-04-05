@@ -19,70 +19,70 @@ const modules: Module[] = [
     number: 0,
     title: "Quick Setup",
     description: "Install OpenClaw, run the onboarding wizard, and send your first message.",
-    readTime: 15,
+    readTime: 5,
     href: "/course/0-setup",
   },
   {
     number: 1,
     title: "How Everything Fits Together",
     description: "The five core components and how a message flows from your phone to an action.",
-    readTime: 10,
+    readTime: 5,
     href: "/course/1-architecture",
   },
   {
     number: 2,
     title: "Connecting Your Apps",
     description: "Add Telegram, WhatsApp, Slack, and other messaging channels.",
-    readTime: 20,
+    readTime: 6,
     href: "/course/2-connecting-apps",
   },
   {
     number: 3,
     title: "Skills & Tools",
     description: "Give your agent abilities from ClawHub — calendar, email, search, and more.",
-    readTime: 25,
+    readTime: 6,
     href: "/course/3-skills-tools",
   },
   {
     number: 4,
     title: "Writing Good Prompts",
     description: "Get better, more consistent results with clear and structured prompts.",
-    readTime: 18,
+    readTime: 5,
     href: "/course/4-prompts",
   },
   {
     number: 5,
     title: "Memory & Personality",
     description: "Customize who your agent is and what it remembers between conversations.",
-    readTime: 22,
+    readTime: 8,
     href: "/course/5-memory-personality",
   },
   {
     number: 6,
     title: "Autonomous Tasks",
     description: "Schedule cron jobs, daily briefings, and deploy for 24/7 operation.",
-    readTime: 20,
+    readTime: 6,
     href: "/course/6-autonomous-tasks",
   },
   {
     number: 7,
     title: "Real-World Projects",
     description: "Build a daily briefing, personal assistant, research tool, or content workflow.",
-    readTime: 30,
+    readTime: 5,
     href: "/course/7-projects",
   },
   {
     number: 8,
     title: "Security & Ethics",
     description: "Sandboxing, prompt injection, API key management, and audit logging.",
-    readTime: 15,
+    readTime: 6,
     href: "/course/8-security-ethics",
   },
   {
     number: 9,
     title: "Next Steps & Community",
     description: "Troubleshooting, updates, contributing, and joining the community.",
-    readTime: 12,
+    readTime: 4,
     href: "/course/9-next-steps",
   },
 ]
@@ -167,7 +167,7 @@ export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
             >
               The beginner-friendly guide to your own AI assistant.
               <br className="hidden sm:block" />
-              10 modules. ~3.5 hours. No experience needed.
+              10 modules. ~1 hour. No experience needed.
             </m.p>
 
             <m.div variants={motionFadeUp} transition={{ duration: 0.5, ease }} className="max-w-md mx-auto mb-10">

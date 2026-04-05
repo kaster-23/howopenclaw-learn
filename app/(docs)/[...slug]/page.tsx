@@ -177,6 +177,7 @@ export default async function Page({ params }: PageProps) {
         <DocsTitle>{page.data.title}</DocsTitle>
         <DocsDescription>{page.data.description}</DocsDescription>
         <DocsBody>
+          {slug[0] === "course" && <CourseProgress />}
           <MDX
             components={{
               ...defaultMdxComponents,

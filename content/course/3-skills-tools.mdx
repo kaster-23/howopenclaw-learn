@@ -1,0 +1,218 @@
+---
+title: "Module 3: Skills & Tools"
+description: "Give your agent abilities — calendar, email, web search, and more — by installing skills from ClawHub."
+readTime: 25
+moduleNumber: 3
+learningObjectives:
+  - "Understand the difference between built-in tools and skills"
+  - "Browse and install skills from ClawHub"
+  - "Configure skill credentials and permissions"
+  - "Write a basic custom skill"
+prerequisites:
+  - "Completed Module 2 (Connecting Your Apps)"
+prevModule: "/course/2-connecting-apps"
+nextModule: "/course/4-prompts"
+howToSteps:
+  - "Browse available skills on ClawHub"
+  - "Install a skill via the CLI"
+  - "Configure the skill's credentials in openclaw.json"
+  - "Restart the gateway and test the skill"
+---
+
+<ReadTime minutes={25} />
+
+<LearningObjectives objectives={[
+  "Understand the difference between built-in tools and skills",
+  "Browse and install skills from ClawHub",
+  "Configure skill credentials and permissions",
+  "Write a basic custom skill"
+]} />
+
+## Why this matters
+
+Out of the box, your agent can think and respond — but it cannot check your
+calendar, send emails, or search the web. Skills give it those abilities.
+
+## Built-in tools vs. skills
+
+OpenClaw has two types of capabilities:
+
+**Built-in tools** are general-purpose and come pre-installed:
+- `web_fetch` — retrieve a webpage
+- `web_search` — search the internet
+- `read` / `write` — access files in your workspace
+- `exec` — run shell commands (with restrictions)
+
+**Skills** are purpose-built integrations with specific APIs:
+- Google Calendar — read and create events
+- Gmail — read and send emails
+- GitHub — manage issues and pull requests
+- Weather — get forecasts
+- And many more on ClawHub
+
+## Browsing ClawHub
+
+ClawHub is the skill directory. Browse it at [clawhub.ai](https://clawhub.ai)
+or through the dashboard.
+
+Each skill listing shows:
+- What it does
+- What credentials it needs
+- Example prompts that use it
+- Configuration format
+
+### Popular skills by category
+
+| Category | Skills |
+|---|---|
+| **Productivity** | Gmail, Google Calendar, Notion, Linear, GitHub, Jira |
+| **Data & Finance** | Alpha Vantage, Polygon, Weather |
+| **Communication** | Gmail Send, Slack Read |
+| **Utilities** | Wikipedia, WolframAlpha, PDF |
+
+## Installing a skill
+
+Installation is two steps: install the package, then configure credentials.
+
+### Example: Install the weather skill
+
+```bash
+openclaw skills install weather
+```
+
+Then add configuration:
+
+```bash
+openclaw config edit
+```
+
+```json
+{
+  "skills": {
+    "weather": {
+      "enabled": true
+    }
+  }
+}
+```
+
+Some skills need API keys or tokens:
+
+```json
+{
+  "skills": {
+    "github": {
+      "enabled": true,
+      "token": "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"
+    }
+  }
+}
+```
+
+Restart the gateway to load the new skill:
+
+```bash
+openclaw gateway restart
+```
+
+### Check skill status
+
+See what is installed and working:
+
+```bash
+openclaw skills info weather
+```
+
+The dashboard also shows skill status with tabs for All, Ready, Needs Setup,
+and Disabled.
+
+## Testing a skill
+
+After installation, ask your agent to use it:
+
+```bash
+openclaw agent --message "What is the weather forecast for tomorrow?"
+```
+
+If the weather skill is installed and configured, the agent will use it
+automatically. You do not need to tell it which skill to use — the agent
+figures that out from your question.
+
+## Skill permissions
+
+Each skill runs in its own sandbox:
+- A skill only gets its own credentials
+- No cross-skill access
+- No access to your SOUL.md or personal files
+- Credentials stored separately at `~/.openclaw/tokens/`
+
+This means a buggy or malicious skill cannot access your other skills or data.
+
+## Writing a custom skill
+
+If you need a skill that does not exist on ClawHub, you can write your own.
+A skill is a Node.js module that exports tool definitions:
+
+```javascript
+module.exports = {
+  name: "my_service",
+  description: "Access My Service API",
+  tools: [
+    {
+      name: "get_items",
+      description: "Get a list of items from My Service",
+      parameters: {
+        type: "object",
+        properties: {
+          filter: {
+            type: "string",
+            description: "Filter items by this string",
+          },
+        },
+      },
+      async execute({ filter }, config) {
+        const response = await fetch(
+          `https://api.myservice.com/items?q=${filter}`,
+          {
+            headers: { Authorization: `Bearer ${config.apiKey}` },
+          },
+        )
+        return await response.json()
+      },
+    },
+  ],
+}
+```
+
+Save it in your skills directory and add the config:
+
+```json
+{
+  "skills": {
+    "my_service": {
+      "enabled": true,
+      "path": "./skills/my-skill",
+      "apiKey": "YOUR_KEY"
+    }
+  }
+}
+```
+
+## Hands-on: Install and test a skill
+
+1. Pick a skill from ClawHub that sounds useful to you
+2. Install it: `openclaw skills install [name]`
+3. Add the configuration with any required credentials
+4. Restart: `openclaw gateway restart`
+5. Test it with a natural language message
+
+If it does not work, check `openclaw skills info [name]` for setup requirements.
+
+<MarkComplete moduleId="3-skills-tools" />
+
+<ModuleNav
+  prevHref="/course/2-connecting-apps"
+  prevLabel="Module 2: Connecting Your Apps"
+  nextHref="/course/4-prompts"
+  nextLabel="Module 4: Writing Good Prompts"
+/>

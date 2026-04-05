@@ -40,7 +40,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
       }}
       githubUrl="https://github.com/OpenClaw"
       sidebar={{
-        defaultOpenLevel: 0,
+        defaultOpenLevel: 1,
         components: {
           Folder: SidebarFolderWithTooltip,
           Separator: SidebarSeparatorItem,

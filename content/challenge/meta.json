@@ -1,0 +1,5 @@
+{
+  "title": "Challenge",
+  "icon": "Zap",
+  "pages": ["index", "---", "install", "deploy", "execute", "---", "complete"]
+}

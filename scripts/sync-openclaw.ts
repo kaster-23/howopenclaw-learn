@@ -166,20 +166,23 @@ async function main() {
 
   // ── Agentic doc-update loop ──────────────────────────────────────────────
 
-  const system = `You are a technical documentation maintainer for HowOpenClaw, a community docs site for OpenClaw (an open-source self-hosted AI assistant).
+  const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw (an open-source self-hosted AI assistant).
+
+The site is structured as a 10-module course (content/course/) plus secondary reference sections (content/channels/, content/reference/).
 
 Your task: update the documentation to reflect changes introduced in a new OpenClaw release.
 
 Rules:
 - Only update files that are directly affected by the release notes
-- Preserve all existing MDX structure, frontmatter (title, description, faqs, howToSteps), and component syntax (Callout, Steps, Step, Cards, Card, Tabs, Tab)
-- Keep the same writing style and tone — factual, concise, actionable
+- Preserve all existing MDX structure and frontmatter — including course-specific fields: title, description, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, faqs, howToSteps
+- Preserve all component syntax — both Fumadocs components (Callout, Steps, Step, Cards, Card, Tabs, Tab) and course components (ReadTime, LearningObjectives, ModuleNav, MarkComplete, VideoEmbed) and Mermaid fenced code blocks
+- Keep the same writing style and tone — calm, professional, beginner-friendly, step-by-step
 - If a feature changed, update the relevant steps/descriptions
-- If a feature is new, add it in the appropriate section
+- If a feature is new, add it in the appropriate module section
 - If a feature was removed, note the removal with a Callout
-- Focus on: content/channels/, content/reference/, content/goals/
-- Skip content/foundation/ unless the release changes core concepts
-- Do not update meta.json files`
+- Focus on: content/course/, content/channels/, content/reference/
+- Do not update meta.json files
+- Do not change moduleNumber, readTime, nextModule, prevModule, or moduleId values`
 
   const userMessage = `OpenClaw released **${release.tag}**.
 
@@ -191,10 +194,11 @@ ${release.notes || "(no release notes provided)"}
 Previous version: ${lastVersion || "unknown"}
 
 Steps:
-1. list_docs to see what's available
-2. Read the files most likely affected by these changes
-3. write_file for any file that needs updating
-4. Stop when done — only update what genuinely changed`
+1. list_docs to see all available files
+2. Based on the release notes, identify which course modules or reference pages are most likely affected (e.g. install changes → content/course/0-setup.mdx, channel changes → content/channels/ + content/course/2-connecting-apps.mdx, memory changes → content/course/5-memory-personality.mdx)
+3. Read those files
+4. write_file for any file that needs updating — preserve all frontmatter and component tags
+5. Stop when done — only update what genuinely changed`
 
   let messages: Anthropic.MessageParam[] = [
     { role: "user", content: userMessage },

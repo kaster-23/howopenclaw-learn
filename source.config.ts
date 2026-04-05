@@ -12,6 +12,13 @@ export const docs = defineDocs({
       howToSteps: z
         .array(z.string())
         .optional(),
+      readTime: z.number().optional(),
+      moduleNumber: z.number().optional(),
+      videoUrl: z.string().optional(),
+      learningObjectives: z.array(z.string()).optional(),
+      prerequisites: z.array(z.string()).optional(),
+      nextModule: z.string().optional(),
+      prevModule: z.string().optional(),
     }),
   },
 })

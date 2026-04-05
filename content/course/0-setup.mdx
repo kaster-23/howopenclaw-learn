@@ -1,0 +1,134 @@
+---
+title: "Module 0: Quick Setup"
+description: "Install OpenClaw, run your first chat, and see your AI assistant come to life — all in under 15 minutes."
+readTime: 15
+moduleNumber: 0
+learningObjectives:
+  - "Understand what OpenClaw is and what it does"
+  - "Install OpenClaw on your machine"
+  - "Complete the onboarding wizard"
+  - "Send your first message and get a real response"
+nextModule: "/course/1-architecture"
+howToSteps:
+  - "Check your Node.js version (Node 24 recommended, 22.16+ minimum)"
+  - "Install OpenClaw globally via npm: npm install -g openclaw@latest"
+  - "Run the onboarding wizard: openclaw onboard --install-daemon"
+  - "Open the dashboard and send your first message"
+---
+
+<ReadTime minutes={15} />
+
+<LearningObjectives objectives={[
+  "Understand what OpenClaw is and what it does",
+  "Install OpenClaw on your machine",
+  "Complete the onboarding wizard",
+  "Send your first message and get a real response"
+]} />
+
+## Why this matters
+
+In under 15 minutes, you will have your own private AI assistant running on your
+machine. It is not a cloud service someone else controls. It is yours.
+
+## What is OpenClaw?
+
+OpenClaw is a personal AI assistant that runs on your computer. You install it
+once, connect it to the apps you already use (WhatsApp, Telegram, Slack), and it
+handles tasks, answers questions, and runs automations on your behalf.
+
+It is **not** like ChatGPT or Claude. Those are websites you visit. OpenClaw is
+software that lives on your machine, keeps your data local, and connects to any
+AI model you choose (OpenAI, Claude, Ollama for fully local).
+
+<Mermaid chart={`graph LR
+  A[Your Device] --> B[OpenClaw Gateway]
+  B --> C[AI Model]
+  C --> B
+  B --> D[WhatsApp / Telegram / Slack]
+  B --> E[Skills & Tools]
+`} />
+
+## Install OpenClaw
+
+You need **Node 24** (recommended) or Node 22.16+. Check your version first:
+
+```bash
+node --version
+```
+
+If you need to install or update Node, visit [nodejs.org](https://nodejs.org) or
+use a version manager like `nvm` or `fnm`.
+
+Then install OpenClaw globally:
+
+```bash
+npm install -g openclaw@latest
+```
+
+Verify the installation:
+
+```bash
+openclaw --version
+```
+
+## Run the onboarding wizard
+
+The wizard walks you through initial configuration. It takes about two minutes:
+
+```bash
+openclaw onboard --install-daemon
+```
+
+Follow the prompts. It will:
+- Set up your workspace directory
+- Install the background process (daemon)
+- Ask which AI model provider you want to use
+
+<Callout type="info" title="Which AI model should I pick?">
+If you are unsure, start with **OpenAI (GPT-4o)**. It is fast, capable, and
+widely supported. You can switch models at any time without losing data.
+</Callout>
+
+## Open the dashboard
+
+The OpenClaw dashboard runs in your browser:
+
+```bash
+openclaw dashboard
+```
+
+This opens **http://127.0.0.1:18789/** — you should see the OpenClaw interface
+with your agent status, connected channels, and configuration options.
+
+## Send your first message
+
+Test that everything is working:
+
+```bash
+openclaw agent --message "Hello! Tell me what you can do."
+```
+
+You should get a response within a few seconds. If you see a reply, your
+installation is working correctly.
+
+## Verify the installation
+
+Run the built-in health check:
+
+```bash
+openclaw doctor
+```
+
+All checks green? You are ready for Module 1.
+
+<Callout type="warn" title="Something not working?">
+Check the [troubleshooting guide](/reference/troubleshooting) for common issues,
+or run `openclaw doctor` to diagnose the problem.
+</Callout>
+
+<MarkComplete moduleId="0-setup" />
+
+<ModuleNav
+  nextHref="/course/1-architecture"
+  nextLabel="Module 1: How Everything Fits Together"
+/>

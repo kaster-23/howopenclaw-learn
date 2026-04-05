@@ -17,10 +17,16 @@ export function LandingHeader() {
         </Link>
         <div className="flex items-center gap-1">
           <Link
-            href="/foundation/what-is-openclaw"
+            href="/course"
             className="hidden sm:block text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors px-3 py-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1"
           >
-            Docs
+            Course
+          </Link>
+          <Link
+            href="/reference"
+            className="hidden sm:block text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors px-3 py-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1"
+          >
+            Reference
           </Link>
           <a
             href="https://github.com/OpenClaw"

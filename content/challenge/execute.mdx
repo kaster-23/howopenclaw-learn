@@ -1,0 +1,78 @@
+---
+title: "Challenge 3 — Execute"
+description: "Connect a channel, send your first message, and run a real task with OpenClaw."
+howToSteps:
+  - "Connect Telegram as your messaging channel via the OpenClaw dashboard or CLI"
+  - "Send your first message to the agent: openclaw message send --to YOUR_ID --message 'Hello'"
+  - "Run a real agent task: openclaw agent --message 'What can you do?'"
+  - "Verify the end-to-end flow: agent running, channel connected, response received"
+---
+
+<Callout type="info" title="Goal">
+A real message. A real response. A real task done. ~15 minutes.
+</Callout>
+
+<Steps>
+<Step>
+
+### Connect Telegram
+
+Telegram is the fastest channel to set up. You'll need a bot token from [@BotFather](https://t.me/BotFather) — takes 60 seconds.
+
+1. Open Telegram → search `@BotFather` → `/newbot`
+2. Copy the token it gives you
+
+Then add the channel in your OpenClaw dashboard at **http://127.0.0.1:18789/** → Channels → Telegram.
+
+Or via CLI:
+
+```bash
+openclaw channels add telegram --token YOUR_BOT_TOKEN
+```
+
+</Step>
+<Step>
+
+### Send your first message
+
+Using the CLI to test the connection:
+
+```bash
+openclaw message send --to YOUR_TELEGRAM_ID --message "Hello! Are you there?"
+```
+
+Or just message your bot directly in Telegram. You should get a response within a few seconds.
+
+</Step>
+<Step>
+
+### Run a real agent task
+
+```bash
+openclaw agent --message "Give me a quick summary of what you can do"
+```
+
+Want more depth?
+
+```bash
+openclaw agent --message "What is today's date and what should I focus on?" --thinking high
+```
+
+</Step>
+<Step>
+
+### Verify end-to-end
+
+Check off each one:
+
+- Agent is running ✓ (`openclaw gateway --status`)
+- DM policy is set ✓ (`openclaw config get dm.policy`)
+- Channel is connected ✓ (Telegram responding)
+- Message sent, response received ✓
+
+That's it. You have a working, deployed, connected OpenClaw agent.
+
+</Step>
+</Steps>
+
+<ChallengeClaimXP challengeId="execute" />

@@ -1,0 +1,135 @@
+---
+title: "Module 1: How Everything Fits Together"
+description: "See the simple blueprint behind OpenClaw. Once you understand these five parts, nothing will feel confusing again."
+readTime: 10
+moduleNumber: 1
+learningObjectives:
+  - "Name the five core components of OpenClaw"
+  - "Trace how a message flows from your phone to an action"
+  - "Understand the difference between local and cloud models"
+  - "Know where your data lives and who controls it"
+prerequisites:
+  - "Completed Module 0 (OpenClaw installed and running)"
+prevModule: "/course/0-setup"
+nextModule: "/course/2-connecting-apps"
+---
+
+<ReadTime minutes={10} />
+
+<LearningObjectives objectives={[
+  "Name the five core components of OpenClaw",
+  "Trace how a message flows from your phone to an action",
+  "Understand the difference between local and cloud models",
+  "Know where your data lives and who controls it"
+]} />
+
+## Why this matters
+
+Before building anything complex, it helps to see the full picture. OpenClaw has
+five simple parts. Once you know what they are and how they connect, every future
+module will make immediate sense.
+
+## The five components
+
+<Mermaid chart={`graph TD
+  A[Channels\nWhatsApp / Telegram / Slack] -->|messages| B[Gateway]
+  B --> C[Agent Brain]
+  C --> D[Memory Files\nIDENTITY.md / SOUL.md]
+  C --> E[Skills\nvia ClawHub]
+  E --> F[Your Apps\nCalendar / Email / GitHub]
+  C -->|thinking| G[AI Model\nOpenAI / Claude / Ollama]
+`} />
+
+| Component | What it does | Where it lives |
+|---|---|---|
+| **Gateway** | Receives messages from all your channels | Background process on your machine |
+| **Agent** | Decides what to do with each message | Core logic layer |
+| **Memory** | Stores personality, preferences, and context | Markdown files in your workspace |
+| **Skills** | Gives the agent abilities (email, calendar, search) | Installed via ClawHub |
+| **AI Model** | Does the actual thinking | Cloud (OpenAI/Claude) or local (Ollama) |
+
+## How a message flows
+
+When you send "What's on my calendar today?" via WhatsApp:
+
+<Mermaid chart={`sequenceDiagram
+  participant You as You (WhatsApp)
+  participant GW as Gateway
+  participant Agent as Agent
+  participant LLM as AI Model
+  participant Skill as Calendar Skill
+
+  You->>GW: What is on my calendar today?
+  GW->>Agent: Route message
+  Agent->>LLM: User wants calendar. Use calendar skill.
+  LLM->>Agent: Call get_today_events()
+  Agent->>Skill: get_today_events()
+  Skill->>Agent: 3 events found
+  Agent->>LLM: Format response
+  LLM->>Agent: You have 3 things today...
+  Agent->>GW: Send reply
+  GW->>You: You have 3 things today...
+`} />
+
+The whole round trip takes 2-5 seconds depending on your model and network.
+
+## Local vs cloud models
+
+You choose where the "thinking" happens:
+
+| Option | Speed | Privacy | Cost |
+|---|---|---|---|
+| **OpenAI (GPT-4o)** | Fast | Data sent to OpenAI servers | Pay per use |
+| **Anthropic (Claude)** | Fast | Data sent to Anthropic servers | Pay per use |
+| **Ollama (local)** | Depends on hardware | Everything stays on your machine | Free |
+
+You can switch models at any time. Your data, memory files, and skills are
+completely independent of which model you use.
+
+<Callout type="info" title="Can I use multiple models?">
+Yes. You can configure different models for different tasks. For example, use a
+fast local model for simple questions and a cloud model for complex reasoning.
+</Callout>
+
+## Where your data lives
+
+Everything OpenClaw stores is in your workspace directory:
+
+```
+~/.openclaw/
+├── IDENTITY.md      # Who your agent is
+├── SOUL.md          # Personality and behavior rules
+├── memory/          # Conversation history and context
+├── skills/          # Installed skills
+└── config.yaml      # All configuration
+```
+
+No data is stored on external servers (unless you choose a cloud AI model, which
+only sees the messages you send it). You own everything.
+
+## Hands-on: Check your components
+
+Confirm everything is working:
+
+```bash
+openclaw doctor
+```
+
+You should see green checks for Gateway, Agent, and your configured model.
+
+Explore your workspace:
+
+```bash
+openclaw config get workspace
+```
+
+Then look at the files inside — that is where your agent lives.
+
+<MarkComplete moduleId="1-architecture" />
+
+<ModuleNav
+  prevHref="/course/0-setup"
+  prevLabel="Module 0: Quick Setup"
+  nextHref="/course/2-connecting-apps"
+  nextLabel="Module 2: Connecting Your Apps"
+/>

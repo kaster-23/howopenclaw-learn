@@ -1,0 +1,80 @@
+---
+title: "Challenge 1 — Install"
+description: "Install OpenClaw, run onboarding, and open the dashboard. Goal: first response in under 5 minutes."
+howToSteps:
+  - "Check Node version — OpenClaw requires Node 24 or Node 22.16+"
+  - "Install OpenClaw globally: npm install -g openclaw@latest"
+  - "Run the onboarding wizard: openclaw onboard --install-daemon"
+  - "Open the dashboard: openclaw dashboard (http://127.0.0.1:18789/)"
+  - "Verify the installation: openclaw doctor"
+---
+
+<Callout type="info" title="Goal">
+OpenClaw installed, running, and the dashboard open. ~5 minutes.
+</Callout>
+
+<Steps>
+<Step>
+
+### Check your Node version
+
+OpenClaw requires **Node 24** (recommended) or Node 22.16+.
+
+```bash
+node --version
+```
+
+Not on Node 24? Install it via [nvm](https://github.com/nvm-sh/nvm):
+
+```bash
+nvm install 24 && nvm use 24
+```
+
+</Step>
+<Step>
+
+### Install OpenClaw
+
+```bash
+npm install -g openclaw@latest
+```
+
+</Step>
+<Step>
+
+### Run onboarding
+
+The onboarding wizard sets up your workspace, installs the background daemon, and walks you through your initial configuration:
+
+```bash
+openclaw onboard --install-daemon
+```
+
+Follow the prompts. It takes about 2 minutes and only needs to be done once.
+
+</Step>
+<Step>
+
+### Open the dashboard
+
+```bash
+openclaw dashboard
+```
+
+This opens your local control panel at **http://127.0.0.1:18789/**. You should see the OpenClaw interface load in your browser.
+
+</Step>
+<Step>
+
+### Verify with doctor
+
+```bash
+openclaw doctor
+```
+
+All checks green? You're done with Challenge 1.
+
+</Step>
+</Steps>
+
+<ChallengeClaimXP challengeId="install" />

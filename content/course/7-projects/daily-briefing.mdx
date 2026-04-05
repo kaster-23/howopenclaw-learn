@@ -1,0 +1,89 @@
+---
+title: "Project: Daily Briefing"
+description: "Build an automated morning briefing that delivers weather, calendar, news, and tasks to your messaging app every day."
+readTime: 10
+moduleNumber: 7
+prevModule: "/course/7-projects"
+nextModule: "/course/7-projects/personal-assistant"
+howToSteps:
+  - "Install the weather, calendar, and news skills from ClawHub"
+  - "Configure your SOUL.md with briefing preferences"
+  - "Set up a cron job to run the briefing every morning"
+  - "Test and refine the output format"
+---
+
+<ReadTime minutes={10} />
+
+## What you will build
+
+A daily briefing that runs automatically every morning and sends you a summary
+via Telegram (or your preferred channel). It includes:
+
+- Current weather and forecast
+- Today's calendar events
+- Top news in your areas of interest
+- Pending tasks and reminders
+
+## Step 1: Install the skills
+
+```bash
+openclaw skills install weather
+openclaw skills install calendar
+openclaw skills install news
+openclaw skills install tasks
+```
+
+## Step 2: Configure your briefing
+
+Add this to your SOUL.md:
+
+```markdown
+## Daily briefing format
+When generating my daily briefing:
+1. Start with a one-line greeting using my name
+2. Weather: current conditions + high/low for today
+3. Calendar: list today's events with times
+4. News: 3 headlines relevant to [your interests]
+5. Tasks: any overdue or due-today items
+Keep the whole briefing under 300 words.
+```
+
+## Step 3: Set up the cron job
+
+Schedule it to run at 7:00 AM every day:
+
+```bash
+openclaw cron add "0 7 * * *" --message "Generate my daily briefing and send it to me"
+```
+
+Verify it is scheduled:
+
+```bash
+openclaw cron list
+```
+
+## Step 4: Test it
+
+Run it manually first:
+
+```bash
+openclaw agent --message "Generate my daily briefing and send it to me"
+```
+
+Review the output. If something is missing or the format is off, adjust your
+SOUL.md instructions and test again.
+
+## Tips
+
+- Add `--thinking high` for more thoughtful news selection
+- Customize the time based on your schedule
+- Add more skills (stocks, fitness, social media) as needed
+
+<MarkComplete moduleId="7-daily-briefing" />
+
+<ModuleNav
+  prevHref="/course/7-projects"
+  prevLabel="Module 7: Real-World Projects"
+  nextHref="/course/7-projects/personal-assistant"
+  nextLabel="Project: Personal Assistant"
+/>

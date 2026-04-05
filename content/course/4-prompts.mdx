@@ -1,0 +1,155 @@
+---
+title: "Module 4: Writing Good Prompts"
+description: "Get better, more consistent results from your AI assistant with clear and structured prompts."
+readTime: 18
+moduleNumber: 4
+learningObjectives:
+  - "Write clear, specific prompts that produce useful results"
+  - "Use templates and variables for repeatable tasks"
+  - "Debug prompts that give poor or inconsistent output"
+  - "Understand chain-of-thought and step-by-step reasoning"
+prerequisites:
+  - "Completed Module 3 (Skills & Tools)"
+prevModule: "/course/3-skills-tools"
+nextModule: "/course/5-memory-personality"
+---
+
+<ReadTime minutes={18} />
+
+<LearningObjectives objectives={[
+  "Write clear, specific prompts that produce useful results",
+  "Use templates and variables for repeatable tasks",
+  "Debug prompts that give poor or inconsistent output",
+  "Understand chain-of-thought and step-by-step reasoning"
+]} />
+
+## Why this matters
+
+The quality of what your agent does depends heavily on how you ask it. A vague
+prompt gives a vague answer. A clear, structured prompt gives a useful one.
+
+This module teaches you the patterns that work best with OpenClaw.
+
+## The basics: Be specific
+
+Compare these two prompts:
+
+**Vague:**
+> Summarize my emails
+
+**Specific:**
+> Check my inbox for unread emails from the last 24 hours. Summarize each one in
+> a single sentence. Group them by sender. Flag anything that looks urgent.
+
+The specific version tells the agent:
+- What to look at (unread, last 24 hours)
+- How to format the output (one sentence per email)
+- How to organize it (by sender)
+- What to prioritize (urgent items)
+
+## Structure your prompts
+
+A good prompt for OpenClaw has three parts:
+
+1. **Context** — What situation is the agent working in?
+2. **Task** — What exactly should it do?
+3. **Format** — How should the output look?
+
+```
+Context: I have a meeting with the engineering team in 30 minutes.
+Task: Check my calendar for today and summarize what I need to prepare.
+Format: Bullet points, no more than 5 items.
+```
+
+## Use SOUL.md for persistent instructions
+
+Instead of repeating the same instructions every time, put them in your
+`SOUL.md` file. This file shapes how your agent behaves by default.
+
+```bash
+openclaw config edit soul
+```
+
+Example additions:
+
+```markdown
+## Response style
+- Keep responses concise — 3 sentences maximum unless I ask for detail
+- Use bullet points for lists
+- Always include the source when citing information
+- Never use emojis unless I use them first
+```
+
+These instructions apply to every conversation automatically.
+
+## Templates for repeatable tasks
+
+If you run the same type of prompt regularly, create a skill or save it as a
+template in your SOUL.md:
+
+```markdown
+## Daily briefing template
+When I ask for my daily briefing, always include:
+1. Weather for my location
+2. Calendar events for today
+3. Unread messages summary
+4. Top 3 news items in my areas of interest
+```
+
+Then you just say:
+
+```
+Give me my daily briefing
+```
+
+And the agent knows exactly what to do.
+
+## Chain-of-thought prompting
+
+For complex tasks, ask the agent to think step by step:
+
+```
+I need to plan a product launch. Think through this step by step:
+1. What are the key milestones?
+2. What teams need to be involved?
+3. What is a reasonable timeline?
+Then give me a one-page summary.
+```
+
+This produces much better results than just asking "Help me plan a product
+launch."
+
+## Debugging bad outputs
+
+If your agent gives poor results:
+
+1. **Too vague?** Add more context and constraints
+2. **Too long?** Specify a length limit ("in 3 sentences")
+3. **Wrong format?** Show an example of what you want
+4. **Inconsistent?** Move instructions to SOUL.md so they persist
+5. **Hallucinating?** Ask it to cite sources or only use information from your tools
+
+## Hands-on: Improve a prompt
+
+Try this exercise. Send this prompt to your agent:
+
+```bash
+openclaw agent --message "Tell me about the weather"
+```
+
+Now try the improved version:
+
+```bash
+openclaw agent --message "What is the current weather and forecast for the next 3 days in my location? Give me temperature, rain probability, and a one-sentence summary for each day."
+```
+
+Compare the results. The second version should be significantly more useful.
+
+<MarkComplete moduleId="4-prompts" />
+
+<ModuleNav
+  prevHref="/course/3-skills-tools"
+  prevLabel="Module 3: Skills & Tools"
+  nextHref="/course/5-memory-personality"
+  nextLabel="Module 5: Memory & Personality"
+/>

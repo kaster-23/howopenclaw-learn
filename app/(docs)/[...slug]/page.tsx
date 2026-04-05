@@ -5,7 +5,18 @@ import { Callout } from "fumadocs-ui/components/callout"
 import { Steps, Step } from "fumadocs-ui/components/steps"
 import { Card, Cards } from "fumadocs-ui/components/card"
 import { Tab, Tabs } from "fumadocs-ui/components/tabs"
+import { ReadTime } from "@/components/course/read-time"
+import { LearningObjectives } from "@/components/course/learning-objectives"
+import { ModuleNav } from "@/components/course/module-nav"
+import { CourseProgress } from "@/components/course/course-progress"
+import { MarkComplete } from "@/components/course/mark-complete"
+import { VideoEmbed } from "@/components/course/video-embed"
+import { Mermaid } from "@/components/mdx/mermaid"
 import { notFound } from "next/navigation"
+
+// No-op stubs for legacy gamification components still referenced in old MDX files
+function Noop() { return null }
+
 import {
   ArrowRightLeft,
   BarChart2,
@@ -177,6 +188,13 @@ export default async function Page({ params }: PageProps) {
               Cards,
               Tab,
               Tabs,
+              ReadTime,
+              LearningObjectives,
+              ModuleNav,
+              CourseProgress,
+              MarkComplete,
+              VideoEmbed,
+              Mermaid,
               ArrowRightLeft,
               BarChart2,
               Bell,
@@ -213,6 +231,12 @@ export default async function Page({ params }: PageProps) {
               User,
               Volume2,
               Wrench,
+              // Legacy gamification stubs (old MDX files still reference these)
+              ClaimXP: Noop,
+              MissionProgress: Noop,
+              Fireworks: Noop,
+              ChallengeProgress: Noop,
+              ChallengeClaimXP: Noop,
             }}
           />
         </DocsBody>

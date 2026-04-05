@@ -1,0 +1,87 @@
+---
+title: "Project: Content Creator"
+description: "Set up a workflow for drafting, editing, and refining content with your AI assistant."
+readTime: 8
+moduleNumber: 7
+prevModule: "/course/7-projects/research-companion"
+nextModule: "/course/8-security-ethics"
+---
+
+<ReadTime minutes={8} />
+
+## What you will build
+
+A content creation workflow where your agent helps you draft, edit, and refine
+written content — blog posts, emails, social media, documentation.
+
+## Step 1: Install content skills
+
+```bash
+openclaw skills install notes
+openclaw skills install web-search
+openclaw skills install grammar
+```
+
+## Step 2: Configure writing style
+
+Add to your SOUL.md:
+
+```markdown
+## Writing assistant
+When helping me write content:
+- Match my tone: professional but approachable
+- Keep sentences short and clear
+- Use active voice
+- Break long paragraphs into shorter ones
+- When editing, explain what you changed and why
+- Never add fluff or filler words
+```
+
+## Step 3: Try the workflow
+
+**Draft:**
+```bash
+openclaw agent --message "Draft a blog post about why personal AI assistants will replace traditional productivity apps. 500 words, casual tone."
+```
+
+**Edit:**
+```bash
+openclaw agent --message "Review my last draft. Fix grammar, tighten the language, and suggest a better title."
+```
+
+**Refine:**
+```bash
+openclaw agent --message "Rewrite the introduction to be more engaging. Start with a specific example instead of a general statement."
+```
+
+## Step 4: Automate with templates
+
+Add common content types to your SOUL.md:
+
+```markdown
+## Content templates
+- "newsletter": 300 words, 3 sections, casual tone, end with a question
+- "social post": Under 280 characters, include a hook, one key insight
+- "email": Professional tone, clear ask in the first paragraph, under 150 words
+```
+
+Then just say:
+
+```
+Write a newsletter about this week's AI news
+```
+
+## Tips
+
+- Use research skills first, then generate content based on findings
+- Ask for multiple versions: "Give me 3 different openings"
+- Set up a weekly content cron job for regular publishing
+
+<MarkComplete moduleId="7-content-creator" />
+
+<ModuleNav
+  prevHref="/course/7-projects/research-companion"
+  prevLabel="Project: Research Companion"
+  nextHref="/course/8-security-ethics"
+  nextLabel="Module 8: Security & Ethics"
+/>

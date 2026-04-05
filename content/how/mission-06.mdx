@@ -1,0 +1,184 @@
+---
+title: "Mission 06 — Intelligence"
+description: "Build a research agent that uses your tools to produce deep, structured reports on any topic. ~25 minutes."
+howToSteps:
+  - "Add a standing research context to ~/.openclaw/workspace/HEARTBEAT.md"
+  - "Test a multi-source research prompt that uses both web_search and web_fetch"
+  - "Schedule a weekly intelligence report as a cron automation"
+  - "Optionally: connect an email skill to add inbox monitoring"
+---
+
+<Callout type="info" title="MISSION 06 OF 07 · ~25 MIN">
+**CLEARANCE LEVEL:** Senior Specialist
+
+**OBJECTIVE:** Build a research agent that gathers, synthesizes, and delivers deep intelligence on any topic
+
+**REWARD:** +250 XP → Rank unlocked: **Agent**
+</Callout>
+
+---
+
+## Tactical overview
+
+By the end of this mission, you'll have an agent that can research any topic across multiple sources and deliver a structured report — on demand or on a schedule. You'll also learn how to use HEARTBEAT.md to give your agent standing context that's always in scope.
+
+---
+
+## Intel briefing
+
+In Mission 05 you enabled tools. In this mission you'll use them together — orchestrating web_search, web_fetch, and write to produce something a single tool call can't do: multi-source research with synthesis.
+
+A research agent isn't a single command. It's a chain:
+1. Search for the best sources on a topic
+2. Fetch and read those sources
+3. Synthesize across all of them
+4. Write the result to a file (or send it to a channel)
+
+You also have a second asset to unlock: **HEARTBEAT.md**. This is a file your agent reads every session — not just once during setup, but every time it wakes up. It's how you maintain standing context without repeating yourself in every prompt.
+
+---
+
+## Mission execution
+
+### Step 1 — Write your HEARTBEAT.md
+
+HEARTBEAT.md lives at `~/.openclaw/workspace/HEARTBEAT.md`. Your agent reads it at the start of every session, so anything you write here stays permanently in scope.
+
+```bash
+code ~/.openclaw/workspace/HEARTBEAT.md
+```
+
+Write the topics and sources you want your agent to track:
+
+```markdown
+# Standing research context
+
+## Topics I track
+- [Topic 1 — e.g., AI developments in your field]
+- [Topic 2 — e.g., a specific technology, market, or news area]
+- [Topic 3]
+
+## Sources I trust
+- [Source 1 — name + URL]
+- [Source 2]
+
+## Research preferences
+- Prefer primary sources over aggregators
+- Always include publication date when citing
+- Flag anything that contradicts what you knew last week
+```
+
+Restart the Gateway so it picks this up:
+
+```bash
+openclaw gateway restart
+```
+
+---
+
+### Step 2 — Test a deep research prompt
+
+Send this via Telegram or the dashboard:
+
+> "Research [your topic] using web search. Find 3 credible sources, fetch each one, and write me a structured summary covering: what's new, what's significant, and what I should pay attention to. Save the report to research-report.md in my workspace."
+
+Watch what happens. Your agent will:
+1. Run a web search on your topic
+2. Fetch each source URL
+3. Synthesize across all three
+4. Write the file
+
+This takes 30–90 seconds. When it finishes, check `~/.openclaw/workspace/research-report.md`.
+
+<Callout type="info" title="The magic of chained tools">
+This works because you haven't written any code. You gave a natural language prompt, and your agent used `web_search`, then multiple `web_fetch` calls, then `write` — automatically, in sequence. This is agentic behavior: planning and executing a multi-step task from a single instruction.
+</Callout>
+
+---
+
+### Step 3 — Schedule a weekly intelligence report
+
+Add a weekly automation to your `openclaw.json`:
+
+```json
+{
+  "id": "weekly-intel",
+  "schedule": "0 9 * * 1",
+  "timezone": "America/New_York",
+  "prompt": "Weekly intelligence report. Research the latest developments in [your topic areas from HEARTBEAT.md]. Fetch 3-5 recent sources per topic. Write a structured report to weekly-intel.md in my workspace, then send me a 3-sentence summary via this channel.",
+  "channel": "telegram"
+}
+```
+
+This runs every Monday at 9am. Your agent researches, writes the full report to a file, and texts you a summary.
+
+Test it immediately:
+
+```bash
+openclaw cron run weekly-intel
+```
+
+---
+
+### Step 4 — Sharpen your research prompts
+
+The quality of a research output depends almost entirely on the quality of the prompt. Some patterns that consistently produce better results:
+
+**Specify how many sources:**
+> "Find 5 sources, not 3" — more sources = less bias from any single one
+
+**Specify recency:**
+> "Only sources published in the last 30 days"
+
+**Specify the output format:**
+> "Organized as: Key Findings, Notable Quotes, What This Means, Open Questions"
+
+**Ask for contradictions:**
+> "Note any claims that conflict with what was true last month"
+
+**Use your HEARTBEAT.md context:**
+> "Given what you know about my interests in HEARTBEAT.md, what from this research is most relevant to me?"
+
+---
+
+## Confirm mission success
+
+- A multi-source research prompt returns a structured report
+- The report file appears in `~/.openclaw/workspace/`
+- `openclaw cron run weekly-intel` delivers a Telegram summary
+
+---
+
+<ClaimXP missionId="mission-06" />
+
+---
+
+## Bonus objective (+50 XP)
+
+Connect an email skill and add inbox monitoring to your morning briefing. From the [Skills section of the main docs](/level-up/skills), connect your Gmail account. Then update your `morning-briefing` prompt:
+
+```json
+"prompt": "Morning briefing. Date and day. Top 3 priorities based on USER.md. Emails in my inbox from the last 24 hours that need a reply — just sender + subject + one-sentence summary. Keep it under 10 lines."
+```
+
+Your morning briefing will now include email intelligence alongside your standing context.
+
+---
+
+## Share your win
+
+```
+Just completed Mission 06 of How OpenClaw — Intelligence ✓
+My AI researched 3 sources, synthesized them, and saved a report.
+No prompt engineering. No code. Just a task and a result.
+Agent rank. 1050/1350 XP.
+#HowOpenClaw #OpenClaw
+```
+
+---
+
+## Mission 07 awaits
+
+One mission left. In Mission 07 you'll deploy a team of sub-agents, make your setup run 24/7 reliably, and claim Commander rank. This is the final mission.
+
+[→ Start Mission 07: Commander](/how/mission-07)

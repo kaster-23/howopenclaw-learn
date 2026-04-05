@@ -1,0 +1,139 @@
+---
+title: "Module 9: Next Steps & Community"
+description: "Troubleshooting, keeping OpenClaw up to date, contributing, and joining the community."
+readTime: 12
+moduleNumber: 9
+learningObjectives:
+  - "Troubleshoot common issues with the built-in tools"
+  - "Keep OpenClaw and its skills up to date"
+  - "Know where to find help and connect with other users"
+  - "Contribute back to the OpenClaw project"
+prerequisites:
+  - "Completed Module 8 (Security & Ethics)"
+prevModule: "/course/8-security-ethics"
+---
+
+<ReadTime minutes={12} />
+
+<LearningObjectives objectives={[
+  "Troubleshoot common issues with the built-in tools",
+  "Keep OpenClaw and its skills up to date",
+  "Know where to find help and connect with other users",
+  "Contribute back to the OpenClaw project"
+]} />
+
+## You made it
+
+If you have been following along from Module 0, you now have:
+
+- A running OpenClaw instance on your machine
+- At least one messaging channel connected
+- Skills installed and working
+- Personalized memory and personality settings
+- Automated tasks running on a schedule
+- Security policies in place
+
+That is a fully operational personal AI assistant. Let's make sure it stays
+healthy.
+
+## Troubleshooting
+
+When something goes wrong, start here:
+
+```bash
+openclaw doctor
+```
+
+This checks your Gateway, Agent, model connection, and installed skills. It will
+tell you exactly what is broken and suggest a fix.
+
+### Common issues
+
+**Agent not responding:**
+```bash
+openclaw gateway --status
+openclaw gateway restart
+```
+
+**Channel disconnected:**
+```bash
+openclaw channels list
+openclaw channels reconnect telegram
+```
+
+**Model errors:**
+```bash
+openclaw config get model
+openclaw models test
+```
+
+For a full troubleshooting guide, see the [Reference section](/reference/troubleshooting).
+
+## Keeping OpenClaw up to date
+
+Update OpenClaw itself:
+
+```bash
+npm update -g openclaw
+```
+
+Update installed skills:
+
+```bash
+openclaw skills update --all
+```
+
+Check for available updates without installing:
+
+```bash
+openclaw skills outdated
+```
+
+<Callout type="info" title="How often should I update?">
+Check for updates every few weeks. OpenClaw releases frequently with bug fixes
+and new features. Skills are updated independently by their authors.
+</Callout>
+
+## Getting help
+
+- **Built-in diagnostics:** `openclaw doctor` and `openclaw --help`
+- **Documentation:** You are reading it — browse the [Reference](/reference) section for CLI details
+- **GitHub Issues:** Report bugs or request features on the [OpenClaw GitHub](https://github.com/openclaw/openclaw/issues)
+- **Discord:** Join the community for real-time help and discussions
+
+## Contributing
+
+OpenClaw is open source. You can contribute in several ways:
+
+- **Report bugs** — File issues on GitHub with steps to reproduce
+- **Write skills** — Share useful skills on ClawHub for others to use
+- **Improve docs** — This documentation is open source too
+- **Share your setup** — Help others learn from what worked for you
+
+## What to build next
+
+Now that you have the fundamentals, here are ideas to explore:
+
+1. **Connect more channels** — Add WhatsApp, Slack, or Discord alongside Telegram
+2. **Build custom skills** — Write skills specific to your workflow
+3. **Create complex automations** — Chain multiple skills together
+4. **Optimize your prompts** — Refine your SOUL.md based on real usage
+5. **Set up on a server** — Move from your laptop to always-on cloud hosting
+
+The [Real-World Projects module](/course/7-projects) has step-by-step guides for
+four practical builds. The [Reference section](/reference) has detailed CLI
+documentation for everything OpenClaw can do.
+
+## Course complete
+
+You have finished all 10 modules. You know how to install, configure, connect,
+customize, automate, secure, and maintain your own AI assistant.
+
+The rest is building things that matter to you.
+
+<MarkComplete moduleId="9-next-steps" />
+
+<ModuleNav
+  prevHref="/course/8-security-ethics"
+  prevLabel="Module 8: Security & Ethics"
+/>

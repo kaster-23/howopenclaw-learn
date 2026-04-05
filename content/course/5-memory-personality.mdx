@@ -1,0 +1,243 @@
+---
+title: "Module 5: Memory & Personality"
+description: "Customize who your agent is and what it remembers between conversations."
+readTime: 22
+moduleNumber: 5
+learningObjectives:
+  - "Write an effective SOUL.md that shapes your agent's personality"
+  - "Configure USER.md so the agent knows who you are"
+  - "Set up session memory that persists between conversations"
+  - "Organize memory files for complex, multi-topic use"
+prerequisites:
+  - "Completed Module 4 (Writing Good Prompts)"
+prevModule: "/course/4-prompts"
+nextModule: "/course/6-autonomous-tasks"
+---
+
+<ReadTime minutes={22} />
+
+<LearningObjectives objectives={[
+  "Write an effective SOUL.md that shapes your agent's personality",
+  "Configure USER.md so the agent knows who you are",
+  "Set up session memory that persists between conversations",
+  "Organize memory files for complex, multi-topic use"
+]} />
+
+## Why this matters
+
+Right now your agent responds generically. After this module, it will have a
+defined personality, know who you are, and remember what you discussed yesterday.
+
+## The two core files
+
+Every time your agent starts a conversation, it reads two files:
+
+- **SOUL.md** — personality, communication style, values, and rules
+- **USER.md** — information about you (name, location, preferences)
+
+These files are the foundation of how your agent behaves.
+
+## Writing your SOUL.md
+
+Open it in your editor:
+
+```bash
+openclaw config edit soul
+```
+
+### The key rule: Be specific
+
+Vague instructions get ignored. Specific, testable ones work.
+
+| Poor | Effective |
+|---|---|
+| "Be concise and helpful" | "Default to 2-3 sentences. If I ask for more detail, give it. Skip all preamble." |
+| "Be friendly" | "Use a warm, casual tone. No corporate language. Address me by my first name." |
+| "Be smart" | "When I ask for opinions, give them directly. Don't hedge with 'it depends.'" |
+
+### Recommended structure
+
+```markdown
+# Personality
+[3-5 specific traits with concrete examples]
+
+# Communication Style
+- Response length: Default to 2-3 sentences unless I ask for detail
+- Format: Use bullet points for lists, plain text for everything else
+- Tone: Direct and casual. No corporate speak.
+- Never say: "Great question!", "Certainly!", "I'd be happy to"
+
+# What you are good at
+[Your agent's strengths, matched to what you use it for]
+
+# Values
+[What to optimize for, what to avoid]
+```
+
+### A working example
+
+```markdown
+You are a sharp personal assistant with strong opinions.
+
+Communication style:
+- Short by default. 2-3 sentences unless depth is asked for.
+- Direct. Say what you think, don't hedge.
+- Skip filler phrases like "Great question!" or "Certainly!"
+- Use markdown only when it adds clarity.
+
+Expertise:
+- Strong: reasoning, writing, research synthesis, code review
+- Weak: real-time data, my personal schedule (check USER.md)
+
+When I ask for opinions: give them. Don't ask "what do you want me to say?"
+When you are uncertain: say so once and move on.
+```
+
+<Callout type="info" title="Length limit">
+Keep SOUL.md under 200 lines. Beyond that, the agent starts ignoring sections.
+Focus on what matters most.
+</Callout>
+
+## Configuring USER.md
+
+Open it:
+
+```bash
+openclaw config edit user
+```
+
+This tells the agent who you are:
+
+```markdown
+Name: Alex
+Location: Buenos Aires, Argentina (UTC-3)
+Role: Product manager at a SaaS startup
+
+Current projects:
+- Launching v2 of our mobile app (deadline: April 20)
+- Evaluating new analytics tools
+
+Communication preference: Short and direct. I read on my phone.
+
+Key context:
+- My team uses Slack for internal comms
+- Weekly standup is Monday at 10am
+- I prefer metric units
+```
+
+## Setting up memory
+
+Memory lets your agent remember things between conversations. OpenClaw uses a
+file-based memory system:
+
+<Mermaid chart={`graph TD
+  A[Session Start] -->|reads| B[SOUL.md + USER.md + MEMORY.md + HEARTBEAT.md]
+  B --> C[Conversation Happens]
+  C -->|session ends| D[Agent writes to MEMORY.md]
+  D -->|next session| A
+`} />
+
+### The memory files
+
+| File | Purpose | Maintenance |
+|---|---|---|
+| **SOUL.md** | Personality and rules | You edit manually |
+| **USER.md** | Your info | You edit manually |
+| **MEMORY.md** | Growing session notes | Agent writes, you prune monthly |
+| **HEARTBEAT.md** | Standing instructions and context | You curate manually |
+
+### Enable automatic memory
+
+Add this to your SOUL.md:
+
+```markdown
+## Memory
+Write to MEMORY.md after each session if:
+- You learned something new about me or my work
+- I explicitly said "remember this" or "save this"
+- A decision was made that will affect future sessions
+
+Format:
+## [Date] — [Topic]
+[1-3 bullet points of key facts]
+```
+
+For automatic writes, add a session hook in your config:
+
+```json
+{
+  "hooks": {
+    "session_end": "Review this conversation. Write a 2-3 line summary to MEMORY.md if anything important was discussed, decided, or learned. Skip if it was just a quick factual question."
+  }
+}
+```
+
+### HEARTBEAT.md: Standing context
+
+HEARTBEAT.md is for things the agent should always know. Keep it under 50 lines:
+
+```markdown
+# Standing Context
+
+## Current priorities
+- Working on mobile app v2 — deadline April 20
+- Evaluating Mixpanel vs Amplitude
+
+## Always track
+- Note any tasks I mention and add to tasks.md
+- Flag if I mention something I've worried about before
+
+## Recurring context
+- Weekly standup is Monday at 10am
+- Team uses Slack, not email
+```
+
+## Organizing memory at scale
+
+As memory grows, split into domain-specific files:
+
+```
+~/.openclaw/workspace/
+├── MEMORY.md          # Recent session notes
+├── HEARTBEAT.md       # Standing instructions
+├── projects/
+│   ├── mobile-v2.md
+│   └── analytics-eval.md
+├── research/
+│   └── notes.md
+└── personal/
+    └── tasks.md
+```
+
+Add routing instructions to SOUL.md:
+
+```markdown
+## Domain files
+For project questions: read from workspace/projects/
+For research questions: check workspace/research/
+For personal tasks: check workspace/personal/
+```
+
+## Testing your setup
+
+After configuring SOUL.md and USER.md, restart the gateway:
+
+```bash
+openclaw gateway restart
+```
+
+Then test through your dashboard or messaging app:
+
+1. Ask "What is my name?" — should use USER.md
+2. Ask a question with a strong opinion — should match your SOUL.md personality
+3. Say "Remember that I prefer morning meetings" — should write to MEMORY.md
+4. Start a new conversation and ask about morning meetings — should recall it
+
+<MarkComplete moduleId="5-memory-personality" />
+
+<ModuleNav
+  prevHref="/course/4-prompts"
+  prevLabel="Module 4: Writing Good Prompts"
+  nextHref="/course/6-autonomous-tasks"
+  nextLabel="Module 6: Autonomous Tasks"
+/>

@@ -1,0 +1,206 @@
+---
+title: "Mission 07 — Commander"
+description: "Deploy a team of sub-agents, verify 24/7 uptime, and claim Commander rank. This is the final mission. ~25 minutes."
+howToSteps:
+  - "Add a 'sub_agents' block to ~/.openclaw/openclaw.json with at least two specialized agents: a researcher and a writer"
+  - "Add delegation instructions to SOUL.md so your main agent knows when to use each sub-agent"
+  - "Test parallel sub-agent execution with a prompt that benefits from multiple agents working simultaneously"
+  - "Verify your daemon is running and configured to start on boot: `openclaw gateway status`"
+  - "Claim your Commander rank certificate at /how/certificate"
+---
+
+<Callout type="info" title="MISSION 07 OF 07 · ~25 MIN">
+**CLEARANCE LEVEL:** Agent
+
+**OBJECTIVE:** Deploy a team of specialized sub-agents and confirm 24/7 uptime. This is the final mission.
+
+**REWARD:** +300 XP → Rank unlocked: **Commander** — Max Rank
+</Callout>
+
+---
+
+## Tactical overview
+
+By the end of this mission, you'll have a main agent that can delegate complex tasks to a team of specialized sub-agents, a setup that runs continuously without you at the keyboard, and Commander rank.
+
+This is the mission that separates a good personal AI setup from an exceptional one.
+
+---
+
+## Intel briefing
+
+Everything you've built so far uses one agent. One agent receives the message, thinks, uses tools, responds.
+
+Sub-agents change the architecture. Your main agent becomes an orchestrator — it receives your request, decides what needs to happen, and delegates specialized work to sub-agents that each do one thing well.
+
+A researcher sub-agent can search and fetch in parallel. A writer sub-agent can take raw research and produce polished prose. A data checker can verify facts before anything goes out. Each can run on a different model — expensive Sonnet for reasoning, cheaper Haiku for structured extraction.
+
+The practical result: tasks that took 90 seconds sequentially take 30 seconds in parallel. And the quality of each piece improves because each sub-agent is focused on exactly one job.
+
+---
+
+## Mission execution
+
+### Step 1 — Define your sub-agents
+
+Open `~/.openclaw/openclaw.json` and add a `sub_agents` block:
+
+```json
+{
+  "provider": "...",
+  "channels": { "..." },
+  "automations": [ "..." ],
+  "tools": { "..." },
+  "sub_agents": {
+    "researcher": {
+      "model": "claude-sonnet-4-6",
+      "tools": ["web_search", "web_fetch"],
+      "systemPrompt": "You are a research specialist. When given a topic, search thoroughly, fetch primary sources, and return structured summaries with publication dates and citations. Never summarize without reading the source."
+    },
+    "writer": {
+      "model": "claude-sonnet-4-6",
+      "systemPrompt": "You are a writing specialist. Take research input and turn it into clear, polished prose. No raw lists. No academic hedging. Write for a smart person who has limited time."
+    },
+    "data-checker": {
+      "model": "claude-haiku-4-5-20251001",
+      "tools": ["web_fetch"],
+      "systemPrompt": "You verify facts and claims. Return only verified data with sources. If you cannot verify a claim, say so explicitly. Be brief.",
+      "maxTokens": 4000
+    }
+  }
+}
+```
+
+**Why three sub-agents?**
+
+| Sub-agent | Model | Job |
+|---|---|---|
+| `researcher` | Sonnet | Deep search + fetch across sources |
+| `writer` | Sonnet | Turn research into polished output |
+| `data-checker` | Haiku | Quick fact verification (fast + cheap) |
+
+Using Haiku for `data-checker` keeps costs low — it runs 3–5x cheaper than Sonnet for tasks that don't require deep reasoning.
+
+---
+
+### Step 2 — Add delegation rules to SOUL.md
+
+Your main agent needs to know when to use sub-agents. Add this section to `~/.openclaw/SOUL.md`:
+
+```markdown
+## When to use sub-agents
+
+For research tasks:
+- Use the "researcher" sub-agent to search and gather sources
+- Pass the research output to the "writer" sub-agent for polished output
+- Use "data-checker" to verify any specific claim before including it
+
+For parallel tasks:
+- If comparing 3+ options, launch researcher sub-agents for each simultaneously
+- For example: "Compare X, Y, and Z" should research all three in parallel, then synthesize
+```
+
+Restart to load:
+
+```bash
+openclaw gateway restart
+```
+
+---
+
+### Step 3 — Test parallel sub-agent execution
+
+Send this prompt via Telegram:
+
+> "I need a comparison of three vector databases: Pinecone, Qdrant, and Weaviate. Use the researcher to investigate each one in parallel, then have the writer produce a 1-page comparison covering: performance, pricing, self-hosting options, and best fit use cases. Save it to vector-db-comparison.md in my workspace."
+
+Watch the timing. Three researcher agents launch simultaneously. Each fetches sources for its assigned database. The writer synthesizes. The full report gets saved.
+
+This would take 2–3 minutes sequentially. With parallel sub-agents, it takes under a minute.
+
+---
+
+### Step 4 — Verify 24/7 uptime
+
+Your daemon was installed in Mission 01. Verify it's running and configured to survive restarts:
+
+```bash
+openclaw gateway status
+```
+
+You should see `Gateway: running` with an uptime. If the daemon is not set as a startup service:
+
+```bash
+openclaw daemon install
+```
+
+This registers the Gateway as a system service that starts automatically when your machine boots. Test by restarting your machine and checking `openclaw gateway status`.
+
+**Cost awareness:** Sub-agents multiply your API costs. One request that spawns 3 sub-agents each using 10k tokens = 30k tokens billed. Monitor your usage in the first week and adjust.
+
+Set token limits on expensive sub-agents if needed:
+
+```json
+"researcher": {
+  "model": "claude-sonnet-4-6",
+  "maxTokens": 8000,
+  "tools": ["web_search", "web_fetch"]
+}
+```
+
+---
+
+## Confirm mission success
+
+- `openclaw gateway status` shows `Gateway: running`
+- A parallel research prompt returns results faster than sequential would
+- The report file appears in your workspace
+- `openclaw daemon install` confirms your setup survives reboots
+
+---
+
+<ClaimXP missionId="mission-07" />
+
+---
+
+## Bonus objective (+50 XP)
+
+Build a fourth sub-agent specialized for your actual work. If you write code, a code reviewer. If you write content, an editor. If you run meetings, a note-taker.
+
+```json
+"[your-specialist]": {
+  "model": "claude-sonnet-4-6",
+  "systemPrompt": "You are a [role]. When given [input type], you [specific behavior]. Always [constraint 1]. Never [constraint 2]."
+}
+```
+
+Add the delegation rule to SOUL.md and test it with a real task from your work.
+
+---
+
+## Share your win
+
+```
+Just completed all 7 missions of How OpenClaw — Commander rank ✓
+I now have a self-hosted AI agent that:
+→ Texts me a daily briefing
+→ Researches topics with a team of sub-agents
+→ Runs 24/7 on my machine
+1,350/1,350 XP. The certificate is mine.
+#HowOpenClaw #OpenClaw
+```
+
+---
+
+## What's next
+
+You've completed the course. Your agent is running, personalized, mobile, automated, tooled, and deployed.
+
+From here, the main docs show you what to build next:
+
+- [Level Up: Memory](/level-up/memory) — build a knowledge base that grows over time
+- [Level Up: Skills & ClawHub](/level-up/skills) — connect Gmail, Calendar, Notion, and more
+- [Level Up: Multi-Channel](/level-up/multi-channel) — add WhatsApp, Discord, or Slack
+- [All Goals →](/goals) — pick a specific use case and go deeper
+
+[→ Claim your Commander certificate](/how/certificate)

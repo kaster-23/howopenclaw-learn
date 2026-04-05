@@ -18,6 +18,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
       "connect-src 'self'",
+      "frame-src 'self' https://www.youtube.com https://youtube.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -69,6 +70,50 @@ const nextConfig: NextConfig = {
       { source: "/cheatsheet", destination: "/reference/cli", permanent: true },
       { source: "/openclaw-vs-claude-code", destination: "/reference/concepts", permanent: true },
       { source: "/playbooks", destination: "/foundation/set-your-goal", permanent: true },
+
+      // Old challenge paths → Module 0
+      { source: "/challenge", destination: "/course/0-setup", permanent: true },
+      { source: "/challenge/install", destination: "/course/0-setup", permanent: true },
+      { source: "/challenge/deploy", destination: "/course/0-setup", permanent: true },
+      { source: "/challenge/execute", destination: "/course/2-connecting-apps", permanent: true },
+      { source: "/challenge/complete", destination: "/course", permanent: true },
+
+      // Old how (missions) paths → course modules
+      { source: "/how", destination: "/course", permanent: true },
+      { source: "/how/mission-1", destination: "/course/0-setup", permanent: true },
+      { source: "/how/mission-2", destination: "/course/2-connecting-apps", permanent: true },
+      { source: "/how/mission-3", destination: "/course/5-memory-personality", permanent: true },
+      { source: "/how/mission-4", destination: "/course/5-memory-personality", permanent: true },
+      { source: "/how/mission-5", destination: "/course/3-skills-tools", permanent: true },
+      { source: "/how/mission-6", destination: "/course/6-autonomous-tasks", permanent: true },
+      { source: "/how/mission-7", destination: "/course/6-autonomous-tasks", permanent: true },
+      { source: "/how/certificate", destination: "/course/9-next-steps", permanent: true },
+
+      // Old foundation paths → course modules
+      { source: "/foundation", destination: "/course", permanent: true },
+      { source: "/foundation/what-is-openclaw", destination: "/course/0-setup", permanent: true },
+      { source: "/foundation/install", destination: "/course/0-setup", permanent: true },
+      { source: "/foundation/first-channel", destination: "/course/2-connecting-apps", permanent: true },
+      { source: "/foundation/soul-md", destination: "/course/5-memory-personality", permanent: true },
+      { source: "/foundation/security", destination: "/course/8-security-ethics", permanent: true },
+      { source: "/foundation/set-your-goal", destination: "/course/7-projects", permanent: true },
+
+      // Old goals paths → Module 7 projects
+      { source: "/goals", destination: "/course/7-projects", permanent: true },
+      { source: "/goals/daily-briefing/:path*", destination: "/course/7-projects/daily-briefing", permanent: true },
+      { source: "/goals/personal-assistant/:path*", destination: "/course/7-projects/personal-assistant", permanent: true },
+      { source: "/goals/research/:path*", destination: "/course/7-projects/research-companion", permanent: true },
+      { source: "/goals/voice/:path*", destination: "/course/7-projects/personal-assistant", permanent: true },
+      { source: "/goals/work-hub/:path*", destination: "/course/7-projects", permanent: true },
+      { source: "/goals/content/:path*", destination: "/course/7-projects/content-creator", permanent: true },
+
+      // Old level-up paths → course modules
+      { source: "/level-up", destination: "/course", permanent: true },
+      { source: "/level-up/memory", destination: "/course/5-memory-personality", permanent: true },
+      { source: "/level-up/skills", destination: "/course/3-skills-tools", permanent: true },
+      { source: "/level-up/sub-agents", destination: "/course/6-autonomous-tasks", permanent: true },
+      { source: "/level-up/models", destination: "/course/1-architecture", permanent: true },
+      { source: "/level-up/deployment", destination: "/course/6-autonomous-tasks", permanent: true },
     ]
   },
 }

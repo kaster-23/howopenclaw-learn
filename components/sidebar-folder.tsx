@@ -29,9 +29,17 @@ const itemHighlight =
   "data-[active=true]:before:content-[''] data-[active=true]:before:bg-fd-primary data-[active=true]:before:absolute data-[active=true]:before:w-px data-[active=true]:before:inset-y-2.5 data-[active=true]:before:start-2.5"
 
 const descriptions: Record<string, string> = {
-  Foundation: "Get set up — install, configure, and send your first message",
-  Goals: "Pick a goal and follow a step-by-step path to build something real",
-  "Level Up": "Add memory, skills, automation, and always-on deployment",
+  Course: "The complete beginner-friendly guide to OpenClaw — 10 modules, ~3.5 hours",
+  "Quick Setup": "Install OpenClaw and send your first message in 15 minutes",
+  "How Everything Fits Together": "The five core components and how messages flow",
+  "Connecting Your Apps": "Add Telegram, WhatsApp, Slack, and more",
+  "Skills & Tools": "Give your agent abilities from ClawHub",
+  "Writing Good Prompts": "Get better results with clear, structured prompts",
+  "Memory & Personality": "Customize who your agent is and what it remembers",
+  "Autonomous Tasks": "Cron jobs, workflows, and always-on deployment",
+  "Real-World Projects": "Build a daily briefing, assistant, research tool, or content workflow",
+  "Security & Ethics": "Sandboxing, prompt injection, secrets, and audit",
+  "Next Steps & Community": "Troubleshooting, updates, contributing, and Discord",
   Channels: "Connect messaging apps — Slack, Telegram, iMessage, and more",
   Reference: "CLI reference, core concepts, and troubleshooting",
   Compare: "See how OpenClaw stacks up against ChatGPT, n8n, Zapier, and more",

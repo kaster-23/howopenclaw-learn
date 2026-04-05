@@ -1,0 +1,82 @@
+---
+title: "Project: Personal Assistant"
+description: "Set up a conversational assistant that manages your schedule, answers questions, and handles routine tasks through chat."
+readTime: 8
+moduleNumber: 7
+prevModule: "/course/7-projects/daily-briefing"
+nextModule: "/course/7-projects/research-companion"
+---
+
+<ReadTime minutes={8} />
+
+## What you will build
+
+A personal assistant that you can message naturally through Telegram or WhatsApp.
+It handles scheduling, reminders, quick lookups, and routine tasks.
+
+## Step 1: Connect your channel
+
+If you have not already, connect Telegram (the fastest option):
+
+```bash
+openclaw channels add telegram --token YOUR_BOT_TOKEN
+```
+
+See [Module 2](/course/2-connecting-apps) for detailed setup.
+
+## Step 2: Install essential skills
+
+```bash
+openclaw skills install calendar
+openclaw skills install reminders
+openclaw skills install web-search
+openclaw skills install notes
+```
+
+## Step 3: Configure personality
+
+Add to your SOUL.md:
+
+```markdown
+## Assistant behavior
+- Be concise and direct in responses
+- When I ask to schedule something, confirm the time and add it to my calendar
+- When I ask to remind me, set a reminder and confirm
+- For factual questions, search the web and cite your source
+- If a request is ambiguous, ask one clarifying question before acting
+```
+
+## Step 4: Set up DM policies
+
+Make sure only you can message the assistant:
+
+```bash
+openclaw config set dm.policy allowlist
+openclaw config set dm.allowlist YOUR_TELEGRAM_ID
+```
+
+## Step 5: Test common workflows
+
+Try these messages in your chat:
+
+- "Schedule a call with Sarah tomorrow at 2pm"
+- "Remind me to buy groceries at 6pm"
+- "What is the capital of Iceland?"
+- "Save a note: project deadline is April 15"
+
+Each one should trigger the appropriate skill and give you a clear response.
+
+## Tips
+
+- Add voice input by enabling Telegram voice messages
+- Chain skills: "Schedule a meeting and send Sarah the invite"
+- Use `openclaw agent --thinking high` for complex scheduling conflicts
+
+<MarkComplete moduleId="7-personal-assistant" />
+
+<ModuleNav
+  prevHref="/course/7-projects/daily-briefing"
+  prevLabel="Project: Daily Briefing"
+  nextHref="/course/7-projects/research-companion"
+  nextLabel="Project: Research Companion"
+/>

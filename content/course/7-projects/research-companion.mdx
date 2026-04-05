@@ -1,0 +1,79 @@
+---
+title: "Project: Research Companion"
+description: "Build an agent that searches, reads, summarizes, and organizes information on any topic you give it."
+readTime: 8
+moduleNumber: 7
+prevModule: "/course/7-projects/personal-assistant"
+nextModule: "/course/7-projects/content-creator"
+---
+
+<ReadTime minutes={8} />
+
+## What you will build
+
+A research agent that can take a topic, search multiple sources, summarize
+findings, and save organized notes — all from a single message.
+
+## Step 1: Install research skills
+
+```bash
+openclaw skills install web-search
+openclaw skills install web-reader
+openclaw skills install notes
+openclaw skills install summarizer
+```
+
+## Step 2: Configure research behavior
+
+Add to your SOUL.md:
+
+```markdown
+## Research mode
+When I ask you to research a topic:
+1. Search at least 3 different sources
+2. Read the most relevant pages in full
+3. Summarize key findings in bullet points
+4. Include direct quotes for important claims
+5. List all sources at the end with URLs
+6. Save the summary to my notes with the topic as the title
+```
+
+## Step 3: Test a research task
+
+```bash
+openclaw agent --message "Research the current state of solar panel efficiency. What are the latest breakthroughs?" --thinking high
+```
+
+The agent should search the web, read several articles, and give you a
+structured summary with sources.
+
+## Step 4: Organize findings
+
+Ask the agent to build on previous research:
+
+```
+Based on my saved notes about solar panels, what are the 3 most
+promising technologies for residential use?
+```
+
+The agent uses its memory and saved notes to give a deeper, more informed answer.
+
+## Advanced: Sub-agents
+
+For complex research, you can configure sub-agents that specialize in different
+aspects. See [Module 6](/course/6-autonomous-tasks) for sub-agent setup.
+
+## Tips
+
+- Use `--thinking high` for better source evaluation
+- Ask for comparisons: "Compare X vs Y based on my research"
+- Export notes: `openclaw notes export --format markdown`
+
+<MarkComplete moduleId="7-research-companion" />
+
+<ModuleNav
+  prevHref="/course/7-projects/personal-assistant"
+  prevLabel="Project: Personal Assistant"
+  nextHref="/course/7-projects/content-creator"
+  nextLabel="Project: Content Creator"
+/>

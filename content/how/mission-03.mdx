@@ -1,0 +1,178 @@
+---
+title: "Mission 03 — Signal Corps"
+description: "Connect Telegram so your agent lives on your phone. Create a bot, add your token, and send your first mobile message. ~15 minutes."
+howToSteps:
+  - "Open Telegram, search @BotFather, send /newbot, and copy the bot token it provides"
+  - "Message @userinfobot on Telegram to find your numeric user ID"
+  - "Add a 'telegram' channel to ~/.openclaw/openclaw.json with your token and user ID in allowedUsers"
+  - "Restart the Gateway with `openclaw gateway restart`, find your bot on Telegram by username, and send it a message"
+---
+
+<Callout type="info" title="MISSION 03 OF 07 · ~15 MIN">
+**CLEARANCE LEVEL:** Field Agent
+
+**OBJECTIVE:** Connect Telegram so you can reach your agent from your phone — anywhere
+
+**REWARD:** +150 XP → Rank unlocked: **Field Agent II**
+</Callout>
+
+---
+
+## Tactical overview
+
+By the end of this mission, you'll have a Telegram bot connected to your OpenClaw agent. You can message it from your phone and it will respond — even when you're away from your computer.
+
+You need:
+- Telegram installed on your phone (and/or desktop)
+- The Telegram app open
+
+---
+
+## Intel briefing
+
+Telegram is the easiest and most reliable channel to set up for OpenClaw. It uses an official bot API — no unofficial protocol emulation, no QR codes, no sessions that expire.
+
+When your Gateway is running, Telegram is running. Messages sent while your Gateway was temporarily offline are queued and delivered when it comes back. It also means: if your agent is running 24/7 on your machine (which Mission 07 covers), you have a persistent AI reachable from anywhere in the world via a phone app you already have installed.
+
+That's what you're connecting right now.
+
+---
+
+## Mission execution
+
+### Step 1 — Create your bot with BotFather
+
+1. Open Telegram and search for **@BotFather**
+2. Start a chat and send: `/newbot`
+3. BotFather asks for a display name — this is what shows in the chat header. Choose anything.
+4. BotFather asks for a username — must end in `bot` (e.g., `myassistant_bot`). This is how you find it later.
+5. BotFather gives you a **token** — a long string like `7281920384:AAF8k2...`. Copy it.
+
+Keep this token private. Anyone with it can control your bot.
+
+---
+
+### Step 2 — Find your Telegram user ID
+
+Your Telegram user ID is a numeric ID, not your @username. You'll need it to restrict who can use your bot.
+
+1. Search for **@userinfobot** on Telegram
+2. Start a chat and send any message
+3. It replies with your numeric ID — something like `123456789`
+
+Copy that number.
+
+---
+
+### Step 3 — Add Telegram to your config
+
+Open `~/.openclaw/openclaw.json` and add a `channels` block. Merge it with what's already in your file — don't replace the whole thing.
+
+```json
+{
+  "provider": "...",
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_BOT_TOKEN_HERE",
+      "dmPolicy": "pairing",
+      "allowedUsers": [
+        123456789
+      ],
+      "parseMode": "Markdown"
+    }
+  }
+}
+```
+
+Replace `YOUR_BOT_TOKEN_HERE` with your actual bot token.
+Replace `123456789` with your actual numeric user ID.
+
+**What these settings do:**
+
+| Setting | Effect |
+|---|---|
+| `token` | Authenticates your bot with Telegram's API |
+| `dmPolicy: pairing` | New users must be approved before the agent responds — keeps your bot private |
+| `allowedUsers` | Numeric IDs that can use the bot without pairing. Add your own ID here. |
+| `parseMode: Markdown` | Lets your agent send formatted responses |
+
+<Callout type="warn" title="Your bot is publicly discoverable">
+Telegram bots are searchable by username. Anyone can find and message yours. `dmPolicy: pairing` means new users get notified to you for approval, but to keep it fully private, rely on `allowedUsers` with your ID listed.
+</Callout>
+
+---
+
+### Step 4 — Restart and test
+
+```bash
+openclaw gateway restart
+```
+
+Verify Telegram loaded:
+
+```bash
+openclaw gateway status
+```
+
+You should see `✓ telegram   ready` in the channels list.
+
+Now open Telegram, search for your bot by its username, and send it a message. It should respond within a few seconds.
+
+---
+
+## Confirm mission success
+
+Your agent should:
+- Appear in Telegram when you search for its username
+- Respond to your messages from your phone
+
+If it doesn't respond:
+
+```bash
+openclaw logs --filter telegram
+```
+
+| Problem | Fix |
+|---|---|
+| Bot doesn't appear in Telegram | Double-check the username you chose — search exact spelling |
+| No response from bot | Check logs, verify token is correct with no extra spaces |
+| Response is slow | Normal for first message — Gateway is initializing the channel |
+| "Unauthorized" error in logs | Token is wrong — copy it again from BotFather |
+
+---
+
+<ClaimXP missionId="mission-03" />
+
+---
+
+## Bonus objective (+50 XP)
+
+Add your bot to a Telegram group and configure it to only respond when @mentioned:
+
+```json
+"groupPolicy": "mention",
+"requireMention": true
+```
+
+Then in BotFather, send `/setprivacy`, select your bot, and disable privacy mode (required for group reading). Test by adding the bot to a group and @mentioning it.
+
+---
+
+## Share your win
+
+```
+Just completed Mission 03 of How OpenClaw — Signal Corps ✓
+My AI agent now lives on my phone via Telegram.
+I can message it from anywhere. No app subscription. No third party.
+Field Agent II rank. 400/1350 XP.
+#HowOpenClaw #OpenClaw
+```
+
+---
+
+## Mission 04 awaits
+
+Your agent responds when you message it. That's reactive. In Mission 04, you'll make it proactive — schedule it to send you a morning briefing every day at a time you choose, without you having to ask.
+
+[→ Start Mission 04: Clockwork](/how/mission-04)

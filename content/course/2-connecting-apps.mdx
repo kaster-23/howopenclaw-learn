@@ -1,0 +1,185 @@
+---
+title: "Module 2: Connecting Your Apps"
+description: "Add Telegram, WhatsApp, Slack, and other messaging channels to your OpenClaw agent."
+readTime: 20
+moduleNumber: 2
+learningObjectives:
+  - "Create a Telegram bot and connect it to OpenClaw"
+  - "Understand DM policies and when to use each one"
+  - "Pair your account with the agent"
+  - "Troubleshoot common channel connection issues"
+prerequisites:
+  - "Completed Module 1 (How Everything Fits Together)"
+prevModule: "/course/1-architecture"
+nextModule: "/course/3-skills-tools"
+howToSteps:
+  - "Create a Telegram bot via @BotFather and copy the token"
+  - "Add the channel configuration to openclaw.json"
+  - "Restart the gateway to apply changes"
+  - "Pair your Telegram account with the agent"
+  - "Send a test message and verify the response"
+---
+
+<ReadTime minutes={20} />
+
+<LearningObjectives objectives={[
+  "Create a Telegram bot and connect it to OpenClaw",
+  "Understand DM policies and when to use each one",
+  "Pair your account with the agent",
+  "Troubleshoot common channel connection issues"
+]} />
+
+## Why this matters
+
+Right now your agent only works through the CLI. In this module, you connect it
+to a real messaging app so you can chat with it from your phone — just like
+texting a friend.
+
+## Why Telegram first
+
+Telegram is the fastest channel to set up:
+
+- No phone number pairing required
+- Official Bot API (free, stable)
+- Works on any device
+- Takes about 2 minutes
+
+You can add WhatsApp, Slack, Discord, and more later. See the
+[Channels guide](/channels) for all supported platforms.
+
+## Step 1: Create your bot
+
+1. Open Telegram and search for **@BotFather**
+2. Send `/newbot`
+3. Choose a display name (e.g., "My OpenClaw")
+4. Choose a username ending in `bot` (e.g., `my_openclaw_bot`)
+5. Copy the **bot token** BotFather gives you
+
+Keep this token private — anyone with it can control your bot.
+
+## Step 2: Add the channel config
+
+Open your OpenClaw configuration:
+
+```bash
+openclaw config edit
+```
+
+Add the Telegram channel to your configuration:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "token": "YOUR_BOT_TOKEN_HERE",
+      "dmPolicy": "pairing"
+    }
+  }
+}
+```
+
+<Callout type="warn" title="Add to existing config">
+Do not replace your entire configuration file. Add the `channels` block
+alongside your existing settings.
+</Callout>
+
+## Step 3: Understand DM policies
+
+The `dmPolicy` setting controls who can message your agent:
+
+| Policy | Who can message | Best for |
+|---|---|---|
+| `pairing` | Users you approve one by one | Getting started (default) |
+| `allowlist` | Only specific user IDs you list | Production use |
+| `open` | Anyone who finds your bot | Never recommended |
+
+**Start with `pairing`** — it lets you approve yourself easily, then switch to
+`allowlist` once you know your Telegram user ID.
+
+To find your Telegram user ID, message **@userinfobot** — it replies with your
+numeric ID.
+
+For `allowlist` mode:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "token": "YOUR_BOT_TOKEN_HERE",
+      "dmPolicy": "allowlist",
+      "allowedUsers": [123456789]
+    }
+  }
+}
+```
+
+## Step 4: Restart and pair
+
+Apply your changes:
+
+```bash
+openclaw gateway restart
+```
+
+Check that the channel is connected:
+
+```bash
+openclaw gateway status
+```
+
+Now open Telegram and send `/start` to your bot. With `pairing` mode, you need
+to approve the request:
+
+```bash
+openclaw channels pair
+```
+
+This shows pending requests. Approve yours, and you are connected.
+
+## Step 5: Test it
+
+Send a message to your bot in Telegram:
+
+> Hello! What can you do?
+
+You should get a response within a few seconds. The agent reads your SOUL.md and
+USER.md on each message, sends the request to your AI provider, and streams the
+response back.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Bot not responding | Run `openclaw gateway status` — is the gateway running? |
+| "Not paired" error | Run `openclaw channels pair` and approve your request |
+| Slow responses | Check your AI model — cloud models need network access |
+| Connection dropped | Run `openclaw gateway restart` |
+
+Check logs for more detail:
+
+```bash
+openclaw logs --filter telegram
+```
+
+Validate your config file syntax:
+
+```bash
+openclaw config validate
+```
+
+## Adding more channels
+
+Once Telegram is working, you can add other channels the same way. Each channel
+gets its own section in the config with its own DM policy.
+
+See the [Channels guide](/channels) for setup instructions for WhatsApp, Slack,
+Discord, iMessage, and more.
+
+<MarkComplete moduleId="2-connecting-apps" />
+
+<ModuleNav
+  prevHref="/course/1-architecture"
+  prevLabel="Module 1: How Everything Fits Together"
+  nextHref="/course/3-skills-tools"
+  nextLabel="Module 3: Skills & Tools"
+/>

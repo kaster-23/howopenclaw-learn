@@ -1,0 +1,215 @@
+---
+title: "Module 6: Autonomous Tasks"
+description: "Schedule cron jobs, run daily briefings, set up workflows, and deploy your agent so it runs 24/7."
+readTime: 20
+moduleNumber: 6
+learningObjectives:
+  - "Schedule automated tasks with cron jobs"
+  - "Deploy OpenClaw to a server for 24/7 operation"
+  - "Monitor your agent's health and logs"
+  - "Set up a self-check system"
+prerequisites:
+  - "Completed Module 5 (Memory & Personality)"
+prevModule: "/course/5-memory-personality"
+nextModule: "/course/7-projects"
+howToSteps:
+  - "Create a cron job for a recurring task"
+  - "Choose a deployment option (local, VPS, or home server)"
+  - "Deploy and verify the agent is running"
+  - "Set up monitoring and health checks"
+---
+
+<ReadTime minutes={20} />
+
+<LearningObjectives objectives={[
+  "Schedule automated tasks with cron jobs",
+  "Deploy OpenClaw to a server for 24/7 operation",
+  "Monitor your agent's health and logs",
+  "Set up a self-check system"
+]} />
+
+## Why this matters
+
+So far, your agent only does things when you message it. In this module, you
+make it proactive — running tasks on a schedule and staying online around the
+clock.
+
+## Scheduling tasks with cron
+
+OpenClaw has built-in cron support. You can schedule any prompt to run
+automatically.
+
+### Add a cron job
+
+```bash
+openclaw cron add "0 7 * * *" --message "Generate my daily briefing and send it to me"
+```
+
+This runs every day at 7:00 AM. The cron syntax:
+
+```
+┌───────── minute (0-59)
+│ ┌─────── hour (0-23)
+│ │ ┌───── day of month (1-31)
+│ │ │ ┌─── month (1-12)
+│ │ │ │ ┌─ day of week (0-6, 0=Sunday)
+│ │ │ │ │
+0 7 * * *
+```
+
+### Common schedules
+
+| Schedule | Cron expression | Example |
+|---|---|---|
+| Every morning at 7am | `0 7 * * *` | Daily briefing |
+| Every weekday at 9am | `0 9 * * 1-5` | Work week digest |
+| Every 30 minutes | `*/30 * * * *` | Health check |
+| Monday at 10am | `0 10 * * 1` | Weekly summary |
+| First of each month | `0 9 1 * *` | Monthly report |
+
+### Manage cron jobs
+
+```bash
+# List all scheduled jobs
+openclaw cron list
+
+# Remove a job
+openclaw cron remove [job-id]
+```
+
+## Deployment: Keeping your agent online
+
+Your agent currently runs on your computer. If your laptop sleeps or shuts
+down, the agent stops. There are three ways to keep it running.
+
+### Option 1: Prevent sleep (simplest)
+
+If you want to keep using your current machine:
+
+```bash
+caffeinate -d &
+```
+
+This keeps your Mac from sleeping. Simple, but your agent goes down if the
+machine restarts.
+
+### Option 2: Deploy to a VPS (most reliable)
+
+A small cloud server costs $5-6/month and runs 24/7.
+
+**Setup steps:**
+
+1. Provision an Ubuntu 22.04+ server (1 vCPU, 1GB RAM is enough)
+2. Install Node.js 24
+3. Install OpenClaw:
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+4. Run the setup wizard:
+
+```bash
+openclaw onboard --install-daemon
+```
+
+5. Copy your config from your local machine:
+
+```bash
+# From your local machine:
+scp ~/.openclaw/openclaw.json user@your-server:~/.openclaw/
+scp ~/.openclaw/SOUL.md user@your-server:~/.openclaw/
+scp ~/.openclaw/USER.md user@your-server:~/.openclaw/
+```
+
+6. Start the daemon:
+
+```bash
+openclaw gateway start --daemon
+```
+
+7. Verify:
+
+```bash
+openclaw gateway status
+```
+
+The daemon registers as a systemd service automatically — it starts on boot
+and restarts on failure.
+
+### Option 3: Home server (no monthly cost)
+
+If you have a Raspberry Pi, old laptop, or NAS, you can run OpenClaw on it.
+Same setup as VPS, but the machine stays in your home. Your data never leaves
+your network.
+
+## Syncing configuration
+
+When you update your config locally, sync it to the server:
+
+```bash
+rsync -avz ~/.openclaw/ user@your-server:~/.openclaw/ --exclude workspace/
+```
+
+Then restart the gateway on the server:
+
+```bash
+ssh user@your-server "openclaw gateway restart"
+```
+
+## Monitoring
+
+### Check status
+
+```bash
+openclaw gateway status
+openclaw cron list
+```
+
+### View logs
+
+```bash
+openclaw logs --tail 50
+```
+
+### Automated health check
+
+Add a self-check cron job that alerts you if something breaks:
+
+```json
+{
+  "id": "self-check",
+  "schedule": "*/30 * * * *",
+  "prompt": "Self-check: confirm you are running and responding. Reply with 'ok' only.",
+  "channel": "telegram",
+  "suppressIfOk": true
+}
+```
+
+This checks every 30 minutes and only notifies you if something is wrong.
+
+### Health endpoint
+
+The Gateway exposes a health endpoint you can monitor externally:
+
+```bash
+curl http://localhost:18789/health
+```
+
+## Security for deployed agents
+
+When your agent runs on a server:
+
+- The Gateway binds to `127.0.0.1:18789` by default (not publicly accessible)
+- Never expose port 18789 directly to the internet
+- Use Tailscale for remote access (see [Module 8](/course/8-security-ethics))
+- Keep your config file permissions restricted: `chmod 600 ~/.openclaw/openclaw.json`
+
+<MarkComplete moduleId="6-autonomous-tasks" />
+
+<ModuleNav
+  prevHref="/course/5-memory-personality"
+  prevLabel="Module 5: Memory & Personality"
+  nextHref="/course/7-projects"
+  nextLabel="Module 7: Real-World Projects"
+/>

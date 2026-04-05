@@ -3,6 +3,7 @@ import fs from "fs"
 import path from "path"
 import { LandingContent } from "@/components/landing-content"
 import { Footer } from "@/components/footer"
+import { BackgroundDotsLoader } from "@/components/background-dots-loader"
 
 function getSyncedVersion(): string {
   try {
@@ -46,6 +47,7 @@ export default function LandingPage() {
   const syncedVersion = getSyncedVersion()
   return (
     <>
+      <BackgroundDotsLoader />
       <LandingContent syncedVersion={syncedVersion} />
       <Footer />
     </>

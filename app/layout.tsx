@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
-import { BackgroundDotsLoader } from "@/components/background-dots-loader"
 import "./globals.css"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
@@ -84,7 +83,6 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body>
-        <BackgroundDotsLoader />
         <a href="#main-content" className="skip-nav">
           Skip to main content
         </a>

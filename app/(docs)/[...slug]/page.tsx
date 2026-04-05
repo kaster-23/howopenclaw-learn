@@ -170,7 +170,7 @@ export default async function Page({ params }: PageProps) {
       <DocsPage
         toc={page.data.toc}
         full={false}
-
+        footer={{ enabled: false }}
         breadcrumb={{ enabled: true, includeRoot: false, includePage: false }}
         tableOfContent={{ style: "clerk" }}
       >

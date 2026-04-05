@@ -52,17 +52,17 @@ export function MarkComplete({ moduleId }: MarkCompleteProps) {
         type="button"
         onClick={toggle}
         aria-pressed={done}
-        className={`group mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl border-2 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
+        className={`mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-150 ${
           done
-            ? "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-            : "border-[var(--color-fd-primary)]/30 bg-[var(--color-fd-primary)]/5 text-fd-foreground hover:border-[var(--color-fd-primary)] hover:bg-[var(--color-fd-primary)]/10"
+            ? "bg-emerald-600 text-white"
+            : "border border-zinc-300 bg-zinc-100 text-zinc-800 hover:bg-[var(--color-fd-primary)] hover:border-[var(--color-fd-primary)] hover:text-white dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-[var(--color-fd-primary)] dark:hover:border-[var(--color-fd-primary)]"
         }`}
       >
         <span
-          className={`flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+          className={`flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-150 ${
             done
-              ? "border-emerald-500 bg-emerald-500 text-white"
-              : "border-current text-transparent group-hover:text-current"
+              ? "border-white bg-white/20 text-white"
+              : "border-current text-transparent"
           }`}
         >
           <Check className="size-3.5" strokeWidth={3} />

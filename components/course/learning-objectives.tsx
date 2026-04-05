@@ -15,9 +15,9 @@ export function LearningObjectives({ objectives }: LearningObjectivesProps) {
         {objectives.map((obj) => (
           <li
             key={obj}
-            className="flex items-start gap-2 text-sm text-fd-muted-foreground"
+            className="flex items-center gap-2 text-sm text-fd-muted-foreground"
           >
-            <span className="mt-1 block size-1.5 shrink-0 rounded-full bg-fd-primary" />
+            <span className="block size-1.5 shrink-0 rounded-full bg-fd-primary" />
             {obj}
           </li>
         ))}

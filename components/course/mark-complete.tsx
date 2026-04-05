@@ -42,26 +42,40 @@ export function MarkComplete({ moduleId }: MarkCompleteProps) {
   }
 
   return (
-    <div className="not-prose mt-10 border-t border-fd-border pt-6">
+    <div className="not-prose mt-12 border-t border-fd-border pt-8 text-center">
+      {!done && (
+        <p className="mb-4 text-xs font-medium uppercase tracking-widest text-fd-muted-foreground">
+          Finished this module?
+        </p>
+      )}
       <button
         type="button"
         onClick={toggle}
-        className="group flex items-center gap-3 rounded-lg border border-fd-border px-4 py-3 text-sm transition-colors hover:bg-fd-accent"
         aria-pressed={done}
+        className={`group mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl border-2 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
+          done
+            ? "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+            : "border-[var(--color-fd-primary)]/30 bg-[var(--color-fd-primary)]/5 text-fd-foreground hover:border-[var(--color-fd-primary)] hover:bg-[var(--color-fd-primary)]/10"
+        }`}
       >
         <span
-          className={`flex size-5 items-center justify-center rounded border transition-colors ${
+          className={`flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
             done
               ? "border-emerald-500 bg-emerald-500 text-white"
-              : "border-fd-muted-foreground/40 text-transparent group-hover:border-fd-muted-foreground"
+              : "border-current text-transparent group-hover:text-current"
           }`}
         >
           <Check className="size-3.5" strokeWidth={3} />
         </span>
-        <span className="text-fd-foreground">
-          {done ? "Completed" : "Mark this module as complete"}
+        <span>
+          {done ? "Module complete — great work!" : "Mark this module as complete"}
         </span>
       </button>
+      {!done && (
+        <p className="mt-3 text-xs text-fd-muted-foreground">
+          Tracks your progress across all 10 modules
+        </p>
+      )}
     </div>
   )
 }

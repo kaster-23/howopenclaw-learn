@@ -3,33 +3,55 @@ title: "OpenClaw Alternatives & Comparisons"
 description: "How OpenClaw compares to ChatGPT, Claude Code, n8n, Zapier, AutoGPT, OpenAI Assistants, and Flowise. Find the right tool for your use case."
 ---
 
-OpenClaw is a self-hosted AI agent you run on your own hardware and access through the messaging apps you already use — Telegram, WhatsApp, iMessage, Slack. That positioning puts it in an interesting spot: it overlaps with automation tools, developer APIs, chatbot platforms, and general AI assistants, but isn't exactly any of them.
+OpenClaw is a self-hosted AI agent you run on your own machine and access through the messaging apps you already use — Telegram, WhatsApp, iMessage, Slack. That positioning puts it in an interesting spot: it overlaps with automation tools, developer APIs, chatbot platforms, and general AI assistants, but isn't exactly any of them.
 
 These pages break down the key differences honestly — including situations where another tool is the better fit.
 
-## Comparisons
+## Pick the comparison that applies to you
 
-| Tool | Why people compare it | Who wins |
-|---|---|---|
-| [Claude Code](/compare/openclaw-vs-claude-code) | Similar brand names ("Claude" / "Claw") cause confusion | Different tools — Claude Code is for coding, OpenClaw is for daily personal use |
-| [ChatGPT](/compare/openclaw-vs-chatgpt) | Both are AI assistants you can chat with | ChatGPT for casual use; OpenClaw when you want privacy, your own data, and messaging integration |
-| [n8n](/compare/openclaw-vs-n8n) | Both are self-hosted and automation-capable | n8n for workflow automation; OpenClaw for a personal AI that responds conversationally |
-| [Zapier](/compare/openclaw-vs-zapier) | Both automate tasks based on triggers | Zapier for integrating cloud apps; OpenClaw for a private AI agent you control end to end |
-| [AutoGPT](/compare/openclaw-vs-autogpt) | Both are described as "AI agents" | AutoGPT for autonomous multi-step tasks; OpenClaw for interactive daily-use conversations |
-| [OpenAI Assistants API](/compare/openclaw-vs-openai-assistants) | Both power AI assistants | OpenAI Assistants for building apps; OpenClaw if you want something that works without writing code |
-| [Flowise](/compare/openclaw-vs-flowise) | Both are self-hosted LLM tools | Flowise for visual workflow design; OpenClaw for a ready-to-use personal agent with messaging |
+<Cards>
+  <Card
+    title="OpenClaw vs ChatGPT"
+    description="Both are AI assistants you can chat with. The difference: ChatGPT is a website someone else controls. OpenClaw runs on your machine, keeps your data local, and lives in your existing apps."
+    href="/compare/openclaw-vs-chatgpt"
+  />
+  <Card
+    title="OpenClaw vs Claude Code"
+    description="Similar-sounding names, completely different tools. Claude Code is a coding assistant for developers. OpenClaw is a personal AI assistant for everyday tasks and messaging."
+    href="/compare/openclaw-vs-claude-code"
+  />
+  <Card
+    title="OpenClaw vs n8n"
+    description="Both are self-hosted and automation-capable. n8n is a workflow automation platform built around visual pipelines. OpenClaw is a conversational AI you interact with through chat."
+    href="/compare/openclaw-vs-n8n"
+  />
+  <Card
+    title="OpenClaw vs Zapier"
+    description="Both automate tasks. Zapier connects cloud apps through triggers. OpenClaw is a private AI agent you control end to end — no cloud subscription, no data leaving your machine."
+    href="/compare/openclaw-vs-zapier"
+  />
+  <Card
+    title="OpenClaw vs AutoGPT"
+    description="Both are described as AI agents. AutoGPT runs autonomous multi-step tasks. OpenClaw focuses on interactive daily-use conversations with memory and messaging integration."
+    href="/compare/openclaw-vs-autogpt"
+  />
+  <Card
+    title="OpenClaw vs OpenAI Assistants API"
+    description="Both power AI assistants. OpenAI Assistants is a developer API for building products. OpenClaw works without writing code — install it and talk to it through Telegram."
+    href="/compare/openclaw-vs-openai-assistants"
+  />
+  <Card
+    title="OpenClaw vs Flowise"
+    description="Both are self-hosted LLM tools. Flowise is built around visual workflow design for developers. OpenClaw is a ready-to-use personal agent with built-in messaging channels."
+    href="/compare/openclaw-vs-flowise"
+  />
+</Cards>
 
-## What OpenClaw Is
+## When OpenClaw is not the right tool
 
-OpenClaw runs a Gateway on your machine — a background process that connects to your messaging channels, loads your personal context files (SOUL.md, USER.md, HEARTBEAT.md), and routes conversations to your chosen AI provider (Claude, GPT-4, Gemini). You configure it through JSON and plain-text markdown files. No drag-and-drop editor, no hosted service, no subscription.
+- **Need a coding assistant** → use Claude Code or GitHub Copilot
+- **Need to connect 100+ SaaS apps** → use [Zapier](/compare/openclaw-vs-zapier) or [n8n](/compare/openclaw-vs-n8n)
+- **Building an AI product for other people** → use [OpenAI Assistants API](/compare/openclaw-vs-openai-assistants)
+- **Want zero setup and don't care about privacy** → use [ChatGPT](/compare/openclaw-vs-chatgpt)
 
-The result is an AI that behaves like yours: it knows your preferences, maintains memory across conversations, runs scheduled automations (daily briefings, reminders), and responds through the messaging app you're already in.
-
-## When OpenClaw Is Not the Right Tool
-
-- You want a coding assistant → use [Claude Code](/compare/openclaw-vs-claude-code) or GitHub Copilot
-- You need to connect 100+ SaaS apps → use [Zapier](/compare/openclaw-vs-zapier) or [n8n](/compare/openclaw-vs-n8n)
-- You're building an AI product for other people → use [OpenAI Assistants API](/compare/openclaw-vs-openai-assistants)
-- You want zero setup and don't care about privacy → use [ChatGPT](/compare/openclaw-vs-chatgpt)
-
-If you've decided OpenClaw is the right fit, the [installation guide](/foundation/install) covers setup from scratch.
+If you've decided OpenClaw is the right fit, start with the [Quick Setup guide](/course/0-setup).

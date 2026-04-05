@@ -28,7 +28,12 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "HowOpenClaw Community", url: siteUrl }],
   icons: {
-    icon: "/clawlogofav.png",
+    icon: [
+      { url: "/clawlogofav.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/icon-192.png",
+    apple: "/icon-192.png",
   },
   robots: {
     index: true,

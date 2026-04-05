@@ -102,7 +102,7 @@ export function LandingContent({ syncedVersion }: { syncedVersion?: string }) {
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <div className="min-h-screen overflow-hidden dot-grid">
+      <div className="min-h-screen overflow-hidden">
         {/* Radial brand glow */}
         <div
           className="pointer-events-none fixed inset-0 z-0"

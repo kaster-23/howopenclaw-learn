@@ -15,7 +15,7 @@ export function Footer() {
   const syncedVersion = getSyncedVersion()
 
   return (
-    <footer className="bg-zinc-950 border-t border-zinc-800">
+    <footer className="relative z-10 bg-zinc-950 border-t border-zinc-800">
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-10 items-start">
 

@@ -76,15 +76,19 @@ Installation is two steps: install the package, then configure credentials.
 
 ### Example: Install the weather skill
 
+In your Terminal, install the skill:
+
 ```bash
 openclaw skills install weather
 ```
 
-Then add configuration:
+Then open your config file to enable it:
 
 ```bash
 openclaw config edit
 ```
+
+This opens `~/.openclaw/openclaw.json`. Add the skills block (or add to an existing `skills` block if you already have one):
 
 ```json
 {
@@ -96,7 +100,7 @@ openclaw config edit
 }
 ```
 
-Some skills need API keys or tokens:
+Save the file and close your editor. Some skills need API keys or tokens — check `openclaw skills info [name]` to see what each skill requires:
 
 ```json
 {
@@ -109,7 +113,11 @@ Some skills need API keys or tokens:
 }
 ```
 
-Restart the gateway to load the new skill:
+<Callout type="info" title="Where to get skill credentials">
+Run `openclaw skills info [skill-name]` — it shows exactly where to get the required API key, token, or OAuth credentials for that skill, with a direct link.
+</Callout>
+
+After saving, restart the gateway in your Terminal to load the new skill:
 
 ```bash
 openclaw gateway restart
@@ -149,6 +157,10 @@ Each skill runs in its own sandbox:
 This means a buggy or malicious skill cannot access your other skills or data.
 
 ## Writing a custom skill
+
+<Callout type="info" title="For developers only">
+This section requires JavaScript knowledge. If you are not a developer, skip to the hands-on section below — you do not need to write custom skills to get full value from OpenClaw.
+</Callout>
 
 If you need a skill that does not exist on ClawHub, you can write your own.
 A skill is a Node.js module that exports tool definitions:

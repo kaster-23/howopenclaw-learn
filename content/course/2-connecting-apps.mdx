@@ -59,13 +59,13 @@ Keep this token private — anyone with it can control your bot.
 
 ## Step 2: Add the channel config
 
-Open your OpenClaw configuration:
+In your Terminal, open your OpenClaw configuration file:
 
 ```bash
 openclaw config edit
 ```
 
-Add the Telegram channel to your configuration:
+This opens `~/.openclaw/openclaw.json` in your default text editor (usually VS Code, nano, or Notepad). Find the spot to add channels and add the Telegram section:
 
 ```json
 {
@@ -78,9 +78,14 @@ Add the Telegram channel to your configuration:
 }
 ```
 
-<Callout type="warn" title="Add to existing config">
-Do not replace your entire configuration file. Add the `channels` block
-alongside your existing settings.
+Replace `YOUR_BOT_TOKEN_HERE` with the actual token BotFather gave you (it looks like `7391827364:AAHqk...`). Then **save the file** (Cmd+S on macOS, Ctrl+S on Windows) and close the editor.
+
+<Callout type="warn" title="Add to existing config — don't replace it">
+Your file already has other settings from the onboarding wizard (your API key, model choice, etc.). Add the `channels` block alongside the existing settings. Do not delete what is already there.
+</Callout>
+
+<Callout type="info" title="If openclaw config edit doesn't open an editor">
+Run `openclaw config path` to find the config file location, then open it manually in any text editor (Notepad, TextEdit, VS Code).
 </Callout>
 
 ## Step 3: Understand DM policies
@@ -115,26 +120,42 @@ For `allowlist` mode:
 
 ## Step 4: Restart and pair
 
-Apply your changes:
+Save your config file, then apply the changes in your Terminal:
 
 ```bash
 openclaw gateway restart
 ```
 
-Check that the channel is connected:
+Check that Telegram is showing as connected:
 
 ```bash
 openclaw gateway status
 ```
 
-Now open Telegram and send `/start` to your bot. With `pairing` mode, you need
-to approve the request:
+You should see:
+```
+Gateway: running
+Channels:
+  ✓ telegram     connected
+```
+
+Now go to Telegram on your phone or computer and **search for your bot by username** (the one you set with BotFather, e.g. `@my_openclaw_bot`). Tap it and send `/start`.
+
+With `pairing` mode, OpenClaw holds the request until you approve it. Back in your Terminal, run:
 
 ```bash
 openclaw channels pair
 ```
 
-This shows pending requests. Approve yours, and you are connected.
+You will see something like:
+```
+Pending pairing requests:
+  1. Telegram — @yourusername (ID: 123456789)
+
+Approve? [y/n]:
+```
+
+Type `y` and press Enter. You are now paired and connected.
 
 ## Step 5: Test it
 

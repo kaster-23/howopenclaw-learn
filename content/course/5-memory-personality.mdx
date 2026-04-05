@@ -46,11 +46,13 @@ These files are the foundation of how your agent behaves.
 
 ## Writing your SOUL.md
 
-Open it in your editor:
+In your Terminal, open SOUL.md:
 
 ```bash
 openclaw config edit soul
 ```
+
+This opens the file in your default text editor (VS Code, nano, Notepad, etc.). Write your instructions in plain Markdown — no special syntax needed. When you are done, **save the file** (Cmd+S or Ctrl+S) and close the editor. Changes take effect after the next gateway restart.
 
 ### The key rule: Be specific
 
@@ -107,13 +109,13 @@ Focus on what matters most.
 
 ## Configuring USER.md
 
-Open it:
+In your Terminal, open USER.md:
 
 ```bash
 openclaw config edit user
 ```
 
-This tells the agent who you are:
+This opens USER.md in your text editor. Fill it in with your details, save, and close. This tells the agent who you are:
 
 ```markdown
 Name: Alex
@@ -155,7 +157,7 @@ file-based memory system:
 
 ### Enable automatic memory
 
-Add this to your SOUL.md:
+Add this to your SOUL.md (open it with `openclaw config edit soul`, paste this in, save):
 
 ```markdown
 ## Memory
@@ -169,7 +171,7 @@ Format:
 [1-3 bullet points of key facts]
 ```
 
-For automatic writes, add a session hook in your config:
+For automatic end-of-session writes, add a session hook to your `openclaw.json` config file. Open it with `openclaw config edit` and add this block alongside your existing settings:
 
 ```json
 {
@@ -178,6 +180,8 @@ For automatic writes, add a session hook in your config:
   }
 }
 ```
+
+Save the file and restart the gateway for the hook to take effect.
 
 ### HEARTBEAT.md: Standing context
 
@@ -227,18 +231,20 @@ For personal tasks: check workspace/personal/
 
 ## Testing your setup
 
-After configuring SOUL.md and USER.md, restart the gateway:
+After editing SOUL.md and USER.md, restart the gateway in your Terminal so the changes load:
 
 ```bash
 openclaw gateway restart
 ```
 
-Then test through your dashboard or messaging app:
+Then open Telegram (or whichever channel you connected) and run these tests:
 
-1. Ask "What is my name?" — should use USER.md
-2. Ask a question with a strong opinion — should match your SOUL.md personality
-3. Say "Remember that I prefer morning meetings" — should write to MEMORY.md
-4. Start a new conversation and ask about morning meetings — should recall it
+1. Send **"What is my name?"** — the agent should answer with the name from your USER.md
+2. Ask **a question that would have an opinion** — the tone and style should match your SOUL.md
+3. Send **"Remember that I prefer morning meetings"** — the agent should confirm it saved this
+4. Close the conversation, start a fresh one, and ask **"Do I have any preferences about meetings?"** — it should recall the morning preference from MEMORY.md
+
+If a test fails, check that you saved the file and ran `openclaw gateway restart` after editing.
 
 The [Key Concepts reference](/reference/concepts) has precise definitions for SOUL.md, USER.md, MEMORY.md, and how they interact with the agent's context window.
 

@@ -41,6 +41,8 @@ automatically.
 
 ### Add a cron job
 
+In your Terminal, schedule a task like this:
+
 ```bash
 openclaw cron add "0 7 * * *" --message "Generate my daily briefing and send it to me"
 ```
@@ -88,12 +90,20 @@ down, the agent stops. There are three ways to keep it running.
 
 If you want to keep using your current machine:
 
+**macOS** — In your Terminal, run:
 ```bash
 caffeinate -d &
 ```
+This prevents your Mac from sleeping. The `&` runs it in the background so your Terminal stays usable.
 
-This keeps your Mac from sleeping. Simple, but your agent goes down if the
-machine restarts.
+**Linux** — Disable sleep via your desktop settings, or use:
+```bash
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+```
+
+**Windows** — Go to Settings → System → Power & Sleep → set sleep to "Never".
+
+Simple, but your agent goes down if the machine restarts or loses power.
 
 ### Option 2: Deploy to a VPS (most reliable)
 
@@ -101,43 +111,46 @@ A small cloud server costs $5-6/month and runs 24/7.
 
 **Setup steps:**
 
-1. Provision an Ubuntu 22.04+ server (1 vCPU, 1GB RAM is enough)
-2. Install Node.js 24
-3. Install OpenClaw:
+1. Get a server — [DigitalOcean](https://digitalocean.com), [Hetzner](https://hetzner.com), or [Vultr](https://vultr.com) all have $5-6/month plans. Choose Ubuntu 22.04+, 1 vCPU, 1 GB RAM.
+2. Your provider will give you an IP address and root password (or SSH key). Connect to your server:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+ssh root@YOUR_SERVER_IP
 ```
 
-4. Run the setup wizard:
+3. Install Node.js 24 on the server:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+apt-get install -y nodejs
+```
+
+4. Install OpenClaw on the server:
+
+```bash
+npm install -g openclaw@latest
+```
+
+5. Run the setup wizard on the server (same as Module 0 — pick your provider, enter your API key, choose model):
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-5. Copy your config from your local machine:
+6. (Optional) If you want to copy your existing SOUL.md and USER.md from your local machine, open a **new Terminal window on your local computer** and run:
 
 ```bash
-# From your local machine:
-scp ~/.openclaw/openclaw.json user@your-server:~/.openclaw/
-scp ~/.openclaw/SOUL.md user@your-server:~/.openclaw/
-scp ~/.openclaw/USER.md user@your-server:~/.openclaw/
+scp ~/.openclaw/SOUL.md root@YOUR_SERVER_IP:~/.openclaw/
+scp ~/.openclaw/USER.md root@YOUR_SERVER_IP:~/.openclaw/
 ```
 
-6. Start the daemon:
-
-```bash
-openclaw gateway start --daemon
-```
-
-7. Verify:
+7. Back in the server Terminal, verify everything is running:
 
 ```bash
 openclaw gateway status
 ```
 
-The daemon registers as a systemd service automatically — it starts on boot
-and restarts on failure.
+The daemon registers as a system service automatically — it starts on boot and restarts on failure.
 
 ### Option 3: Home server (no monthly cost)
 
@@ -147,16 +160,18 @@ your network.
 
 ## Syncing configuration
 
-When you update your config locally, sync it to the server:
+When you update your SOUL.md or config locally and want to push changes to your server, run this from your **local Terminal**:
 
 ```bash
-rsync -avz ~/.openclaw/ user@your-server:~/.openclaw/ --exclude workspace/
+rsync -avz ~/.openclaw/ root@YOUR_SERVER_IP:~/.openclaw/ --exclude workspace/
 ```
+
+`rsync` copies only the changed files — it is much faster than copying everything. The `--exclude workspace/` skips your local files so they don't overwrite the server's memory.
 
 Then restart the gateway on the server:
 
 ```bash
-ssh user@your-server "openclaw gateway restart"
+ssh root@YOUR_SERVER_IP "openclaw gateway restart"
 ```
 
 ## Monitoring

@@ -73,9 +73,13 @@ Format: Bullet points, no more than 5 items.
 Instead of repeating the same instructions every time, put them in your
 `SOUL.md` file. This file shapes how your agent behaves by default.
 
+In your Terminal, open SOUL.md:
+
 ```bash
 openclaw config edit soul
 ```
+
+This opens your SOUL.md file in a text editor. Edit the content, **save the file** (Cmd+S or Ctrl+S), and close the editor.
 
 Example additions:
 
@@ -138,7 +142,7 @@ If your agent gives poor results:
 
 ## Hands-on: Improve a prompt
 
-Try this exercise. Send this prompt to your agent:
+Try this exercise. In your Terminal, send this vague prompt:
 
 ```bash
 openclaw agent --message "Tell me about the weather"
@@ -151,6 +155,8 @@ openclaw agent --message "What is the current weather and forecast for the next 
 ```
 
 Compare the results. The second version should be significantly more useful.
+
+You can also test prompts directly through Telegram or whichever channel you connected in Module 2 — just send the message there instead. The Terminal method is just faster for testing.
 
 <MarkComplete moduleId="4-prompts" />
 

@@ -104,33 +104,49 @@ Everything OpenClaw stores is in your workspace directory:
 
 ```
 ~/.openclaw/
-├── IDENTITY.md      # Who your agent is
-├── SOUL.md          # Personality and behavior rules
-├── memory/          # Conversation history and context
+├── SOUL.md          # Agent personality and behavior rules
+├── USER.md          # Information about you
+├── MEMORY.md        # Things the agent remembers across conversations
+├── HEARTBEAT.md     # Standing context and priorities
+├── workspace/       # Files the agent can read and write
 ├── skills/          # Installed skills
-└── config.yaml      # All configuration
+├── tokens/          # OAuth tokens (don't edit these)
+└── openclaw.json    # All configuration (API keys, channels, settings)
 ```
+
+The `~` symbol means your home folder — on macOS it is `/Users/yourname`, on Linux `/home/yourname`, on Windows `C:\Users\yourname`.
 
 No data is stored on external servers (unless you choose a cloud AI model, which
 only sees the messages you send it). You own everything.
 
 ## Hands-on: Check your components
 
-Confirm everything is working:
+Open your Terminal and run the health check:
 
 ```bash
 openclaw doctor
 ```
 
-You should see green checks for Gateway, Agent, and your configured model.
+You should see output like this — green checks mean everything is working:
 
-Explore your workspace:
+```
+✓ Node.js         v24.0.1
+✓ OpenClaw        v2026.3.24
+✓ Gateway         running (pid 12847)
+✓ Agent           ready
+✓ Model           gpt-4o (OpenAI) — connected
+✓ Config          valid
+```
+
+If anything shows a red ✗, the output will tell you what to fix.
+
+Explore your workspace path:
 
 ```bash
 openclaw config get workspace
 ```
 
-Then look at the files inside — that is where your agent lives.
+Then open that folder in Finder (macOS) or File Explorer (Windows) to see your agent's files.
 
 For precise definitions of Gateway, Agent, SOUL.md, and every other OpenClaw concept, see the [Key Concepts reference](/reference/concepts).
 

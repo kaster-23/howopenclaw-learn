@@ -7,7 +7,7 @@ faqs:
   - q: "Does OpenClaw work on Raspberry Pi?"
     a: "Yes, with at least 1GB RAM and a 64-bit OS. Use Node.js 22 LTS. Raspberry Pi 4 (2GB+) is recommended for comfortable performance with automations running. Pi Zero and older Pi 3 models may be too slow."
   - q: "What Node.js version does OpenClaw require?"
-    a: "Node.js 22.14 or later. Node.js 24 LTS is recommended. Older versions (18, 20) are not supported as of v2026.3.24. Check your version with `node --version` and upgrade via nvm if needed."
+    a: "Node.js 22.14 or later. Node.js 24 LTS is recommended. Older versions (18, 20) are not supported. Check your version with `node --version` and upgrade via nvm if needed."
   - q: "Can I run OpenClaw in Docker?"
     a: "Yes. OpenClaw runs in Docker. The official image handles all dependencies. The iMessage channel requires macOS and won't work inside a Linux container."
 ---
@@ -67,8 +67,6 @@ nvm use 24
 ```
 
 Or download from [nodejs.org](https://nodejs.org).
-
-**Why 22.14+?** As of v2026.3.24, OpenClaw uses native Node.js APIs that require 22.14. Earlier versions will fail at startup with a clear error message.
 
 ---
 

@@ -59,7 +59,7 @@ Copy your `TEAMS_APP_ID` and `TEAMS_APP_PASSWORD` — you'll need them in the ne
 
 ## Streaming Replies
 
-As of v2026.3.24, OpenClaw streams 1:1 replies in real time. Users see your agent's response appear gradually as it's generated, providing better feedback than waiting for a complete response.
+OpenClaw streams 1:1 replies in real time. Users see your agent's response appear gradually as it's generated, providing better feedback than waiting for a complete response.
 
 Enable streaming in your agent config:
 
@@ -97,7 +97,7 @@ When a user starts a conversation with your bot, they see a welcome card with su
 
 ## Message Editing & Deletion
 
-As of v2026.3.24, you can edit or delete messages your agent has sent. This includes in-thread fallbacks when no explicit target is provided.
+You can edit or delete messages your agent has sent. This includes in-thread fallbacks when no explicit target is provided.
 
 ```json
 {
@@ -149,6 +149,14 @@ Set `groupPolicy` to control how the bot behaves in groups:
   }
 }
 ```
+
+## Channel Threading (v2026.4.5)
+
+As of v2026.4.5, channel reply threading is now preserved in proactive fallback scenarios. This ensures that replies maintain proper conversation structure in Teams channels.
+
+## SDK Updates (v2026.4.5)
+
+The deprecated Teams SDK `HttpPlugin` stub has been replaced with the modern `httpServerAdapter`. This eliminates recurring gateway deprecation warnings and keeps the Express 5 compatibility workaround on the supported SDK path.
 
 ## Related channels
 

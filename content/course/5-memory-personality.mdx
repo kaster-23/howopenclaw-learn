@@ -203,6 +203,69 @@ HEARTBEAT.md is for things the agent should always know. Keep it under 50 lines:
 - Team uses Slack, not email
 ```
 
+## Memory Dreaming (Experimental)
+
+OpenClaw includes an experimental **memory dreaming** system that helps your agent consolidate and recall important memories more naturally. When enabled, the agent periodically reviews recent conversations and promotes important insights into long-term memory.
+
+### Enabling dreaming
+
+In your config, add:
+
+```json
+{
+  "memory": {
+    "dreaming": {
+      "enabled": true
+    }
+  }
+}
+```
+
+This enables automatic memory consolidation with sensible defaults. The agent will review recent session notes and surface lasting truths and important learnings.
+
+### How dreaming works (conceptually)
+
+Dreaming runs three cooperative phases in the background:
+
+1. **Light recall** — Quick surface-level promotion of recent context
+2. **Deep consolidation** — More thorough review to find meaningful patterns
+3. **REM refresh** — Cleanup and finalization of promoted memories
+
+Each phase has its own independent schedule. You don't need to configure them individually — the defaults handle most use cases.
+
+### Accessing dream insights
+
+Once dreaming is enabled, check the Dreams UI in your Control Panel or run:
+
+```bash
+openclaw /dreaming
+```
+
+This shows recent memory promotions and insights. The agent also writes consolidated memories to a `dreams.md` file in your workspace for explicit reads.
+
+### Tuning recall decay
+
+If your agent is forgetting recent things too quickly or holding onto things too long, you can adjust:
+
+```json
+{
+  "memory": {
+    "dreaming": {
+      "enabled": true,
+      "recencyHalfLifeDays": 30,
+      "maxAgeDays": 365
+    }
+  }
+}
+```
+
+- `recencyHalfLifeDays`: How quickly recent events fade in importance (default: 30 days)
+- `maxAgeDays`: Maximum age before memories are considered stale (default: 365 days)
+
+<Callout type="info" title="Experimental feature">
+Memory dreaming is experimental as of v2026.4.5. Configuration and behavior may change in future releases based on user feedback. It's safe to enable, but consider it a preview feature.
+</Callout>
+
 ## Organizing memory at scale
 
 As memory grows, split into domain-specific files:

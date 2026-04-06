@@ -42,6 +42,9 @@ OpenClaw has two types of capabilities:
 - `web_search` — search the internet
 - `read` / `write` — access files in your workspace
 - `exec` — run shell commands (with restrictions)
+- `image_generate` — create images using configured providers
+- `video_generate` — create videos (as of v2026.4.5)
+- `music_generate` — create music (as of v2026.4.5)
 
 **Skills** are purpose-built integrations with specific APIs:
 - Google Calendar — read and create events
@@ -49,6 +52,58 @@ OpenClaw has two types of capabilities:
 - GitHub — manage issues and pull requests
 - Weather — get forecasts
 - And many more on ClawHub
+
+## Media generation (new in v2026.4.5)
+
+Your agent can now generate images, videos, and music if you configure the right providers.
+
+### Image generation
+
+This has been available for a while — your agent can create images using providers like OpenAI DALL-E, Midjourney, or ComfyUI:
+
+```bash
+openclaw agent --message "Create an image of a cozy home office with plants"
+```
+
+### Video generation
+
+As of v2026.4.5, your agent can generate videos. Configure a provider like Runway or xAI:
+
+```json
+{
+  "providers": {
+    "videoGeneration": "runway"
+  }
+}
+```
+
+Then ask:
+
+```bash
+openclaw agent --message "Create a short video of a rocket launching"
+```
+
+Your agent will use the `video_generate` tool to create the video and return it directly in the reply.
+
+### Music generation
+
+As of v2026.4.5, your agent can generate music using Google Lyria, MiniMax, or ComfyUI workflows:
+
+```json
+{
+  "providers": {
+    "musicGeneration": "google"
+  }
+}
+```
+
+Then ask:
+
+```bash
+openclaw agent --message "Create upbeat background music for a product demo"
+```
+
+The agent will use the `music_generate` tool. Music generation is asynchronous — the agent starts a task and will notify you when the music is ready.
 
 ## Browsing ClawHub
 

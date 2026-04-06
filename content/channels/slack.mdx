@@ -71,7 +71,7 @@ Requires a publicly accessible webhook URL. Slack sends event notifications to y
 
 ## Interactive Replies
 
-As of v2026.3.24, Slack replies have full rich reply parity for direct deliveries. If your agent's response ends with a simple `Options:` block, OpenClaw auto-renders those options as interactive buttons or select menus in Slack — no extra configuration needed.
+Slack replies have full rich reply parity for direct deliveries. If your agent's response ends with a simple `Options:` block, OpenClaw auto-renders those options as interactive buttons or select menus in Slack — no extra configuration needed.
 
 Example agent output:
 
@@ -84,7 +84,17 @@ Options:
 - Skip this cycle
 ```
 
-This renders as clickable buttons in Slack. Interactive setup defaults have also been improved and reply controls are isolated from plugin interactive handlers, so custom plugins won't interfere with standard reply buttons.
+This renders as clickable buttons in Slack. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers, so custom plugins won't interfere with standard reply buttons.
+
+## Direct Message Routing (v2026.4.5)
+
+As of v2026.4.5, live DM replies now correctly route back to the concrete inbound DM channel while keeping persisted routing metadata user-scoped. This fix resolves an issue where normal assistant replies were disappearing when pairing, while system messages still arrived correctly.
+
+## Recent Fixes (v2026.4.5)
+
+- Live DM replies route to the correct concrete inbound DM channel
+- Persisted routing metadata remains user-scoped for consistency
+- System messages continue to arrive as expected
 
 ## Security Recommendations
 

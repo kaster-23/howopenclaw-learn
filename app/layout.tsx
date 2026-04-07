@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     title: "HowOpenClaw",
     description: siteDescription,
     creator: "@imfrancoierace",
-    images: ["/og-image.png"],
+    images: [`${siteUrl}/og-image.png`],
   },
   alternates: {
     canonical: siteUrl,

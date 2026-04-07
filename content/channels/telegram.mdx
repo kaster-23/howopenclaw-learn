@@ -72,13 +72,30 @@ With privacy mode disabled, the bot can read all messages in the group. With `re
 
 ## Forum Topics
 
-If you use Telegram groups with **Topics** enabled (forum-style groups), OpenClaw routes messages to the correct topic. As of v2026.3.24, the `#General` topic (topic ID `1`) is handled reliably even when Telegram omits forum metadata — native commands, interactive callbacks, inbound message context, and fallback error replies all route correctly.
+If you use Telegram groups with **Topics** enabled (forum-style groups), OpenClaw routes messages to the correct topic. The `#General` topic (topic ID `1`) is handled reliably even when Telegram omits forum metadata — native commands, interactive callbacks, inbound message context, and fallback error replies all route correctly.
 
 No special configuration is needed. Topic routing works automatically when Topics are enabled in the group.
 
 ## Photo & Media Sending
 
 When your agent sends images, OpenClaw preflights Telegram's photo dimension and aspect-ratio rules. If an image doesn't meet Telegram's requirements (or metadata is unavailable), it automatically falls back to sending as a document — so photo uploads no longer fail with `PHOTO_INVALID_DIMENSIONS`.
+
+## Voice Notes & Audio
+
+As of v2026.4.5, voice note transcription in direct messages has been restored. When you send a voice message to your bot, it will transcribe the audio and respond — no longer arriving as raw `<media:audio>` placeholders.
+
+## Improved Error Handling
+
+Outbound delivery errors now preserve actionable details (e.g., 403 membership/block/kick reasons), and permanently failed chats (such as when the bot has been blocked or kicked) stop retrying automatically instead of looping.
+
+## Recent Improvements (v2026.4.5)
+
+- Fixed model picker current-model checks
+- HTML-formatted non-default `/model` confirmations
+- Explicit topic reply routing
+- Persisted reaction ownership across restarts
+- Caption-media placeholder and `file_id` preservation on download failure
+- Improved handling in upgraded installations
 
 ## Related channels
 
@@ -91,8 +108,6 @@ When your agent sends images, OpenClaw preflights Telegram's photo dimension and
 Unlike WhatsApp, Telegram provides an official Bot API. There's no session that expires, no QR code to re-scan, no unofficial protocol emulation. When the gateway is running, the Telegram channel is running.
 
 It also queues messages during disconnections — if your gateway restarts, it will receive all messages sent while it was offline.
-
-Outbound delivery errors now preserve actionable details (e.g., 403 membership/block/kick reasons), and permanently failed chats (such as when the bot has been blocked or kicked) stop retrying automatically instead of looping.
 
 ## Testing
 

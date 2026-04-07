@@ -66,8 +66,8 @@ jobs:
       - name: Commit version file to main
         if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "kaster-23"
+          git config user.email "francoierace.dev@gmail.com"
           git add .openclaw-last-version
           git commit -m "chore: track OpenClaw ${{ steps.sync.outputs.version }}"
           git push

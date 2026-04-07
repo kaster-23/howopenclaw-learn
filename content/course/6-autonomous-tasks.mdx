@@ -47,27 +47,26 @@ In your Terminal, schedule a task like this:
 openclaw cron add "0 7 * * *" --message "Generate my daily briefing and send it to me"
 ```
 
-This runs every day at 7:00 AM. The cron syntax:
+This runs every day at 7:00 AM. You don't need to understand the scheduling syntax — just copy from the table below and change the time.
 
-```
-┌───────── minute (0-59)
-│ ┌─────── hour (0-23)
-│ │ ┌───── day of month (1-31)
-│ │ │ ┌─── month (1-12)
-│ │ │ │ ┌─ day of week (0-6, 0=Sunday)
-│ │ │ │ │
-0 7 * * *
-```
+<Callout type="info" title="Don't know cron syntax? Just use the table">
+Cron expressions look cryptic but you only need a handful of patterns. The numbers represent: minute, hour, day, month, weekday — in that order. A `*` means "every". Use the examples below and swap in your preferred time.
+</Callout>
 
 ### Common schedules
 
-| Schedule | Cron expression | Example |
+| When | Use this expression | Example |
 |---|---|---|
 | Every morning at 7am | `0 7 * * *` | Daily briefing |
-| Every weekday at 9am | `0 9 * * 1-5` | Work week digest |
+| Every morning at 8am | `0 8 * * *` | Change 7 to your hour |
+| Weekdays (Mon–Fri) at 9am | `0 9 * * 1-5` | Work digest |
 | Every 30 minutes | `*/30 * * * *` | Health check |
-| Monday at 10am | `0 10 * * 1` | Weekly summary |
-| First of each month | `0 9 1 * *` | Monthly report |
+| Every Monday at 10am | `0 10 * * 1` | Weekly summary |
+| First of each month at 9am | `0 9 1 * *` | Monthly report |
+
+<Callout type="warn" title="Watch your API costs">
+Each cron job makes one or more AI API calls. A job running every 30 minutes = ~1,440 API calls per month. For simple health checks, use a very short prompt ("reply ok only") to keep costs minimal. Check your AI provider's dashboard to monitor usage. The [Pricing guide](/reference/pricing) has cost estimates.
+</Callout>
 
 ### Manage cron jobs
 
@@ -94,12 +93,13 @@ If you want to keep using your current machine:
 ```bash
 caffeinate -d &
 ```
-This prevents your Mac from sleeping. The `&` runs it in the background so your Terminal stays usable.
+This prevents your Mac from sleeping. The `&` at the end means "run this in the background" — it keeps running silently while you use your Terminal for other things. To stop it later, close the Terminal window or restart your Mac.
 
-**Linux** — Disable sleep via your desktop settings, or use:
+**Linux** — Go to your desktop Settings → Power → disable automatic sleep. Or if you're comfortable in the Terminal:
 ```bash
-systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 ```
+(`systemctl` is the Linux tool for managing system services. `mask` disables the sleep targets permanently until you unmask them.)
 
 **Windows** — Go to Settings → System → Power & Sleep → set sleep to "Never".
 
@@ -118,12 +118,17 @@ A small cloud server costs $5-6/month and runs 24/7.
 ssh root@YOUR_SERVER_IP
 ```
 
-3. Install Node.js 24 on the server:
+3. Install Node.js 24 on the server. Copy and paste these two commands one at a time:
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+```
+(`curl` downloads a setup script from the internet. The `|` pipes it directly into `bash` which runs it. This is the standard way to install Node.js on Linux servers — it's safe.)
+
+```bash
 apt-get install -y nodejs
 ```
+(`apt-get` is the Linux package manager — like an app store for the Terminal.)
 
 4. Install OpenClaw on the server:
 
@@ -137,12 +142,14 @@ npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-6. (Optional) If you want to copy your existing SOUL.md and USER.md from your local machine, open a **new Terminal window on your local computer** and run:
+6. (Optional) If you want to copy your existing SOUL.md and USER.md from your local machine to the server, open a **new Terminal window on your local computer** (not the server) and run:
 
 ```bash
 scp ~/.openclaw/SOUL.md root@YOUR_SERVER_IP:~/.openclaw/
 scp ~/.openclaw/USER.md root@YOUR_SERVER_IP:~/.openclaw/
 ```
+
+(`scp` stands for "secure copy" — it copies a file from one machine to another over SSH. The first path is the file on your local machine, the second is where to put it on the server.)
 
 7. Back in the server Terminal, verify everything is running:
 
@@ -191,19 +198,15 @@ openclaw logs --tail 50
 
 ### Automated health check
 
-Add a self-check cron job that alerts you if something breaks:
+Add a self-check cron job that pings your agent every 30 minutes and only alerts you if something is wrong. In your Terminal:
 
-```json
-{
-  "id": "self-check",
-  "schedule": "*/30 * * * *",
-  "prompt": "Self-check: confirm you are running and responding. Reply with 'ok' only.",
-  "channel": "telegram",
-  "suppressIfOk": true
-}
+```bash
+openclaw cron add "*/30 * * * *" --message "Self-check: confirm you are running and responding. Reply with 'ok' only." --suppress-if-ok
 ```
 
-This checks every 30 minutes and only notifies you if something is wrong.
+`--suppress-if-ok` means: only send the result to your channel if the agent fails to respond. If everything is fine, you hear nothing. If it breaks, you get a message.
+
+This checks every 30 minutes. Since it's a short prompt with a short reply, the API cost is negligible.
 
 ### Health endpoint
 

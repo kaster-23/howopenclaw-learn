@@ -169,15 +169,17 @@ network):
   A -->|No| G[Keep on localhost\nMost secure]
 `} />
 
-**Tailscale** (recommended) creates a private network between your devices.
-Your Gateway stays completely off the public internet:
+**Tailscale** (recommended for most people) — install it on your phone and your server, and they form a private network. Your Gateway stays completely off the public internet. Install at [tailscale.com](https://tailscale.com) — it's free for personal use and requires no technical configuration.
+
+**SSH tunnel** — for temporary access without installing anything:
 
 ```bash
-# With Tailscale installed, your Gateway is accessible
-# at your Tailscale IP — no additional configuration needed
+ssh -N -L 18789:127.0.0.1:18789 user@your-server-ip
 ```
 
-**Reverse proxy** with authentication:
+This forwards your local port to the server securely. Close the Terminal to disconnect.
+
+**Reverse proxy with nginx** — for advanced users who already have nginx running on their server. Skip this if you don't know what nginx is:
 
 ```nginx
 server {
@@ -190,14 +192,9 @@ server {
 }
 ```
 
-**SSH tunnel** for quick access:
+**For most users: use Tailscale.** It takes 5 minutes, requires no configuration, and is the most secure option.
 
-```bash
-ssh -N -L 18789:127.0.0.1:18789 user@host
-```
-
-Never expose `http://127.0.0.1:18789` directly to the internet without
-authentication.
+Never expose `http://127.0.0.1:18789` directly to the internet without authentication.
 
 ## Regular audits
 

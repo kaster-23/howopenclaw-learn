@@ -65,10 +65,29 @@ In your Terminal, open your OpenClaw configuration file:
 openclaw config edit
 ```
 
-This opens `~/.openclaw/openclaw.json` in your default text editor (usually VS Code, nano, or Notepad). Find the spot to add channels and add the Telegram section:
+This opens `~/.openclaw/openclaw.json` in your default text editor (usually VS Code, nano, or Notepad).
+
+<Callout type="info" title="What is a .json file?">
+JSON is just a structured text format for storing settings. It uses curly braces `{}`, colons `:`, and quotes `"` to organize information. You don't need to understand it deeply — just copy the examples exactly, including all the brackets and commas.
+</Callout>
+
+The file already has content from the onboarding wizard. It looks something like this:
 
 ```json
 {
+  "model": "gpt-4o",
+  "provider": "openai",
+  "apiKey": "sk-..."
+}
+```
+
+Add the `channels` section inside the outer `{}` brackets, after the last line, separated by a comma:
+
+```json
+{
+  "model": "gpt-4o",
+  "provider": "openai",
+  "apiKey": "sk-...",
   "channels": {
     "telegram": {
       "token": "YOUR_BOT_TOKEN_HERE",
@@ -80,12 +99,12 @@ This opens `~/.openclaw/openclaw.json` in your default text editor (usually VS C
 
 Replace `YOUR_BOT_TOKEN_HERE` with the actual token BotFather gave you (it looks like `7391827364:AAHqk...`). Then **save the file** (Cmd+S on macOS, Ctrl+S on Windows) and close the editor.
 
-<Callout type="warn" title="Add to existing config — don't replace it">
-Your file already has other settings from the onboarding wizard (your API key, model choice, etc.). Add the `channels` block alongside the existing settings. Do not delete what is already there.
+<Callout type="warn" title="Common mistake — missing comma">
+In JSON, each section must be separated by a comma. If you get a "config invalid" error, check that there is a comma after the line before `"channels"`. Run `openclaw config validate` to check.
 </Callout>
 
 <Callout type="info" title="If openclaw config edit doesn't open an editor">
-Run `openclaw config path` to find the config file location, then open it manually in any text editor (Notepad, TextEdit, VS Code).
+Run `openclaw config path` in your Terminal to see the file location (e.g. `/Users/yourname/.openclaw/openclaw.json`), then open that file in any text editor — TextEdit on Mac, Notepad on Windows, or VS Code if you have it installed.
 </Callout>
 
 ## Step 3: Understand DM policies

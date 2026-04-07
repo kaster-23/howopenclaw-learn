@@ -88,14 +88,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "article",
       siteName: "HowOpenClaw",
       locale: "en_US",
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: pageTitle }],
+      images: [{ url: "/og-image.png", width: 2414, height: 1274, alt: pageTitle }],
     },
     twitter: {
       card: "summary_large_image",
       title: pageTitle,
       description,
       creator: "@imfrancoierace",
-      images: ["/opengraph-image"],
+      images: ["/og-image.png"],
     },
     alternates: {
       canonical: `${siteUrl}${page.url}`,

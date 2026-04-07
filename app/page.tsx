@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
+        url: "/og-image.png",
+        width: 2414,
+        height: 1274,
         alt: "HowOpenClaw — Learn OpenClaw Step by Step",
       },
     ],
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: "HowOpenClaw — Learn OpenClaw Step by Step",
     description,
     creator: "@imfrancoierace",
-    images: ["/opengraph-image"],
+    images: ["/og-image.png"],
   },
   alternates: {
     canonical: siteUrl,

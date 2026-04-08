@@ -10,6 +10,7 @@ const navLinkClass =
   "hidden sm:flex items-center min-h-[44px] text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors px-3 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-fd-primary)]/70 focus-visible:ring-offset-1"
 
 const resources = [
+  { label: "What is OpenClaw?", href: "/reference/what-is-openclaw" },
   { label: "Reference", href: "/reference" },
   { label: "Channels", href: "/channels" },
   { label: "Compare", href: "/compare" },

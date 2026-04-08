@@ -65,6 +65,11 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
+                <Link href="/reference/what-is-openclaw" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+                  What is OpenClaw?
+                </Link>
+              </li>
+              <li>
                 <Link href="/reference" className="text-zinc-400 hover:text-zinc-100 transition-colors">
                   Reference
                 </Link>
@@ -77,6 +82,11 @@ export function Footer() {
               <li>
                 <Link href="/compare" className="text-zinc-400 hover:text-zinc-100 transition-colors">
                   Compare
+                </Link>
+              </li>
+              <li>
+                <Link href="/reference/troubleshooting" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+                  Troubleshooting
                 </Link>
               </li>
               <li>

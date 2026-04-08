@@ -26,7 +26,7 @@ function getGitLastModified(filePath: string): Date {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "")
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
 
   return [
     {

@@ -16,7 +16,7 @@ function getSyncedVersion(): string {
 const description =
   "Build your own private AI assistant with OpenClaw — no subscriptions, no cloud. 10 beginner-friendly modules to go from zero to running in an hour."
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "")
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
 
 export const metadata: Metadata = {
   title: "HowOpenClaw — Learn OpenClaw Step by Step",

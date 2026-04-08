@@ -221,8 +221,18 @@ openclaw config validate
 Once Telegram is working, you can add other channels the same way. Each channel
 gets its own section in the config with its own DM policy.
 
-See the [Channels guide](/channels) for setup instructions for WhatsApp, Slack,
-Discord, iMessage, and more. If you hit issues connecting a channel, the [troubleshooting guide](/reference/troubleshooting) covers the most common errors.
+Each channel has a dedicated setup guide:
+
+- [Telegram](/channels/telegram) — easiest to set up, official Bot API, recommended first channel
+- [WhatsApp](/channels/whatsapp) — scan a QR code to link, unofficial API, works for personal use
+- [Slack](/channels/slack) — Socket Mode, no public URL needed, best for work contexts
+- [Discord](/channels/discord) — bot application, great for communities
+- [iMessage](/channels/imessage) — Mac only, requires BlueBubbles or AirMessage bridge
+- [Microsoft Teams](/channels/teams) — official Teams SDK, enterprise grade
+- [Signal](/channels/signal) — end-to-end encrypted, privacy first
+- [Web Chat](/channels/webchat) — embeddable widget for websites
+
+If you hit issues connecting a channel, the [troubleshooting guide](/reference/troubleshooting) covers the most common errors.
 
 <MarkComplete moduleId="2-connecting-apps" />
 

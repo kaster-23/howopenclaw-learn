@@ -7,7 +7,6 @@ const INDEX_SLUGS = new Set([
   "/reference",
   "/channels",
   "/compare",
-  "/course/7-projects",
 ])
 
 function getPriority(url: string): number {
@@ -27,7 +26,7 @@ function getGitLastModified(filePath: string): Date {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "")
 
   return [
     {

@@ -1,3 +1,4 @@
+// Build: 2026-04-08
 import type { NextConfig } from "next"
 import path from "path"
 import { createMDX } from "fumadocs-mdx/next"

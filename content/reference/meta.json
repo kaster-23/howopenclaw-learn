@@ -2,6 +2,7 @@
   "title": "Reference",
   "icon": "FileText",
   "pages": [
+    "what-is-openclaw",
     "cli",
     "concepts",
     "troubleshooting",

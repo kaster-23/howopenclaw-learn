@@ -1,0 +1,113 @@
+---
+title: "What Is OpenClaw?"
+description: "OpenClaw is an open-source, self-hosted personal AI agent. It runs on your machine, connects to messaging apps like Telegram and WhatsApp, and responds using the AI model you choose — with no subscription and no cloud dependency."
+faqs:
+  - q: "What is OpenClaw?"
+    a: "OpenClaw is an open-source, self-hosted personal AI agent. You install it on your own machine (Mac, Linux, or a home server), connect it to messaging apps like Telegram, WhatsApp, or Slack, and it responds to your messages using the AI model you choose — Claude, GPT-4, or Gemini. Your data stays on your hardware."
+  - q: "What is OpenClaw used for?"
+    a: "OpenClaw is used as a personal AI assistant accessible through everyday messaging apps. Common uses include answering questions from your phone via Telegram, sending automated morning briefings, managing tasks and reminders, running web searches, and integrating with calendars and email."
+  - q: "Is OpenClaw free?"
+    a: "OpenClaw itself is free and open source — no subscription, no monthly fee. You pay only for the AI model API calls (Claude, GPT-4, or Gemini), which typically cost a few cents per conversation. For light personal use, monthly costs are often under $5."
+  - q: "Is OpenClaw open source?"
+    a: "Yes. OpenClaw is open-source software published on GitHub under a permissive license. You can inspect the code, fork it, self-host it, and contribute back. There is no closed-source component."
+  - q: "What messaging apps does OpenClaw support?"
+    a: "OpenClaw supports Telegram, WhatsApp, Slack, Discord, iMessage (Mac only), Microsoft Teams, Signal, and a web chat widget. You configure which channels are active in openclaw.json. Multiple channels can run simultaneously."
+  - q: "How is OpenClaw different from ChatGPT?"
+    a: "ChatGPT is a hosted service — your data is processed on OpenAI's servers. OpenClaw runs on your own hardware, so your data stays local. OpenClaw also lives in messaging apps you already use (Telegram, WhatsApp) instead of requiring you to open a browser, and can send proactive messages like scheduled briefings. ChatGPT can't message you unprompted."
+  - q: "Does OpenClaw require coding to use?"
+    a: "No. Setup involves editing a JSON config file and a few Markdown files — no programming required. The install process takes about 15 minutes using the command-line installer. The course at howopenclaw.com walks through every step."
+  - q: "What AI models does OpenClaw work with?"
+    a: "OpenClaw works with Anthropic (Claude 3, Claude 4), OpenAI (GPT-4o, GPT-4), and Google (Gemini 1.5 Pro, Gemini 2.0). You specify your provider and model in openclaw.json. Switching models requires changing two lines in the config."
+howToSteps:
+  - "Install OpenClaw: run `npm install -g openclaw` or download the installer from howopenclaw.com"
+  - "Initialize your config: run `openclaw init` and follow the prompts to set your AI provider and API key"
+  - "Create a Telegram bot via @BotFather, copy the token, and add it to openclaw.json"
+  - "Start the gateway: run `openclaw gateway start`"
+  - "Message your bot on Telegram — it should respond within seconds"
+---
+
+
+**OpenClaw is an open-source, self-hosted personal AI agent.** It runs as a background process on your own machine, connects to messaging apps you already use, and responds to messages using the AI model of your choice — Claude, GPT-4, or Gemini. Your conversations and personal context stay on your hardware. There is no subscription, no cloud dependency, and no third party processing your data.
+
+## What OpenClaw does
+
+When you send a message to your OpenClaw bot on Telegram or WhatsApp, the following happens:
+
+1. The **Gateway** receives the message from the channel
+2. The **Agent** loads your personal context (SOUL.md, USER.md, MEMORY.md)
+3. The message and your context are sent to your chosen AI model's API
+4. The response streams back to the messaging app
+
+This all happens on your machine in a few seconds. The only external call is to the AI provider's API — everything else is local.
+
+OpenClaw can also run proactively: a cron automation sends you a morning briefing at 7am, a reminder before a meeting, or a nightly summary — without you initiating anything.
+
+## The five things that define OpenClaw
+
+**1. It lives in your messaging apps.** You interact with OpenClaw through Telegram, WhatsApp, Slack, Discord, or iMessage — the same apps you use to message people. No browser tab, no separate app to open.
+
+**2. Your data stays on your hardware.** Conversations, context files, and memory all live on your machine. The only data that leaves is the message payload sent to your AI provider's API — which you choose and pay for directly.
+
+**3. It knows who you are.** SOUL.md defines the agent's personality. USER.md stores facts about you. MEMORY.md grows across sessions. The agent reads these on every conversation, giving it persistent, editable context.
+
+**4. It can message you first.** Cron automations let OpenClaw send you scheduled messages: a morning briefing, a weekly summary, a reminder. Hosted AI services like ChatGPT only respond when you initiate.
+
+**5. You choose the AI model.** OpenClaw works with Claude, GPT-4, and Gemini. You can switch models by changing two lines in the config, or run different agents on different models simultaneously.
+
+## How OpenClaw compares to alternatives
+
+| | OpenClaw | ChatGPT | n8n | Zapier |
+|---|---|---|---|---|
+| Runs on your machine | ✅ | ❌ | ✅ | ❌ |
+| Lives in messaging apps | ✅ | ❌ | ❌ | ❌ |
+| Data stays local | ✅ | ❌ | ✅ | ❌ |
+| Persistent memory | ✅ | Limited | ❌ | ❌ |
+| Proactive messages | ✅ | ❌ | ✅ | ✅ |
+| No subscription | ✅ | ❌ | ✅ | ❌ |
+| No coding required | ✅ | ✅ | ❌ | ✅ |
+
+Full comparisons: [OpenClaw vs ChatGPT](/compare/openclaw-vs-chatgpt) · [OpenClaw vs n8n](/compare/openclaw-vs-n8n) · [OpenClaw vs Zapier](/compare/openclaw-vs-zapier) · [see all](/compare)
+
+## Who OpenClaw is for
+
+OpenClaw is for people who:
+
+- Want an AI assistant they can message from their phone without switching apps
+- Care about data privacy and don't want conversations processed by a third-party cloud service
+- Want persistent memory — an agent that actually remembers what you've talked about
+- Want to pay for AI by usage (API cost) rather than a fixed monthly subscription
+- Are comfortable with a 15-minute command-line setup
+
+It's not for people who need zero setup (use ChatGPT), want to automate workflows between 50 SaaS apps (use n8n or Zapier), or are building AI products for other users (use the OpenAI Assistants API).
+
+## How to get started
+
+The quickest path:
+
+1. **Install**: `npm install -g openclaw` (requires Node.js 18+)
+2. **Initialize**: `openclaw init` — sets up your config with your AI provider key
+3. **Connect a channel**: Add [Telegram](/channels/telegram) (2 minutes) or [another channel](/channels)
+4. **Start the gateway**: `openclaw gateway start`
+5. **Test**: Send your bot a message
+
+The full course at [howopenclaw.com/course](/course) walks through every step with no assumed knowledge — from install to automations in about an hour.
+
+## OpenClaw terminology
+
+A few terms you'll see throughout the documentation:
+
+- **Gateway** — the always-running background process that manages channels, the agent, and cron jobs
+- **Agent** — the conversational AI component that reads your context and generates responses
+- **SOUL.md** — a Markdown file defining your agent's personality and communication style
+- **USER.md** — facts about you that the agent always loads
+- **MEMORY.md** — persistent notes that grow across sessions
+- **Skills** — extensions that add capabilities (web search, email, calendar, GitHub)
+- **Channels** — the messaging platforms the agent communicates through
+
+Full definitions are in the [Key Concepts](/reference/concepts) reference.
+
+---
+
+<Callout type="info" title="Ready to install?">
+  The [installation guide](/course/0-setup) covers every step — from Node.js to your first Telegram message — with troubleshooting for every common failure point.
+</Callout>

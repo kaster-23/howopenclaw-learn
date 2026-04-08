@@ -5,7 +5,7 @@ const WINDOW_MS = 60_000 // 1 minute
 
 const requestCounts = new Map<string, { count: number; resetAt: number }>()
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown"
   const now = Date.now()
   const entry = requestCounts.get(ip)

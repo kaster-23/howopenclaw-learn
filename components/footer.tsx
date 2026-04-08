@@ -94,11 +94,6 @@ export function Footer() {
                   Pricing
                 </Link>
               </li>
-              <li>
-                <Link href="/reference/system-requirements" className="text-zinc-400 hover:text-zinc-100 transition-colors">
-                  System Requirements
-                </Link>
-              </li>
             </ul>
           </div>
 

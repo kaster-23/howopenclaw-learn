@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import fs from "fs"
+import path from "path"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
@@ -71,9 +73,11 @@ export const metadata: Metadata = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": `${siteUrl}/#website`,
   name: "HowOpenClaw",
   url: siteUrl,
   description: siteDescription,
+  inLanguage: "en-US",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -87,20 +91,83 @@ const websiteJsonLd = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${siteUrl}/#organization`,
   name: "HowOpenClaw",
   url: siteUrl,
-  logo: `${siteUrl}/clawlogo.png`,
+  logo: {
+    "@type": "ImageObject",
+    url: `${siteUrl}/clawlogo.png`,
+    width: 512,
+    height: 512,
+  },
   sameAs: [
     "https://github.com/kaster-23/howopenclaw-learn",
     "https://x.com/imfrancoierace",
   ],
+  knowsAbout: [
+    "OpenClaw self-hosted AI assistant",
+    "Self-hosted AI",
+    "Local AI models",
+    "Telegram bots",
+    "Discord AI bots",
+    "Personal AI assistants",
+    "Ollama",
+  ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  let softwareVersion = ""
+  try {
+    softwareVersion = fs
+      .readFileSync(path.resolve(process.cwd(), ".openclaw-last-version"), "utf8")
+      .trim()
+  } catch { /* version file may not exist */ }
+
+  const softwareApplicationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": "https://openclaw.ai/#app",
+    name: "OpenClaw",
+    description:
+      "Free, open-source, self-hosted AI assistant. Connects to Telegram, Discord, WhatsApp, Slack, iMessage, Signal, and Microsoft Teams. Runs on your own hardware — no cloud subscription required.",
+    url: "https://openclaw.ai",
+    downloadUrl: "https://github.com/OpenClaw/OpenClaw/releases",
+    installUrl: `${siteUrl}/course/0-setup`,
+    applicationCategory: "ProductivityApplication",
+    applicationSubCategory: "AI Assistant",
+    operatingSystem: ["macOS", "Linux", "Windows"],
+    softwareRequirements: "Node.js 22.16 or later",
+    ...(softwareVersion ? { softwareVersion } : {}),
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    featureList: [
+      "Self-hosted deployment — no cloud subscription",
+      "Connects to Telegram, Discord, WhatsApp, Slack, iMessage, Signal, Microsoft Teams",
+      "Supports Claude, GPT-4o, and local Ollama models",
+      "Persistent memory with SOUL.md and MEMORY.md",
+      "Skill system for calendar, email, web search, and more",
+      "Cron jobs for scheduled autonomous tasks",
+      "24/7 deployment on VPS or home server",
+    ],
+    author: {
+      "@type": "Organization",
+      name: "OpenClaw",
+      url: "https://openclaw.ai",
+    },
+    sameAs: [
+      "https://github.com/OpenClaw/OpenClaw",
+      "https://openclaw.ai",
+    ],
+  }
+
   return (
     <html
       lang="en"
@@ -122,6 +189,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }}
         />
       </body>
     </html>

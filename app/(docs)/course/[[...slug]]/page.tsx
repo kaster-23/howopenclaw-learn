@@ -126,15 +126,48 @@ export default async function Page({ params }: PageProps) {
 
   const MDX = page.data.body
 
+  const pageUrl = `${siteUrl}${page.url}`
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
+    "@id": `${pageUrl}#article`,
     headline: page.data.title,
     description: page.data.description,
-    url: `${siteUrl}${page.url}`,
-    publisher: { "@type": "Organization", name: "HowOpenClaw", url: siteUrl },
-    author: { "@type": "Organization", name: "HowOpenClaw Community" },
-    isPartOf: { "@type": "WebSite", name: "HowOpenClaw", url: siteUrl },
+    url: pageUrl,
+    datePublished: "2025-03-01",
+    dateModified: new Date().toISOString().split("T")[0],
+    inLanguage: "en-US",
+    ...(page.data.readTime ? { timeRequired: `PT${page.data.readTime}M` } : {}),
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "HowOpenClaw",
+      url: siteUrl,
+      logo: { "@type": "ImageObject", url: `${siteUrl}/clawlogo.png` },
+    },
+    author: {
+      "@type": "Organization",
+      name: "HowOpenClaw Community",
+      url: siteUrl,
+    },
+    isPartOf: { "@type": "WebSite", "@id": `${siteUrl}/#website`, name: "HowOpenClaw", url: siteUrl },
+    about: {
+      "@type": "SoftwareApplication",
+      "@id": "https://openclaw.ai/#app",
+      name: "OpenClaw",
+      sameAs: "https://openclaw.ai",
+    },
+    mentions: [
+      { "@type": "SoftwareApplication", name: "OpenClaw", sameAs: "https://openclaw.ai" },
+      { "@type": "SoftwareApplication", name: "Telegram", sameAs: "https://telegram.org" },
+      { "@type": "SoftwareApplication", name: "Ollama", sameAs: "https://ollama.ai" },
+      { "@type": "Organization", name: "Anthropic", sameAs: "https://anthropic.com" },
+    ],
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", "h2", ".prose > p:first-of-type"],
+    },
   }
 
   const breadcrumbJsonLd = buildBreadcrumbList(fullSlug, page.data.title)

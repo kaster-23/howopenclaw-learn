@@ -8,6 +8,15 @@ learningObjectives:
   - "Browse and install skills from ClawHub"
   - "Configure skill credentials and permissions"
   - "Write a basic custom skill"
+faqs:
+  - q: "What is the difference between a built-in tool and a skill?"
+    a: "Built-in tools (read, write, shell) are compiled into OpenClaw and enabled via config flags. Skills are external extensions — Markdown SKILL.md files that describe tools the agent can call. Skills are installed from ClawHub and can be added or removed without touching the core config."
+  - q: "Are OpenClaw skills free to use?"
+    a: "The skills themselves are free and open source. However, some skills connect to external services that have their own costs — for example, a Google Calendar skill requires a Google account, and a web search skill may use a paid API. Check each skill's readme for dependencies."
+  - q: "Can I use multiple skills at the same time?"
+    a: "Yes. You can have any number of skills installed and active at once. The agent selects which skills to invoke based on the task — it won't call your calendar skill when you ask a general knowledge question. Skills don't conflict with each other unless they share the same tool name."
+  - q: "Do skills have access to my files or personal data?"
+    a: "Only the skills you explicitly enable and configure. File access is limited to ~/.openclaw/workspace/ by default. Skills can only access your accounts if you provide credentials during setup. You can audit all enabled skills at any time by running `openclaw config audit`."
 prerequisites:
   - "Completed Module 2 (Connecting Your Apps)"
 prevModule: "/course/2-connecting-apps"

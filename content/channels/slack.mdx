@@ -8,6 +8,13 @@ howToSteps:
   - "Install the app to your workspace and copy the Bot Token"
   - "Store your tokens as environment variables and add the Slack channel config to openclaw.json"
   - "Restart the gateway with `openclaw gateway restart` and test by DMing your bot or @mentioning it in an allowed channel"
+faqs:
+  - q: "Does Socket Mode require a paid Slack plan?"
+    a: "No. Socket Mode is available on Slack's free tier. It uses a WebSocket connection from your server to Slack — no public URL or webhook endpoint needed. This makes OpenClaw work behind firewalls and corporate VPNs without any network configuration."
+  - q: "Can the Slack bot respond in public channels?"
+    a: "Yes. Add channels:history to the bot's token scopes and specify the channel ID in allowedChannels in your OpenClaw config. The bot can also respond in DMs and to @mentions in any channel it has been invited to. You control exactly which channels it monitors."
+  - q: "Will the bot work in a Slack organization I don't administer?"
+    a: "Only if a workspace admin installs it. Slack requires admin approval to install third-party apps. If you're in a corporate Slack, you'll need IT or admin sign-off. For personal or small team use where you are the admin, the installation takes about 5 minutes."
 ---
 
 

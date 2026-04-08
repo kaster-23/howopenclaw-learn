@@ -7,6 +7,13 @@ howToSteps:
   - "Restart the gateway: `openclaw gateway restart`"
   - "Send a test iMessage from another Apple device — your agent should reply within a few seconds"
   - "If it doesn't respond, check logs with `openclaw logs --filter imessage` for permission or formatting errors"
+faqs:
+  - q: "Can I use OpenClaw via iMessage from my iPhone?"
+    a: "Yes — that's the main use case. You message the agent from your iPhone using iMessage, and it responds through the Mac running OpenClaw. Your iPhone and Mac need to share the same Apple ID and have iMessage enabled on both devices. Messages appear in your standard Messages app."
+  - q: "Does it work if my Mac is asleep?"
+    a: "No. The Mac needs to be awake and running the OpenClaw Gateway for iMessage to work. If your Mac sleeps, messages you sent will be delivered when it wakes, but the agent won't respond until then. Use Power Nap on Mac or adjust sleep settings if you need more availability."
+  - q: "Can I run this on Linux or Windows?"
+    a: "No. iMessage integration uses the macOS Messages framework, which only exists on Apple hardware running macOS 13 Ventura or later. It cannot run inside a virtual machine either — the Messages framework requires a real Apple environment. For cross-platform use, set up Telegram or Signal instead."
 ---
 
 

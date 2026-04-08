@@ -1,5 +1,6 @@
 import { source } from "@/lib/source"
 import defaultMdxComponents from "fumadocs-ui/mdx"
+import { FaqSection } from "@/components/faq-section"
 import { Callout } from "fumadocs-ui/components/callout"
 import { Steps, Step } from "fumadocs-ui/components/steps"
 import { Card, Cards } from "fumadocs-ui/components/card"
@@ -249,6 +250,7 @@ export default async function Page({ params }: PageProps) {
         <div className="prose dark:prose-invert max-w-none">
           <MDX components={mdxComponents} />
         </div>
+        {page.data.faqs?.length ? <FaqSection faqs={page.data.faqs} /> : null}
       </article>
     </>
   )

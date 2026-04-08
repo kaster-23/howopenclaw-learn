@@ -7,6 +7,15 @@ howToSteps:
   - "Restart the gateway and watch logs: `openclaw gateway restart && openclaw logs --filter whatsapp`"
   - "Scan the QR code that appears in your terminal using WhatsApp on your phone: Settings → Linked Devices → Link a Device"
   - "Test by sending a message from an allowed contact — the agent should reply"
+faqs:
+  - q: "Is the WhatsApp connection official?"
+    a: "No. OpenClaw's WhatsApp integration uses Baileys, an unofficial library that emulates WhatsApp Web. It is not part of the official WhatsApp Business API. This means it's more fragile — WhatsApp may require re-authentication periodically. For a more stable, official channel, use Telegram, Slack, or Discord."
+  - q: "Will WhatsApp ban my account for using OpenClaw?"
+    a: "There's a small risk. WhatsApp's terms of service prohibit unofficial API usage, and automated messaging can trigger account restrictions. Using your personal WhatsApp number is riskier than a dedicated one. To minimize risk, don't send bulk messages — use it only for personal back-and-forth conversations."
+  - q: "Why does the QR code expire before I can scan it?"
+    a: "The QR code refreshes every 60 seconds. If it expires, wait for the new code to appear in the terminal logs — it regenerates automatically. Make sure you're watching `openclaw logs --filter whatsapp` in your terminal and open WhatsApp → Settings → Linked Devices on your phone before the QR appears."
+  - q: "Can I use my existing personal WhatsApp number?"
+    a: "Technically yes, but not recommended. If the integration is detected as automated activity, your personal number could be restricted. Best practice is to get a dedicated phone number (a cheap prepaid SIM or Google Voice) for the bot, keeping your personal number completely separate."
 ---
 
 

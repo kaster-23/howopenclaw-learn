@@ -7,6 +7,13 @@ howToSteps:
   - "Go to OAuth2 → URL Generator with scopes 'bot' and 'applications.commands', add Send Messages and Read Message History permissions, then open the generated URL to invite the bot to your server"
   - "Store the bot token as an environment variable and add the Discord channel config to openclaw.json with your guild and channel IDs"
   - "Restart the gateway with `openclaw gateway restart` and @mention your bot in an allowed channel to test"
+faqs:
+  - q: "Does the Discord bot need admin permissions in my server?"
+    a: "No. The bot only needs the minimum permissions for its function: Send Messages, Read Message History, and View Channels in the channels you want it active in. Never grant Administrator permissions to a bot — limit it to exactly what it needs. You set permissions during the OAuth2 invite step."
+  - q: "Can the bot respond in multiple Discord servers?"
+    a: "Yes. Invite the bot to as many servers as you like. In openclaw.json, configure each guild ID and which channels the bot should monitor in each. The same bot token works across all servers — you don't need separate bots."
+  - q: "Is Discord free to use with OpenClaw?"
+    a: "Yes. Discord's free tier is sufficient for running an OpenClaw bot. You don't need Discord Nitro or any paid plan. The Discord Developer Portal, bot creation, and all required API features are free. Your only costs are the AI provider API calls that generate responses."
 ---
 
 

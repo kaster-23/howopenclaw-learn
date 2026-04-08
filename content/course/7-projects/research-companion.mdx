@@ -10,6 +10,13 @@ howToSteps:
   - "Add research mode instructions to SOUL.md"
   - "Run a test research task with --thinking high"
   - "Ask the agent to build on saved notes from previous research"
+faqs:
+  - q: "How many sources does the research agent search?"
+    a: "The default SOUL.md instruction in this module tells the agent to search at least 3 different sources. You can raise this to 5 or 10 by updating the instruction. For deeper research, use the `--thinking high` flag — it makes the agent reason more carefully before deciding which sources to trust."
+  - q: "Does the research agent save its findings automatically?"
+    a: "Yes, when you include the notes skill and instruct the agent to save summaries in SOUL.md. The agent saves findings as a Markdown file named after the topic. You can retrieve past research by asking the agent to 'find my notes about X' or by opening the file directly in your workspace."
+  - q: "Can I ask the agent to research something while I'm away?"
+    a: "Yes. Use the CLI to send a message without waiting for a response: `openclaw agent --message 'Research X and save a summary to my notes' --async`. The agent runs the task in the background and stores the result. You can check the notes later by asking 'what did you find about X?'"
 ---
 
 <ReadTime minutes={3} />

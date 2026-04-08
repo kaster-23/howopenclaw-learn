@@ -8,6 +8,15 @@ learningObjectives:
   - "Deploy OpenClaw to a server for 24/7 operation"
   - "Monitor your agent's health and logs"
   - "Set up a self-check system"
+faqs:
+  - q: "Does my computer need to stay on for cron jobs to run?"
+    a: "Yes — if your machine sleeps or shuts down, scheduled tasks don't run. For 24/7 reliability, deploy OpenClaw to a VPS (a small cloud server costs about $5/month). Alternatively, use caffeinate on Mac to prevent sleep while keeping the agent on your local machine."
+  - q: "How much do scheduled AI tasks cost in API fees?"
+    a: "It depends on the task complexity. A simple self-check prompt ('reply ok only') costs a fraction of a cent per run. A detailed daily briefing with web searches might cost $0.01–$0.05. A cron job running every 30 minutes with a short prompt costs under $1/month at current API rates."
+  - q: "How do I pause or stop a cron job without deleting it?"
+    a: "Run `openclaw cron list` to find your job's ID, then `openclaw cron remove [job-id]` to stop it. To pause temporarily, you can comment out the cron entry in your config. There's no built-in 'pause' — removing and re-adding is the simplest approach."
+  - q: "What's the cheapest way to keep OpenClaw running 24/7?"
+    a: "A $4–6/month VPS (DigitalOcean, Hetzner, or Vultr) is the most reliable option. Alternatively, a Raspberry Pi or old laptop at home costs nothing monthly after purchase. The VPS option is recommended for beginners since it's simpler to set up and maintain."
 prerequisites:
   - "Completed Module 5 (Memory & Personality)"
 prevModule: "/course/5-memory-personality"

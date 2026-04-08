@@ -7,6 +7,15 @@ howToSteps:
   - "Add the Telegram channel config to openclaw.json with your bot token and allowed user IDs"
   - "Restart the gateway with `openclaw gateway restart`"
   - "Find your bot by username in Telegram and send it a message — it should reply within seconds"
+faqs:
+  - q: "Do I need a Telegram account to create a bot?"
+    a: "Yes, but you only need a basic free Telegram account — no premium subscription required. The bot is created through @BotFather, which is a special Telegram bot that issues tokens. Your personal Telegram account and the bot are completely separate: the bot gets its own username and identity."
+  - q: "Can multiple people use my Telegram bot?"
+    a: "Yes. Add multiple Telegram user IDs to the allowedUsers array in openclaw.json. Each person messages the bot through their own Telegram account. The agent maintains context per user, so conversations don't mix. Remove a user from the list to revoke their access instantly."
+  - q: "Are my conversations with the bot private?"
+    a: "Messages go from Telegram's servers to your bot, then to your machine. Telegram encrypts messages in transit but does not use end-to-end encryption for bots — Telegram can see message content. If you need end-to-end encryption, use the Signal channel instead. Your AI provider also sees the message content."
+  - q: "Why isn't my Telegram bot responding?"
+    a: "Check three things: (1) your Telegram user ID is in allowedUsers in openclaw.json, (2) the Gateway is running — `openclaw gateway status`, and (3) the bot token in your config is correct. Run `openclaw logs --filter telegram` to see any error messages that pinpoint the issue."
 ---
 
 

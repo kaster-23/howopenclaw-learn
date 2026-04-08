@@ -48,6 +48,7 @@ const SECTIONS: Record<string, SectionData> = {
     label: "Reference",
     indexHref: "/reference",
     pages: [
+      { title: "What is OpenClaw?", href: "/reference/what-is-openclaw" },
       { title: "CLI Cheatsheet", href: "/reference/cli" },
       { title: "Key Concepts", href: "/reference/concepts" },
       { title: "Fix It When It Breaks", href: "/reference/troubleshooting" },

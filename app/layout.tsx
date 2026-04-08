@@ -6,7 +6,7 @@ import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import "./globals.css"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "")
 const siteDescription =
   "Step-by-step guides to set up OpenClaw, your self-hosted AI assistant. Connect Telegram, Discord, WhatsApp — no cloud subscription needed."
 

@@ -57,7 +57,7 @@ interface PageProps {
   params: Promise<{ slug: string[] }>
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "")
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params

@@ -6,7 +6,7 @@ import "./globals.css"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
 const siteDescription =
-  "Community documentation for OpenClaw — the open-source self-hosted AI assistant. Installation, security, channels, automation, and more."
+  "Step-by-step guides to set up OpenClaw, your self-hosted AI assistant. Connect Telegram, Discord, WhatsApp — no cloud subscription needed."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

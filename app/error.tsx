@@ -13,6 +13,7 @@ export default function Error({ error, reset }: ErrorProps) {
     console.error(error)
   }, [error])
 
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4 text-center">
       <p className="text-fd-muted-foreground text-sm font-mono">500</p>

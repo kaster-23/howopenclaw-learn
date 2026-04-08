@@ -2,6 +2,8 @@ import { source } from "@/lib/source"
 import { DocsPage, DocsTitle, DocsDescription, DocsBody } from "fumadocs-ui/page"
 import defaultMdxComponents from "fumadocs-ui/mdx"
 import { FaqSection } from "@/components/faq-section"
+import { OpenClawVersion } from "@/components/openclaw-version"
+import { execSync } from "child_process"
 import { Callout } from "fumadocs-ui/components/callout"
 import { Steps, Step } from "fumadocs-ui/components/steps"
 import { Card, Cards } from "fumadocs-ui/components/card"
@@ -118,6 +120,17 @@ function buildBreadcrumbList(slug: string[], pageTitle: string) {
   return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items }
 }
 
+function getGitDate(filePath: string): string {
+  try {
+    const iso = execSync(
+      `git log -1 --format="%aI" -- "${filePath}"`,
+      { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] }
+    ).trim()
+    if (iso) return new Date(iso).toISOString().split("T")[0]
+  } catch { /* fall through */ }
+  return new Date().toISOString().split("T")[0]
+}
+
 export default async function Page({ params }: PageProps) {
   const { slug } = await params
   const fullSlug = getFullSlug(slug)
@@ -126,6 +139,7 @@ export default async function Page({ params }: PageProps) {
 
   const MDX = page.data.body
 
+  const dateModified = page.absolutePath ? getGitDate(page.absolutePath) : new Date().toISOString().split("T")[0]
   const pageUrl = `${siteUrl}${page.url}`
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -135,7 +149,7 @@ export default async function Page({ params }: PageProps) {
     description: page.data.description,
     url: pageUrl,
     datePublished: "2025-03-01",
-    dateModified: new Date().toISOString().split("T")[0],
+    dateModified,
     inLanguage: "en-US",
     ...(page.data.readTime ? { timeRequired: `PT${page.data.readTime}M` } : {}),
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
@@ -268,6 +282,7 @@ export default async function Page({ params }: PageProps) {
               User,
               Volume2,
               Wrench,
+              OpenClawVersion,
               // Legacy gamification stubs
               ClaimXP: Noop,
               MissionProgress: Noop,

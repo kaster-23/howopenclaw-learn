@@ -52,8 +52,8 @@ OpenClaw has two types of capabilities:
 - `read` / `write` — access files in your workspace
 - `exec` — run shell commands (with restrictions)
 - `image_generate` — create images using configured providers
-- `video_generate` — create videos (as of v2026.4.5)
-- `music_generate` — create music (as of v2026.4.5)
+- `video_generate` — create videos (as of <OpenClawVersion />)
+- `music_generate` — create music (as of <OpenClawVersion />)
 
 **Skills** are purpose-built integrations with specific APIs:
 - Google Calendar — read and create events
@@ -62,7 +62,7 @@ OpenClaw has two types of capabilities:
 - Weather — get forecasts
 - And many more on ClawHub
 
-## Media generation (new in v2026.4.5)
+## Media generation (new in <OpenClawVersion />)
 
 Your agent can now generate images, videos, and music if you configure the right providers.
 
@@ -76,7 +76,7 @@ openclaw agent --message "Create an image of a cozy home office with plants"
 
 ### Video generation
 
-As of v2026.4.5, your agent can generate videos. Configure a provider like Runway or xAI:
+As of <OpenClawVersion />, your agent can generate videos. Configure a provider like Runway or xAI:
 
 ```json
 {
@@ -96,7 +96,7 @@ Your agent will use the `video_generate` tool to create the video and return it 
 
 ### Music generation
 
-As of v2026.4.5, your agent can generate music using Google Lyria, MiniMax, or ComfyUI workflows:
+As of <OpenClawVersion />, your agent can generate music using Google Lyria, MiniMax, or ComfyUI workflows:
 
 ```json
 {

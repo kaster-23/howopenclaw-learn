@@ -99,9 +99,9 @@ Group echo suppression is now smarter: OpenClaw tracks recent gateway-sent messa
 
 Reply-to-bot detection in groups also works reliably with linked accounts. OpenClaw unwraps `botInvokeMessage` payloads and reads `selfLid` from `creds.json`, so reply-based mentions reach the bot in linked-account group chats.
 
-## Reconnection Stability (v2026.4.5)
+## Reconnection Stability (<OpenClawVersion />)
 
-As of v2026.4.5, WhatsApp reconnection has been improved:
+As of <OpenClawVersion />, WhatsApp reconnection has been improved:
 
 - The `blockStreaming` setting has been restored and controls streaming behavior
 - Watchdog timeouts are now reset after reconnect, so quiet chats no longer fall into reconnect loops

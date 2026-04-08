@@ -106,14 +106,14 @@ This automatically detects and recovers from dropped connections.
 
 If the inbound Discord worker times out before a final reply starts, OpenClaw now sends a visible timeout reply to the user — including in auto-created threads and queued runs. Previously, timeouts could result in silent failures with no feedback in the channel.
 
-## Media Handling (v2026.4.5)
+## Media Handling (<OpenClawVersion />)
 
 - Media cap raised to **100MB** (previously 25MB), bringing it closer to Telegram's limits
 - Generated images are now properly tracked with real `MEDIA:` paths instead of missing local files
 - Component-only media sends are preserved without extra plain-output requeueing
 - Text-plus-video deliveries are intelligently split into a text reply followed by a media-only send
 
-## Recent Fixes (v2026.4.5)
+## Recent Fixes (<OpenClawVersion />)
 
 - REST, webhook, and monitor traffic stays on the configured proxy
 - `@everyone` and `@here` mention gates are honored

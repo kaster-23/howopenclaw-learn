@@ -12,7 +12,7 @@ const SECTION_LABELS: Record<string, string> = {
 }
 
 export function GET() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
   const pages = source.getPages()
 
   // Group pages by top-level section

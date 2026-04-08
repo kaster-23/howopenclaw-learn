@@ -4,7 +4,7 @@ import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import "./globals.css"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
 const siteDescription =
   "Community documentation for OpenClaw — the open-source self-hosted AI assistant. Installation, security, channels, automation, and more."
 

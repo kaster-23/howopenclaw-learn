@@ -15,7 +15,7 @@ function getPriority(url: string): number {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
 
   return [
     {

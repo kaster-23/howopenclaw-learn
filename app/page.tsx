@@ -16,7 +16,7 @@ function getSyncedVersion(): string {
 const description =
   "Practical, goal-driven guides for building your personal AI assistant with OpenClaw. Pick a goal. Follow the path. Ship something real."
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://howopenclaw.com"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com"
 
 export const metadata: Metadata = {
   title: "HowOpenClaw — Learn OpenClaw Step by Step",

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo, useEffect } from "react"
+import { useRef, useMemo, useEffect, useState } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 
@@ -14,10 +14,11 @@ const CFG = {
   repelRadiusRatio: 0.23,
   dotSize: 1.7,
   opacity: 0.61,
+  opacityMobile: 0.43, // 30% less than desktop (0.61 × 0.70)
   color: "#d95000",
 }
 
-function DotsField() {
+function DotsField({ opacity }: { opacity: number }) {
   const { viewport, camera } = useThree()
   const pointsRef = useRef<THREE.Points>(null!)
   const mouse = useRef(new THREE.Vector3(-9999, -9999, 0))
@@ -101,13 +102,26 @@ function DotsField() {
         size={CFG.dotSize}
         sizeAttenuation={false}
         transparent
-        opacity={CFG.opacity}
+        opacity={opacity}
       />
     </points>
   )
 }
 
 export default function BackgroundDots() {
+  const [opacity, setOpacity] = useState(CFG.opacity)
+
+  useEffect(() => {
+    // tablet and below: ≤1024px (Tailwind lg breakpoint)
+    const mq = window.matchMedia("(max-width: 1024px)")
+    const update = (e: MediaQueryList | MediaQueryListEvent) => {
+      setOpacity(e.matches ? CFG.opacityMobile : CFG.opacity)
+    }
+    update(mq)
+    mq.addEventListener("change", update)
+    return () => mq.removeEventListener("change", update)
+  }, [])
+
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
       <Canvas
@@ -116,7 +130,7 @@ export default function BackgroundDots() {
         style={{ background: "transparent" }}
         dpr={[1, 1.5]}
       >
-        <DotsField />
+        <DotsField opacity={opacity} />
       </Canvas>
     </div>
   )

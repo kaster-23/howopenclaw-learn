@@ -52,7 +52,7 @@ openclaw logs --filter error --tail 200
 
 If it's crashing on startup with a channel error, try disabling all channels temporarily and re-enabling them one at a time to find the bad config.
 
-<Callout type="info" title="Channel isolation (<OpenClawVersion />)">
+<Callout type="info" title="Channel isolation">
 Channel startup failures are now isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed; the rest will continue to operate normally.
 </Callout>
 
@@ -63,7 +63,7 @@ openclaw config set gateway.port 18790
 openclaw gateway
 ```
 
-### Gateway restart issues (Windows & macOS, <OpenClawVersion />)
+### Gateway restart issues (Windows & macOS)
 
 Windows and macOS now handle gateway restarts more reliably:
 
@@ -86,7 +86,7 @@ openclaw gateway restart
 2. Verify the bot token in config is correct (no extra spaces)
 3. Check if BotFather revoked the token — generate a new one if needed
 4. Make sure you sent `/start` to the bot before messaging
-5. As of <OpenClawVersion />, voice notes should transcribe automatically — if you see `<media:audio>` placeholders, check logs for transcription errors
+5. Voice notes should transcribe automatically — if you see `<media:audio>` placeholders, check logs for transcription errors
 
 ### WhatsApp disconnected
 
@@ -105,7 +105,7 @@ rm -rf ~/.openclaw/sessions/whatsapp
 openclaw channels login --channel whatsapp
 ```
 
-As of <OpenClawVersion />, watchdog timeouts are reset after reconnect, so quiet chats should no longer fall into reconnect loops.
+Watchdog timeouts are reset after reconnect, so quiet chats should no longer fall into reconnect loops.
 
 ### Slack "not_in_channel" error
 
@@ -117,11 +117,11 @@ Your bot isn't in the channel you're trying to post to. In Slack:
 
 Also check the bot's OAuth scopes — it needs `chat:write` at minimum.
 
-As of <OpenClawVersion />, live DM replies now route correctly to the concrete inbound DM channel, so assistant replies should no longer disappear when pairing.
+Live DM replies now route correctly to the concrete inbound DM channel, so assistant replies should no longer disappear when pairing.
 
 ### Slack in proxy-only deployments
 
-As of v2026.4.8, Socket Mode WebSocket connections now honor your ambient HTTP(S) proxy settings and `NO_PROXY` exclusions. If your deployment uses a proxy server for all outbound traffic, OpenClaw will route Socket Mode connections through the proxy automatically — no manual configuration needed.
+Socket Mode WebSocket connections now honor your ambient HTTP(S) proxy settings and `NO_PROXY` exclusions. If your deployment uses a proxy server for all outbound traffic, OpenClaw will route Socket Mode connections through the proxy automatically — no manual configuration needed.
 
 ### iMessage not responding
 
@@ -137,7 +137,7 @@ Re-grant permissions when prompted.
 
 If your Discord worker times out before a reply starts, OpenClaw now sends a visible timeout reply to the user — including in auto-created threads. Previously, timeouts resulted in silent failures with no feedback.
 
-### Teams media and threading (<OpenClawVersion />)
+### Teams media and threading
 
 - Channel reply threading is now preserved in proactive fallback scenarios
 - Inline DM images are downloaded via Graph API correctly
@@ -162,7 +162,7 @@ Check:
 2. Is the Gateway running at the scheduled time? (Laptop sleeping breaks this — see [Module 6: Autonomous Tasks](/course/6-autonomous-tasks))
 3. Is the timezone correct? Add `"timezone": "America/New_York"` to the automation config if not specified
 
-As of <OpenClawVersion />, interrupted recurring jobs are replayed on the first gateway restart (not the second), and failure notifications are sent through the job's primary delivery channel using the same session context as successful delivery when no explicit `failureDestination` is configured.
+Interrupted recurring jobs are replayed on the first gateway restart (not the second), and failure notifications are sent through the job's primary delivery channel using the same session context as successful delivery when no explicit `failureDestination` is configured.
 
 ### Test an automation manually
 
@@ -204,11 +204,19 @@ openclaw tools list
 
 Check that the tool is enabled and available to the current agent. If `web_search` isn't in the list, it's not in your config or not available to this agent's profile.
 
-As of <OpenClawVersion />, new built-in tools include `video_generate` and `music_generate` for media creation. Check that you've configured the appropriate providers if you want to use these.
+New built-in tools include `video_generate` and `music_generate` for media creation. Check that you've configured the appropriate providers if you want to use these.
+
+### Provider-specific issues
+
+**OpenAI:** Missing reasoning effort now defaults to `high` on OpenAI Responses, WebSocket, and compatible completions transports — explicit per-run reasoning levels are still honored.
+
+**Ollama:** Models using the native `api: "ollama"` path can now optionally display thinking output when `/think` is set to a non-off level.
+
+**Codex CLI:** System prompts are now passed through Codex's `model_instructions_file` config override so fresh Codex CLI sessions receive the same prompt guidance as Claude CLI sessions.
 
 ### Agent execution reporting accuracy
 
-As of v2026.4.8, `/exec` command reports now accurately reflect real runtime behavior. Host-aware fallback policies are reported correctly:
+`/exec` command reports now accurately reflect real runtime behavior. Host-aware fallback policies are reported correctly:
 
 - **Gateway host**: `full/off` (full execution or off)
 - **Node deployment**: `full/off`
@@ -242,9 +250,9 @@ openclaw config reset
 
 This resets `openclaw.json` to defaults but doesn't touch SOUL.md, USER.md, or workspace files.
 
-### Legacy config aliases (<OpenClawVersion />)
+### Legacy config aliases
 
-As of <OpenClawVersion />, legacy public config aliases like `talk.voiceId`, `talk.apiKey`, and channel/group/room `allow` toggles have been removed in favor of canonical public paths and `enabled`. However, existing configs with legacy aliases still load at startup.
+Legacy public config aliases like `talk.voiceId`, `talk.apiKey`, and channel/group/room `allow` toggles have been removed in favor of canonical public paths and `enabled`. However, existing configs with legacy aliases still load at startup.
 
 For guidance on updating your config:
 
@@ -253,6 +261,10 @@ openclaw doctor --fix
 ```
 
 This will apply migrations and show you exactly what changed. Test your setup after running this command.
+
+### Auth profile persistence
+
+Explicit auth-profile upserts are now persisted directly without stale external credential state. Profile changes are saved without requiring external CLI sync for local writes.
 
 ---
 
@@ -272,13 +284,13 @@ Then retry the update:
 openclaw update
 ```
 
-### Update with mixed package managers (<OpenClawVersion />)
+### Update with mixed package managers
 
 If you have a mixed Homebrew-plus-nvm setup, `openclaw update` now prefers the npm binary that owns the installed global OpenClaw prefix. This ensures mixed setups update the right install.
 
 ---
 
-## Memory & Dreaming issues (<OpenClawVersion />)
+## Memory & Dreaming issues
 
 ### Dreaming not consolidating memories
 
@@ -317,13 +329,41 @@ Tune recall decay with:
 
 Adjust `recencyHalfLifeDays` to control how quickly recent events fade, and `maxAgeDays` to set the maximum retention window.
 
+### Backfill issues
+
+If backfilling historical diary entries, ensure source-day labels are preserved:
+
+```bash
+openclaw diary commit [path]    # Commit historical entries to memory
+openclaw diary reset [path]     # Reset stale or incorrect entries
+```
+
+The backfill process now normalizes diary headings and tightens claim splitting automatically.
+
 ---
 
 ## Network issues
 
 ### Sandbox connectivity with HTTP proxy
 
-As of v2026.4.8, the network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
+The network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
+
+---
+
+## Mobile deployment issues
+
+### Android manual connect with TLS
+
+Blank port input is now allowed only for TLS manual gateway endpoints. Standard HTTPS Tailscale hosts will default to port `443` without silently changing cleartext manual connects to port 80.
+
+### Android pairing
+
+Clear stale setup-code auth on new QR scans. The system now:
+- Bootstraps operator and node sessions from fresh pairing
+- Prefers stored device tokens after bootstrap handoff
+- Pauses pairing auto-retry while the app is backgrounded
+
+This makes scan-once Android pairing more reliable.
 
 ---
 

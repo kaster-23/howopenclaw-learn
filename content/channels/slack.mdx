@@ -74,7 +74,7 @@ Creates a persistent WebSocket connection — no public URL required. Works behi
 
 This is what most setups should use. Reliable enough to run continuously for weeks without issues.
 
-As of v2026.4.8, Socket Mode connections honor ambient HTTP(S) proxy settings (including `NO_PROXY` exclusions), so OpenClaw works in proxy-only deployments without requiring manual configuration.
+Socket Mode connections now honor ambient HTTP(S) proxy settings (including `NO_PROXY` exclusions), so OpenClaw works in proxy-only deployments without requiring manual configuration.
 
 ### Events API
 
@@ -97,21 +97,31 @@ Options:
 
 This renders as clickable buttons in Slack. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers, so custom plugins won't interfere with standard reply buttons.
 
-## Direct Message Routing (<OpenClawVersion />)
+## Direct Message Routing
 
-As of <OpenClawVersion />, live DM replies now correctly route back to the concrete inbound DM channel while keeping persisted routing metadata user-scoped. This fix resolves an issue where normal assistant replies were disappearing when pairing, while system messages still arrived correctly.
+Live DM replies now correctly route back to the concrete inbound DM channel while keeping persisted routing metadata user-scoped. This ensures that normal assistant replies arrive reliably when pairing, and system messages continue to work as expected.
 
 ## Token Resolution
 
-As of v2026.4.8, OpenClaw correctly resolves SecretRef-backed bot tokens before passing them to file download operations. This ensures that tokens referenced from secret stores work reliably after a configuration reload, so `downloadFile` operations no longer fail with token resolution errors.
+OpenClaw correctly resolves SecretRef-backed bot tokens before passing them to file download operations. This ensures that tokens referenced from secret stores work reliably after a configuration reload, so `downloadFile` operations no longer fail with token resolution errors.
+
+## ACP Block Replies
+
+Slack ACP (Advanced Channel Platform) block replies are now treated as visible delivered output. This means OpenClaw stops re-sending the final fallback text after Slack has already rendered the reply, preventing duplicate messages.
+
+## Partial Streaming
+
+Turn-local deduplication is now keyed by dispatch kind, and the final fallback reply path stays active when preview finalization fails. This prevents stale preview text from suppressing the actual final answer.
 
 ## Recent Fixes (<OpenClawVersion />)
 
 - Live DM replies route to the correct concrete inbound DM channel
-- Persisted routing metadata remains user-scoped for consistency
+- Persisted routing metadata remains user-scoped for consistency  
 - System messages continue to arrive as expected
 - Socket Mode honors HTTP(S) proxy settings, including NO_PROXY exclusions
 - SecretRef-backed bot tokens resolve correctly for file operations
+- ACP block replies are treated as visible delivered output
+- Partial streaming deduplication is correct and doesn't suppress final answers
 
 ## Security Recommendations
 

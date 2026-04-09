@@ -93,20 +93,28 @@ When your agent sends images, OpenClaw preflights Telegram's photo dimension and
 
 ## Voice Notes & Audio
 
-As of <OpenClawVersion />, voice note transcription in direct messages has been restored. When you send a voice message to your bot, it will transcribe the audio and respond — no longer arriving as raw `<media:audio>` placeholders.
+Voice note transcription in direct messages has been restored. When you send a voice message to your bot, it will transcribe the audio and respond naturally — no longer arriving as raw `<media:audio>` placeholders.
 
 ## Improved Error Handling
 
 Outbound delivery errors now preserve actionable details (e.g., 403 membership/block/kick reasons), and permanently failed chats (such as when the bot has been blocked or kicked) stop retrying automatically instead of looping.
 
+## HTML Entity-Encoded Media Tags
+
+QQBot-style media tags with HTML entity-encoded angle brackets (`&lt;`/`&gt;`) are now correctly parsed and normalized, as are URL slashes in attributes and self-closing media tags.
+
 ## Recent Improvements (<OpenClawVersion />)
 
+- Voice note transcription in DMs restored — voice messages now transcribe and respond
+- HTML entity-encoded media tags properly parsed
 - Fixed model picker current-model checks
 - HTML-formatted non-default `/model` confirmations
 - Explicit topic reply routing
 - Persisted reaction ownership across restarts
 - Caption-media placeholder and `file_id` preservation on download failure
 - Improved handling in upgraded installations
+- Outbound delivery errors preserve actionable details
+- Permanently failed chats stop auto-retrying
 
 ## Related channels
 

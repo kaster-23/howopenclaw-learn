@@ -209,9 +209,9 @@ HEARTBEAT.md is for things the agent should always know. Keep it under 50 lines:
 - Team uses Slack, not email
 ```
 
-## Memory Dreaming (Experimental)
+## Memory Dreaming
 
-OpenClaw includes an experimental **memory dreaming** system that helps your agent consolidate and recall important memories more naturally. When enabled, the agent periodically reviews recent conversations and promotes important insights into long-term memory.
+OpenClaw includes a **memory dreaming** system that helps your agent consolidate and recall important memories more naturally. When enabled, the agent periodically reviews recent conversations and promotes important insights into long-term memory.
 
 ### Enabling dreaming
 
@@ -237,6 +237,8 @@ Dreaming runs three cooperative phases in the background:
 2. **Deep consolidation** — More thorough review to find meaningful patterns
 3. **REM refresh** — Cleanup and finalization of promoted memories
 
+The system also includes a **grounded REM backfill lane** that lets you replay old daily notes into Dreams and durable memory without needing a second memory stack. This means you can use the `rem-harness --path` tool to backfill historical entries, and the agent will consolidate them alongside recent memories.
+
 Each phase has its own independent schedule. You don't need to configure them individually — the defaults handle most use cases.
 
 ### Accessing dream insights
@@ -247,7 +249,25 @@ Once dreaming is enabled, check the Dreams UI in your Control Panel or run:
 openclaw /dreaming
 ```
 
-This shows recent memory promotions and insights. The agent also writes consolidated memories to a `dreams.md` file in your workspace for explicit reads.
+This shows recent memory promotions, a structured timeline view of your diary entries, and insights from the dreaming process. The agent also writes consolidated memories to a `dreams.md` file in your workspace for explicit reads.
+
+The control UI now includes:
+- **Structured diary view** with timeline navigation
+- **Backfill and reset controls** for managing historical entries
+- **Traceable dreaming summaries** showing exactly what memories were promoted
+- **Grounded Scene lane** with promotion hints for backfilled content
+- **Safe clear-grounded action** for staged backfill signals
+
+### Diary commit and reset flows
+
+You can now manage your memory diary using explicit commit and reset operations:
+
+```bash
+openclaw diary commit [path]    # Commit historical entries to memory
+openclaw diary reset [path]     # Reset stale or incorrect entries
+```
+
+Diary writes are stored with source-day labels so you can track when entries were added. The backfill process now cleans up durable-fact extraction and handles diary heading normalization automatically.
 
 ### Tuning recall decay
 
@@ -268,8 +288,8 @@ If your agent is forgetting recent things too quickly or holding onto things too
 - `recencyHalfLifeDays`: How quickly recent events fade in importance (default: 30 days)
 - `maxAgeDays`: Maximum age before memories are considered stale (default: 365 days)
 
-<Callout type="info" title="Experimental feature">
-Memory dreaming is experimental as of <OpenClawVersion />. Configuration and behavior may change in future releases based on user feedback. It's safe to enable, but consider it a preview feature.
+<Callout type="info" title="Stable feature">
+Memory dreaming is now a stable feature as of <OpenClawVersion />. It's safe to enable and use for production workloads. Configuration and behavior are well-tested.
 </Callout>
 
 ## Organizing memory at scale

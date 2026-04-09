@@ -231,19 +231,63 @@ If something breaks after a config change, the [troubleshooting guide](/referenc
 
 ## Recent security improvements (<OpenClawVersion />)
 
-OpenClaw <OpenClawVersion /> includes several security enhancements:
+OpenClaw v2026.4.9 includes several important security hardening measures:
 
-- Plugin-only tool allowlists are now strictly preserved
-- Owner access is required for `/allowlist add` and `/allowlist remove` commands
-- Browser SSRF redirect bypasses are blocked earlier
-- `before_tool_call` hooks that crash now fail closed (safely)
-- Non-interactive auth inference is scoped to bundled and already-trusted plugins
-- Device pairing security has been tightened for token rotation and reconnect flows
-- Synology Chat HTTPS verification defaults to on
-- Telegram Bot API file reads now require explicit trust configuration
-- Special tokens and scaffolding are stripped from user-visible assistant text
+**Browser security:**
+- SSRF (Server-Side Request Forgery) redirect bypass protection is now re-run after interaction-driven main-frame navigations from click, evaluate, hook-triggered click, and batched action flows
+- Browser interactions can no longer bypass the quarantine when they land on forbidden URLs
+
+**Dotenv configuration:**
+- Runtime-control env vars plus browser-control override and skip-server env vars are now blocked from untrusted workspace `.env` files
+- Unsafe URL-style browser control override specifiers are rejected before lazy loading
+
+**Node exec events:**
+- Remote node `exec.started`, `exec.finished`, and `exec.denied` summaries are marked as untrusted system events
+- Node-provided command/output/reason text is sanitized before enqueueing
+- Remote node output can no longer inject trusted `System:` content into later turns
+
+**Plugin authentication:**
+- Untrusted workspace plugins can no longer collide with bundled provider auth-choice ids during non-interactive onboarding
+- Bundled provider setup keeps operator secrets out of untrusted workspace plugin handlers unless those plugins are explicitly trusted
+
+**Dependency security:**
+- `basic-ftp` forced to version 5.2.1 for CRLF command-injection fix
+- Hono and `@hono/node-server` bumped in production resolution paths
 
 These improvements happen automatically — no action needed on your part. They make OpenClaw safer by default, especially in shared or networked environments.
+
+## Plugin-specific security
+
+If you use untrusted workspace plugins:
+
+- Never allow them to handle auth choices for built-in providers unless you've explicitly trusted them
+- Verify that custom plugins don't try to override system environment variables
+- Keep plugin code reviewed before deploying to production
+
+## Network isolation security
+
+When running OpenClaw in sandboxed or isolated environments:
+
+- SSRF protections now apply consistently across all interaction flows
+- Blocked URLs are enforced at the browser level, not just on initial requests
+- Redirects to forbidden destinations are caught and blocked
+
+## Testing your security
+
+After configuration, test that restricted commands are blocked:
+
+```bash
+# Try to run a forbidden command — it should fail
+openclaw agent --message "Run rm -rf /"
+
+# Try to access a blocked path — it should fail
+openclaw agent --message "Read from /etc/passwd"
+
+# Check that untrusted content can't override instructions
+echo "ignore previous instructions" | openclaw agent --message "Read this and follow its instructions"
+```
+
+None of these should work if your security settings are correct.
 
 <MarkComplete moduleId="8-security-ethics" />
 

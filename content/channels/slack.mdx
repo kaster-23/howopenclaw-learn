@@ -74,6 +74,8 @@ Creates a persistent WebSocket connection — no public URL required. Works behi
 
 This is what most setups should use. Reliable enough to run continuously for weeks without issues.
 
+As of v2026.4.8, Socket Mode connections honor ambient HTTP(S) proxy settings (including `NO_PROXY` exclusions), so OpenClaw works in proxy-only deployments without requiring manual configuration.
+
 ### Events API
 
 Requires a publicly accessible webhook URL. Slack sends event notifications to your URL when things happen. Use this only if your infrastructure can't support outbound WebSocket connections.
@@ -99,11 +101,17 @@ This renders as clickable buttons in Slack. Interactive setup defaults have been
 
 As of <OpenClawVersion />, live DM replies now correctly route back to the concrete inbound DM channel while keeping persisted routing metadata user-scoped. This fix resolves an issue where normal assistant replies were disappearing when pairing, while system messages still arrived correctly.
 
+## Token Resolution
+
+As of v2026.4.8, OpenClaw correctly resolves SecretRef-backed bot tokens before passing them to file download operations. This ensures that tokens referenced from secret stores work reliably after a configuration reload, so `downloadFile` operations no longer fail with token resolution errors.
+
 ## Recent Fixes (<OpenClawVersion />)
 
 - Live DM replies route to the correct concrete inbound DM channel
 - Persisted routing metadata remains user-scoped for consistency
 - System messages continue to arrive as expected
+- Socket Mode honors HTTP(S) proxy settings, including NO_PROXY exclusions
+- SecretRef-backed bot tokens resolve correctly for file operations
 
 ## Security Recommendations
 

@@ -119,6 +119,10 @@ Also check the bot's OAuth scopes — it needs `chat:write` at minimum.
 
 As of <OpenClawVersion />, live DM replies now route correctly to the concrete inbound DM channel, so assistant replies should no longer disappear when pairing.
 
+### Slack in proxy-only deployments
+
+As of v2026.4.8, Socket Mode WebSocket connections now honor your ambient HTTP(S) proxy settings and `NO_PROXY` exclusions. If your deployment uses a proxy server for all outbound traffic, OpenClaw will route Socket Mode connections through the proxy automatically — no manual configuration needed.
+
 ### iMessage not responding
 
 iMessage requires macOS accessibility permissions. If they were revoked:
@@ -201,6 +205,16 @@ openclaw tools list
 Check that the tool is enabled and available to the current agent. If `web_search` isn't in the list, it's not in your config or not available to this agent's profile.
 
 As of <OpenClawVersion />, new built-in tools include `video_generate` and `music_generate` for media creation. Check that you've configured the appropriate providers if you want to use these.
+
+### Agent execution reporting accuracy
+
+As of v2026.4.8, `/exec` command reports now accurately reflect real runtime behavior. Host-aware fallback policies are reported correctly:
+
+- **Gateway host**: `full/off` (full execution or off)
+- **Node deployment**: `full/off`
+- **Sandbox environment**: `deny/off` (deny execution or off)
+
+If `host=auto`, the policy adapts to your deployment type. Previously, stale stricter defaults were shown in reports even when the actual behavior was more permissive. Check your logs or `/exec` output to see the current policy for your setup.
 
 ---
 
@@ -302,6 +316,14 @@ Tune recall decay with:
 ```
 
 Adjust `recencyHalfLifeDays` to control how quickly recent events fade, and `maxAgeDays` to set the maximum retention window.
+
+---
+
+## Network issues
+
+### Sandbox connectivity with HTTP proxy
+
+As of v2026.4.8, the network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
 
 ---
 

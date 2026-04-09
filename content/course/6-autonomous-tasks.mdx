@@ -89,6 +89,43 @@ openclaw cron remove [job-id]
 
 See the [CLI Cheatsheet](/reference/cli) for the full list of `openclaw cron` flags and options.
 
+## Agent Execution & Progress Tracking
+
+When your agent runs automated tasks, it can report its progress with the `/exec` command.
+
+### Understanding execution reporting
+
+As of v2026.4.8, `/exec` reports now accurately reflect your actual runtime environment. The fallback policy shown depends on where OpenClaw is running:
+
+| Deployment | Fallback Policy | Behavior |
+|---|---|---|
+| Gateway host | `full/off` | Full execution available, or disabled |
+| Node deployment | `full/off` | Full execution available, or disabled |
+| Sandbox environment | `deny/off` | Execution denied by default, or disabled |
+
+If you set `host=auto`, the policy automatically adapts to your environment. Previously, stricter defaults were displayed even when the actual behavior was more permissive. Now the report is honest about what your agent can do.
+
+### Progress tool: keeping update_plan available
+
+For OpenAI-family runs, the agent keeps `update_plan` available for progress tracking during autonomous tasks. You can now:
+
+- Set `tools.experimental.planTool=true` to enable progress reporting (default)
+- Set `tools.experimental.planTool=false` to opt out and use simpler compact payloads
+
+This gives you fine-grained control over whether the agent tracks detailed progress or sends minimal status updates.
+
+Example: disable detailed planning for cost-sensitive automations
+
+```json
+{
+  "tools": {
+    "experimental": {
+      "planTool": false
+    }
+  }
+}
+```
+
 ## Deployment: Keeping your agent online
 
 Your agent currently runs on your computer. If your laptop sleeps or shuts

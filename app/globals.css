@@ -212,7 +212,11 @@ a.rounded-lg.border.p-4:hover {
   }
 
   .prose table {
-    @apply w-full text-sm border-collapse my-6 block overflow-x-auto;
+    @apply w-full text-sm border-collapse;
+  }
+
+  .prose .table-wrapper {
+    @apply my-6 overflow-x-auto;
   }
 
   .prose thead {

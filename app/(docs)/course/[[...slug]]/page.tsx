@@ -15,6 +15,7 @@ import { CourseProgress } from "@/components/course/course-progress"
 import { MarkComplete } from "@/components/course/mark-complete"
 import { VideoEmbed } from "@/components/course/video-embed"
 import { Mermaid } from "@/components/mdx/mermaid"
+import { Table } from "@/components/mdx/table"
 import { notFound } from "next/navigation"
 
 // No-op stubs for legacy gamification components still referenced in old MDX files
@@ -246,6 +247,7 @@ export default async function Page({ params }: PageProps) {
               MarkComplete,
               VideoEmbed,
               Mermaid,
+              table: Table,
               ArrowRightLeft,
               BarChart2,
               Bell,

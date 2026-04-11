@@ -8,6 +8,7 @@ import { Steps, Step } from "fumadocs-ui/components/steps"
 import { Card, Cards } from "fumadocs-ui/components/card"
 import { Tab, Tabs } from "fumadocs-ui/components/tabs"
 import { Mermaid } from "@/components/mdx/mermaid"
+import { Table } from "@/components/mdx/table"
 import { notFound } from "next/navigation"
 
 import {
@@ -130,6 +131,7 @@ const mdxComponents = {
   OpenClawVersion,
   Tabs,
   Mermaid,
+  table: Table,
   ArrowRightLeft,
   BarChart2,
   Bell,

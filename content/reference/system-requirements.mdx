@@ -1,26 +1,118 @@
 ---
 title: "System Requirements"
-description: "What hardware and software you need to run OpenClaw. Mac, Linux, and Windows supported. Runs on a Raspberry Pi — no dedicated GPU required."
+description: "What hardware you need to run OpenClaw — from a Raspberry Pi to a Mac Studio. Requirements depend on whether you use cloud models, local models, or run multi-agent orchestration 24/7."
 faqs:
   - q: "Does OpenClaw work on Windows?"
     a: "Yes. OpenClaw runs on Windows with Node.js 22.16 or later. WSL2 is strongly recommended for the best experience. The iMessage channel is the only exception — it requires macOS. All other channels work on Windows."
   - q: "Does OpenClaw work on Raspberry Pi?"
-    a: "Yes. Raspberry Pi 4 or 5 with 2 GB+ RAM (4 GB recommended) and a 64-bit OS. Use Node.js 24. All channels supported except iMessage."
+    a: "Yes, for cloud-model setups. Raspberry Pi 4 or 5 with 2 GB+ RAM (4 GB recommended) and a 64-bit OS. Since models run in the cloud via API, even a modest Pi handles the gateway workload well. Not suitable for local models."
   - q: "What Node.js version does OpenClaw require?"
     a: "Node.js 22.16 or later. Node.js 24 is recommended. Older versions (18, 20) are not supported. Check your version with `node --version` and upgrade via nvm if needed."
   - q: "Can I run OpenClaw in Docker?"
     a: "Yes. OpenClaw runs in Docker with Docker Engine or Docker Desktop + Compose v2. Your host needs at least 2 GB RAM — 1 GB hosts may OOM-kill the build. The iMessage channel requires macOS and won't work inside a Linux container."
+  - q: "What do I need for multi-agent orchestration with local models?"
+    a: "A single 24 GB machine is the absolute floor — the official docs describe it as suitable only for lighter prompts with higher latency. For serious multi-agent setups running 24/7, you want more: the docs reference ≥2 maxed-out Mac Studios or an equivalent GPU rig as the recommended ceiling for full local stacks."
+  - q: "What Mac should I use for 24/7 multi-agent OpenClaw?"
+    a: "A Mac Mini with 24 GB RAM and 512 GB SSD is a solid starting point for multi-agent orchestration with cloud models. If you want to also run local models (Ollama) alongside agents, 24 GB is the minimum — expect higher latency on larger models. For heavy local model workloads, a Mac Studio with 64 GB+ unified memory is recommended."
 ---
 
+Requirements depend heavily on **what you want to do**. A basic personal assistant and a 24/7 multi-agent orchestration setup with local models are very different workloads. Use the tiers below to find your target.
 
-## Minimum requirements
+---
+
+## Tier 1 — Basic personal assistant (cloud models)
+
+This is the default. Your AI provider (Anthropic, OpenAI, Google, etc.) does the heavy lifting. OpenClaw is just the gateway — it routes messages and runs automations.
+
+| Component | Minimum | Notes |
+|---|---|---|
+| **Node.js** | 22.16 | Node 24 recommended |
+| **RAM** | 2 GB | 4 GB+ for comfortable headroom |
+| **Disk** | 512 MB | Logs and memory files grow over time |
+| **OS** | macOS, Linux (64-bit), Windows (WSL2) | |
+
+**Works on:** Raspberry Pi 4/5, any cheap VPS ($5/month), a spare laptop, Mac Mini.
+
+When to use this tier: you want a personal assistant, you're connecting messaging apps, you want scheduled automations. You don't need a GPU. You're paying API costs per request.
+
+---
+
+## Tier 2 — Always-on, 24/7, multi-channel (cloud models)
+
+Adding more channels, more automations, and always-on operation doesn't change the model compute requirements — that still runs in the cloud. What changes is reliability and uptime.
+
+| Component | Recommended |
+|---|---|
+| **RAM** | 4–8 GB |
+| **Disk** | 20–50 GB (logs, session files, media accumulate) |
+| **Machine** | Dedicated always-on device — not a laptop that sleeps |
+| **Network** | Stable connection; no sleep/hibernate |
+
+**Good choices:** Mac Mini, Raspberry Pi 5 (4 GB), a VPS with SSD storage.
+
+**Important:** Cron jobs, scheduled briefings, and automations only fire when the gateway is running. A laptop in sleep mode won't trigger them. A Mac Mini set to "prevent sleep" or a VPS is the right approach for this tier.
+
+---
+
+## Tier 3 — Local models via Ollama (no cloud API)
+
+Running models locally means your machine does all the inference. Requirements scale with the model you want to run.
+
+| Model size | RAM / Unified Memory needed | Examples |
+|---|---|---|
+| 7–8B | 8 GB | Mistral 7B, Llama 3.1 8B |
+| 13–14B | 16 GB | Llama 2 13B, Qwen 14B |
+| 32B | 32 GB+ | Qwen2.5-Coder 32B, DeepSeek-R1 32B |
+| 70B+ | 64 GB+ | Llama 3.3 70B |
+
+The official OpenClaw docs note: *"A single 24 GB GPU works only for lighter prompts with higher latency."*
+
+This means 24 GB unified memory (Mac) or VRAM (GPU) is the **floor** for meaningful local model use — not the sweet spot. At 24 GB you can run 13–14B models well, or 32B models slowly.
+
+**Disk:** Local model weights are large. A 32B model is ~20 GB on disk. A 70B model is ~40 GB+. Budget 512 GB SSD minimum if you plan to run multiple models.
+
+---
+
+## Tier 4 — Multi-agent orchestration with local models, 24/7
+
+This is the most demanding use case: multiple agents running in parallel, each making inference calls, with memory consolidation, automations, and always-on operation.
+
+The official docs are direct: *"≥2 maxed-out Mac Studios or equivalent GPU rig (~$30k+)"* is the recommended hardware for a full local multi-agent stack.
+
+For most users, the practical entry point is:
 
 | Component | Minimum | Recommended |
 |---|---|---|
-| **Node.js** | 22.16 | 24 |
-| **RAM** | 2 GB | 4 GB+ |
-| **Disk** | 512 MB | 1 GB+ (for logs and memory files) |
-| **OS** | macOS, Linux (64-bit), Windows (WSL2) | Any modern 64-bit OS |
+| **RAM / Unified Memory** | 24 GB | 64 GB+ |
+| **Disk** | 512 GB SSD | 1 TB+ NVMe SSD |
+| **CPU** | Apple Silicon M-series or modern x86 | M4 Pro / M4 Max or better |
+| **Machine** | Mac Mini (24 GB) | Mac Studio (64 GB+) |
+| **Uptime** | Dedicated always-on machine | Never sleeps, UPS recommended |
+
+**Mac Mini 24 GB + 512 GB SSD** is the realistic entry point for running multi-agent orchestration 24/7 with cloud models, plus moderate local model use (up to ~14B comfortably, 32B with patience). It's a solid machine for this workload at a reasonable price.
+
+If you want to run large local models (32B+) as the backbone of your agents — not just occasionally — a **Mac Studio with 64 GB+ unified memory** is the right tool.
+
+**On Apple Silicon:** Unified memory means RAM and VRAM are the same pool. A 24 GB Mac Mini gives you the full 24 GB for model inference, not split between system and GPU like a PC with a discrete card. This makes Apple Silicon unusually efficient for local model workloads at this price point.
+
+---
+
+## Node.js
+
+OpenClaw requires **Node.js 22.16 or later**. Node.js 24 is recommended.
+
+Check your version:
+```bash
+node --version
+```
+
+Install or upgrade via nvm:
+```bash
+nvm install 24
+nvm use 24
+```
+
+Or download from [nodejs.org](https://nodejs.org).
 
 ---
 
@@ -47,32 +139,13 @@ faqs:
 - Raspberry Pi 4 or 5 with 2 GB+ RAM (4 GB recommended)
 - 64-bit OS required — Raspberry Pi OS Bookworm 64-bit or Ubuntu 24.04
 - Pi 3 and earlier are not officially supported
-- All channels supported except iMessage
-
----
-
-## Node.js
-
-OpenClaw requires **Node.js 22.16 or later**. Node.js 24 is recommended.
-
-Check your version:
-```bash
-node --version
-```
-
-Install or upgrade via nvm:
-```bash
-nvm install 24
-nvm use 24
-```
-
-Or download from [nodejs.org](https://nodejs.org).
+- Suitable for Tier 1–2 (cloud models only) — not for local model inference
 
 ---
 
 ## Docker
 
-OpenClaw runs in Docker. The Gateway, all channels (except iMessage), and automations work inside a container.
+OpenClaw runs in Docker with Docker Engine or Desktop + Compose v2.
 
 ```bash
 docker pull openclaw/openclaw:latest
@@ -82,21 +155,23 @@ docker run -d \
   openclaw/openclaw:latest
 ```
 
+**Minimum RAM for Docker:** 2 GB — 1 GB hosts may OOM-kill the build (exit 137).
+
+**Disk:** Watch `media/`, session JSONL files, and `cron/runs/*.jsonl` — these grow over time. Use SSD-backed storage.
+
 **iMessage in Docker:** Not supported. iMessage uses the macOS Messages framework, which isn't available in Linux containers.
 
 ---
 
-## What keeps running 24/7
+## Always-on deployment
 
-For automations (cron jobs, scheduled briefings) to fire at the scheduled time, the Gateway must be running. This means the machine must:
+For automations and scheduled briefings to fire reliably, the Gateway must be running continuously:
 
-- Be powered on
-- Not be in sleep mode
-- Have network access (for AI provider API calls)
+- Machine must be powered on and not sleeping
+- Stable network connection required for API calls
+- Automations will not fire if the machine hibernates
 
-A Raspberry Pi or cheap VPS ($5/month) works well for always-on deployment. For personal use where you just want to respond to messages, a laptop is fine — automations simply won't fire when it's sleeping.
-
-See [Module 6: Autonomous Tasks](/course/6-autonomous-tasks) for deployment options.
+See [Module 6: Autonomous Tasks](/course/6-autonomous-tasks) for deployment options including VPS and Mac Mini setups.
 
 ---
 

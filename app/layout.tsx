@@ -179,7 +179,7 @@ export default async function RootLayout({
         <a href="#main-content" className="skip-nav">
           Skip to main content
         </a>
-        <RootProvider theme={{ defaultTheme: "system" }}>
+        <RootProvider theme={{ defaultTheme: "dark" }}>
 {children}
         </RootProvider>
         <script

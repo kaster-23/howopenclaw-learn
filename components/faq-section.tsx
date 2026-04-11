@@ -57,12 +57,12 @@ export function FaqSection({ faqs }: FaqSectionProps) {
   if (!faqs?.length) return null
   return (
     <section className="mt-12 pt-8 border-t border-fd-border" aria-label="Frequently asked questions">
-      <h2 className="text-xl font-semibold text-fd-foreground mb-6">Frequently asked questions</h2>
-      <dl className="space-y-6">
+      <p className="text-xs font-semibold uppercase tracking-widest text-fd-muted-foreground opacity-60 mb-5">FAQ</p>
+      <dl className="space-y-5">
         {faqs.map(({ q, a }) => (
           <div key={q}>
-            <dt className="font-medium text-fd-foreground mb-2">{q}</dt>
-            <dd className="text-fd-muted-foreground leading-relaxed m-0">{renderAnswer(a)}</dd>
+            <dt className="text-sm font-medium text-fd-muted-foreground mb-1">{q}</dt>
+            <dd className="text-sm text-fd-muted-foreground/70 leading-relaxed m-0">{renderAnswer(a)}</dd>
           </div>
         ))}
       </dl>

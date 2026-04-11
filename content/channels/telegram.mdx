@@ -23,17 +23,38 @@ Telegram is the easiest channel to set up and one of the most reliable to run. N
 
 New to OpenClaw? The [course module on connecting apps](/course/2-connecting-apps) walks through this same Telegram setup step by step, with troubleshooting for every common failure point.
 
-## Create Your Bot
+<Steps>
+
+<Step>
+
+### Create your bot
 
 1. Open Telegram and search for **@BotFather**
 2. Send `/newbot`
 3. Choose a display name for your bot (e.g., "My Assistant")
 4. Choose a username ending in `bot` (e.g., `myassistant_bot`)
-5. Copy the token BotFather provides
+5. Copy the token BotFather provides — you'll need it in the next step
 
-Copy it — you'll need it in the next step.
+</Step>
 
-## Configuration
+<Step>
+
+### Find your Telegram user ID
+
+Your Telegram user ID is a number, not your @username:
+
+1. Message @userinfobot on Telegram
+2. It will reply with your numeric ID
+
+Use this ID in `allowedUsers` for allowlist-style access.
+
+</Step>
+
+<Step>
+
+### Configure OpenClaw
+
+Add the Telegram channel to `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -54,16 +75,29 @@ Copy it — you'll need it in the next step.
 }
 ```
 
-Replace `YOUR_BOT_TOKEN_HERE` with the token from BotFather.
+Replace `YOUR_BOT_TOKEN_HERE` with the token from BotFather and `123456789` with your actual user ID.
 
-## Finding Your Telegram User ID
+</Step>
 
-Your Telegram user ID is a number, not your @username. To find it:
+<Step>
 
-1. Message @userinfobot on Telegram
-2. It will reply with your numeric ID
+### Restart and test
 
-Use this ID in `allowedUsers` for allowlist-style access.
+```bash
+openclaw gateway restart
+```
+
+Open Telegram, find your bot by username, and send it a message. It should respond within a few seconds.
+
+If it doesn't respond:
+
+```bash
+openclaw logs --filter telegram
+```
+
+</Step>
+
+</Steps>
 
 ## Important: Bots Are Publicly Discoverable
 
@@ -129,22 +163,6 @@ QQBot-style media tags with HTML entity-encoded angle brackets (`&lt;`/`&gt;`) a
 Unlike WhatsApp, Telegram provides an official Bot API. There's no session that expires, no QR code to re-scan, no unofficial protocol emulation. When the gateway is running, the Telegram channel is running.
 
 It also queues messages during disconnections — if your gateway restarts, it will receive all messages sent while it was offline.
-
-## Testing
-
-After saving your configuration and restarting the gateway:
-
-```bash
-openclaw gateway restart
-```
-
-Open Telegram, find your bot by username, and send it a message. It should respond within a few seconds.
-
-If it doesn't respond:
-
-```bash
-openclaw logs --filter telegram
-```
 
 ---
 

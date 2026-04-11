@@ -21,7 +21,11 @@ Signal offers the strongest privacy guarantees of any OpenClaw channel. Messages
 
 The tradeoff: setup is the most involved of any channel. Plan 30–60 minutes for your first attempt.
 
-## Before You Start: Use a Dedicated Number
+<Steps>
+
+<Step>
+
+### Get a dedicated phone number
 
 **Do not use your personal Signal account.** Signal links your account to your phone number, and using your personal number creates conflicts when the agent sends messages on your behalf.
 
@@ -30,7 +34,11 @@ Get a separate number for your agent:
 - Twilio (+$1/month)
 - Prepaid SIM
 
-## Install signal-cli
+</Step>
+
+<Step>
+
+### Install signal-cli
 
 `signal-cli` is the command-line Signal client that OpenClaw uses.
 
@@ -52,7 +60,11 @@ Verify:
 signal-cli --version
 ```
 
-## Register Your Number
+</Step>
+
+<Step>
+
+### Register your number
 
 ```bash
 # Register with your dedicated number
@@ -65,7 +77,11 @@ signal-cli -u +15559876543 verify 123456
 signal-cli -u +15559876543 updateAccount
 ```
 
-## Configuration
+</Step>
+
+<Step>
+
+### Configure OpenClaw
 
 ```json
 {
@@ -85,14 +101,25 @@ signal-cli -u +15559876543 updateAccount
 }
 ```
 
-## Testing
+</Step>
 
-Send a test message from your personal Signal account to the agent's number:
+<Step>
+
+### Restart and test
 
 ```bash
-# Or watch logs as you send a test message
+openclaw gateway restart
+```
+
+Send a test message from your personal Signal account to the agent's number. Watch logs as you test:
+
+```bash
 openclaw logs --follow | grep signal
 ```
+
+</Step>
+
+</Steps>
 
 ## Group Chat Limitations
 

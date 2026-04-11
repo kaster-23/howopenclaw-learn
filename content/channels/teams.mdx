@@ -19,35 +19,49 @@ faqs:
 
 Microsoft Teams integration uses the official Teams SDK for enterprise-grade reliability. It provides AI-agent best practices including streaming replies, welcome cards with prompt starters, status updates, and native AI labeling.
 
-## Create Your Teams Bot
+<Steps>
+
+<Step>
+
+### Create the Azure Bot Service
 
 1. Go to [portal.azure.com](https://portal.azure.com) and sign in with your Microsoft account
 2. Click **Create a resource** → search for **Azure Bot Service** → click **Create**
-3. Fill in:
-   - Resource name (e.g., "my-assistant-bot")
-   - Subscription and resource group
-   - Pricing tier (Free tier works for development)
-4. Choose **Multi Tenant** for standard Teams bots
-5. Click **Create**
-6. Go to **Settings** → **Configuration** → copy the **Microsoft App ID**
-7. Click **Manage Password** next to the App ID → **New client secret** → copy the secret value
+3. Fill in the resource name, subscription, resource group, and pricing tier (Free tier works for development)
+4. Choose **Multi Tenant** for standard Teams bots and click **Create**
 
-Save these as environment variables:
+</Step>
+
+<Step>
+
+### Get your credentials
+
+1. Go to **Settings** → **Configuration** → copy the **Microsoft App ID**
+2. Click **Manage Password** next to the App ID → **New client secret** → copy the secret value
+
+Save them as environment variables:
 
 ```bash
 export TEAMS_APP_ID="your-app-id"
 export TEAMS_APP_PASSWORD="your-app-secret"
 ```
 
-## Register the Bot with Teams
+</Step>
+
+<Step>
+
+### Register the bot with Teams
 
 1. In the Azure Bot Service, go to **Channels** → **Microsoft Teams**
 2. Accept the terms and **Configure**
-3. You'll get a messaging endpoint URL (`https://your-domain.com/api/messages`)
 
-Copy your `TEAMS_APP_ID` and `TEAMS_APP_PASSWORD` — you'll need them in the next step.
+</Step>
 
-## Configuration
+<Step>
+
+### Configure OpenClaw
+
+Add the Teams channel to `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -63,6 +77,29 @@ Copy your `TEAMS_APP_ID` and `TEAMS_APP_PASSWORD` — you'll need them in the ne
   }
 }
 ```
+
+</Step>
+
+<Step>
+
+### Restart and test
+
+```bash
+openclaw gateway restart
+openclaw logs --filter teams
+```
+
+In a Teams chat, @mention your bot:
+
+```
+@YourBot are you there?
+```
+
+It should respond with a streaming reply.
+
+</Step>
+
+</Steps>
 
 ## Streaming Replies
 
@@ -181,27 +218,6 @@ The deprecated Teams SDK `HttpPlugin` stub has been replaced with the modern `ht
 **Store secrets in Azure Key Vault.** Never commit `appPassword` to version control. Use environment variables or Azure Key Vault.
 
 **Enable message validation.** Teams validates all incoming messages with a cryptographic signature. OpenClaw verifies this automatically.
-
-## Testing
-
-After configuration and restart:
-
-```bash
-openclaw gateway restart
-openclaw logs --filter teams
-```
-
-In a Teams chat, @mention your bot:
-
-```
-@YourBot are you there?
-```
-
-It should respond with a streaming reply. Watch logs if it doesn't:
-
-```bash
-openclaw logs --follow | grep teams
-```
 
 ---
 

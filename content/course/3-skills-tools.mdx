@@ -282,13 +282,57 @@ Save it in your skills directory and add the config:
 
 ## Hands-on: Install and test a skill
 
-1. Pick a skill from ClawHub that sounds useful to you
-2. Install it: `openclaw skills install [name]`
-3. Add the configuration with any required credentials
-4. Restart: `openclaw gateway restart`
-5. Test it with a natural language message
+<Steps>
+
+<Step>
+
+### Pick a skill
+
+Browse [ClawHub](https://clawhub.ai) and pick a skill that sounds useful — weather, calendar, or web-search are good starting points.
+
+</Step>
+
+<Step>
+
+### Install it
+
+```bash
+openclaw skills install [name]
+```
+
+</Step>
+
+<Step>
+
+### Add the configuration
+
+Open your config (`openclaw config edit`) and add the skill block with any required credentials. Run `openclaw skills info [name]` to see exactly what it needs.
+
+</Step>
+
+<Step>
+
+### Restart the gateway
+
+```bash
+openclaw gateway restart
+```
+
+</Step>
+
+<Step>
+
+### Test with a natural language message
+
+```bash
+openclaw agent --message "What's the weather today?"
+```
 
 If it does not work, check `openclaw skills info [name]` for setup requirements. The [CLI Cheatsheet](/reference/cli) lists every `openclaw skills` command with flags.
+
+</Step>
+
+</Steps>
 
 <MarkComplete moduleId="3-skills-tools" />
 

@@ -26,7 +26,11 @@ faqs:
 A personal assistant that you can message naturally through Telegram or WhatsApp.
 It handles scheduling, reminders, quick lookups, and routine tasks.
 
-## Step 1: Connect your channel
+<Steps>
+
+<Step>
+
+### Connect your channel
 
 If you have not already, connect Telegram (the fastest option):
 
@@ -36,7 +40,11 @@ openclaw channels add telegram --token YOUR_BOT_TOKEN
 
 See [Module 2](/course/2-connecting-apps) for detailed setup.
 
-## Step 2: Install essential skills
+</Step>
+
+<Step>
+
+### Install essential skills
 
 ```bash
 openclaw skills install calendar
@@ -45,7 +53,11 @@ openclaw skills install web-search
 openclaw skills install notes
 ```
 
-## Step 3: Configure personality
+</Step>
+
+<Step>
+
+### Configure personality
 
 Add to your SOUL.md:
 
@@ -58,7 +70,11 @@ Add to your SOUL.md:
 - If a request is ambiguous, ask one clarifying question before acting
 ```
 
-## Step 4: Set up DM policies
+</Step>
+
+<Step>
+
+### Set up DM policies
 
 Make sure only you can message the assistant:
 
@@ -67,7 +83,11 @@ openclaw config set dm.policy allowlist
 openclaw config set dm.allowlist YOUR_TELEGRAM_ID
 ```
 
-## Step 5: Test common workflows
+</Step>
+
+<Step>
+
+### Test common workflows
 
 Try these messages in your chat:
 
@@ -77,6 +97,10 @@ Try these messages in your chat:
 - "Save a note: project deadline is April 15"
 
 Each one should trigger the appropriate skill and give you a clear response.
+
+</Step>
+
+</Steps>
 
 ## Tips
 

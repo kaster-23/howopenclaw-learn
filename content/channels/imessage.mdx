@@ -21,7 +21,11 @@ iMessage integration requires a Mac running the agent because it relies on the m
 
 If you're on macOS and want the most natural, personal channel, this is the one to set up first.
 
-## Prerequisites
+<Steps>
+
+<Step>
+
+### Check prerequisites
 
 - macOS 13 Ventura or later
 - Apple ID signed into the Messages app
@@ -29,7 +33,11 @@ If you're on macOS and want the most natural, personal channel, this is the one 
 
 The Mac must remain powered on and awake for iMessage to work. If it sleeps, messages queue and deliver when it wakes — but proactive cron-triggered messages won't fire during sleep.
 
-## Configuration
+</Step>
+
+<Step>
+
+### Configure OpenClaw
 
 Add the iMessage channel to `~/.openclaw/openclaw.json`:
 
@@ -51,15 +59,7 @@ Add the iMessage channel to `~/.openclaw/openclaw.json`:
 }
 ```
 
-Restart the gateway after saving:
-
-```bash
-openclaw gateway restart
-```
-
-## Critical: Phone Number Formatting
-
-Phone numbers **must include the country code** in E.164 format. This is the #1 source of allowlist failures.
+Phone numbers **must include the country code** in E.164 format — this is the #1 source of allowlist failures:
 
 | Format | Works? |
 |---|---|
@@ -67,6 +67,40 @@ Phone numbers **must include the country code** in E.164 format. This is the #1 
 | `+1 555 123 4567` | ❌ No |
 | `(555) 123-4567` | ❌ No |
 | `5551234567` | ❌ No |
+
+</Step>
+
+<Step>
+
+### Restart the gateway
+
+```bash
+openclaw gateway restart
+```
+
+</Step>
+
+<Step>
+
+### Test the connection
+
+Send yourself a test message from another Apple device:
+
+```
+Hello, are you there?
+```
+
+If configured correctly, your agent will respond. If not:
+
+```bash
+openclaw logs --filter imessage
+```
+
+Common issues: Messages app not signed in, Mac in sleep mode, phone number format errors in allowedContacts.
+
+</Step>
+
+</Steps>
 
 ## Group Chat Behavior
 
@@ -77,22 +111,6 @@ Recommended group policies by use case:
 - **Family group chat:** `groupPolicy: mention` — respond only when asked
 - **Dedicated work group:** `groupPolicy: always` — always respond
 - **Social groups:** `groupPolicy: never` — don't respond at all
-
-## Testing the Connection
-
-After configuration, send yourself a test message from another Apple device:
-
-```
-Hello, are you there?
-```
-
-If configured correctly, your agent will respond. If not, check:
-
-```bash
-openclaw logs --filter imessage
-```
-
-Common issues: Messages app not signed in, Mac in sleep mode, phone number format errors in allowedContacts.
 
 ## Related channels
 

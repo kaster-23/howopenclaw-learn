@@ -21,26 +21,50 @@ Discord works well for community-facing use cases and casual personal use. The s
 
 New to OpenClaw? The [installation guide](/course/0-setup) covers getting the gateway running first. If you want to validate the setup with a simpler channel, try [Telegram](/channels/telegram) — it takes about 2 minutes — then come back here.
 
-## Create Your Discord Bot
+<Steps>
+
+<Step>
+
+### Create your Discord bot
 
 1. Go to [discord.com/developers/applications](https://discord.com/developers/applications)
 2. Click **New Application** and give it a name
 3. Go to the **Bot** tab → click **Add Bot**
-4. Under **Privileged Gateway Intents**, enable:
-   - Message Content Intent (required to read messages)
+4. Under **Privileged Gateway Intents**, enable **Message Content Intent** (required to read messages)
 5. Copy the bot token
-6. Go to **OAuth2 → URL Generator**:
-   - Scopes: `bot`, `applications.commands`
-   - Bot Permissions: Send Messages, Read Message History, Use Slash Commands
-7. Open the generated URL to invite the bot to your server
 
-Save your token:
+</Step>
+
+<Step>
+
+### Invite the bot to your server
+
+1. Go to **OAuth2 → URL Generator**
+2. Scopes: `bot`, `applications.commands`
+3. Bot Permissions: Send Messages, Read Message History, Use Slash Commands
+4. Open the generated URL to invite the bot to your server
+
+Save your token as an environment variable:
 
 ```bash
 export DISCORD_BOT_TOKEN="your-bot-token-here"
 ```
 
-## Configuration
+</Step>
+
+<Step>
+
+### Find your server and channel IDs
+
+Enable Developer Mode in Discord settings (Appearance → Advanced → Developer Mode), then right-click any server or channel to copy its ID.
+
+</Step>
+
+<Step>
+
+### Configure OpenClaw
+
+Add the Discord channel to `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -62,7 +86,26 @@ export DISCORD_BOT_TOKEN="your-bot-token-here"
 }
 ```
 
-To find IDs: enable Developer Mode in Discord settings (Appearance → Advanced → Developer Mode), then right-click any server or channel to copy its ID.
+</Step>
+
+<Step>
+
+### Restart and test
+
+```bash
+openclaw gateway restart
+openclaw logs --filter discord
+```
+
+@mention your bot in an allowed channel:
+
+```
+@YourBot are you there?
+```
+
+</Step>
+
+</Steps>
 
 ## Auto Threads
 
@@ -157,21 +200,6 @@ To avoid rate limiting:
 - Use `threadReplies: true` — threads have more permissive limits than main channels
 - Add response delays for automated messages
 - Don't use Discord for high-frequency automations — use Slack or iMessage instead
-
-## Testing
-
-After configuration and restart:
-
-```bash
-openclaw gateway restart
-openclaw logs --filter discord
-```
-
-@mention your bot in an allowed channel:
-
-```
-@YourBot are you there?
-```
 
 ---
 

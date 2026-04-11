@@ -26,7 +26,11 @@ faqs:
 A research agent that can take a topic, search multiple sources, summarize
 findings, and save organized notes — all from a single message.
 
-## Step 1: Install research skills
+<Steps>
+
+<Step>
+
+### Install research skills
 
 ```bash
 openclaw skills install web-search
@@ -35,7 +39,11 @@ openclaw skills install notes
 openclaw skills install summarizer
 ```
 
-## Step 2: Configure research behavior
+</Step>
+
+<Step>
+
+### Configure research behavior
 
 Add to your SOUL.md:
 
@@ -50,7 +58,11 @@ When I ask you to research a topic:
 6. Save the summary to my notes with the topic as the title
 ```
 
-## Step 3: Test a research task
+</Step>
+
+<Step>
+
+### Test a research task
 
 ```bash
 openclaw agent --message "Research the current state of solar panel efficiency. What are the latest breakthroughs?" --thinking high
@@ -60,7 +72,11 @@ openclaw agent --message "Research the current state of solar panel efficiency. 
 
 The agent should search the web, read several articles, and give you a structured summary with sources.
 
-## Step 4: Organize findings
+</Step>
+
+<Step>
+
+### Organize findings
 
 Ask the agent to build on previous research:
 
@@ -70,6 +86,10 @@ promising technologies for residential use?
 ```
 
 The agent uses its memory and saved notes to give a deeper, more informed answer.
+
+</Step>
+
+</Steps>
 
 ## Advanced: Sub-agents
 

@@ -31,7 +31,11 @@ via Telegram (or your preferred channel). It includes:
 - Top news in your areas of interest
 - Pending tasks and reminders
 
-## Step 1: Install the skills
+<Steps>
+
+<Step>
+
+### Install the skills
 
 ```bash
 openclaw skills install weather
@@ -40,7 +44,11 @@ openclaw skills install news
 openclaw skills install tasks
 ```
 
-## Step 2: Configure your briefing
+</Step>
+
+<Step>
+
+### Configure your briefing
 
 Add this to your SOUL.md:
 
@@ -55,7 +63,11 @@ When generating my daily briefing:
 Keep the whole briefing under 300 words.
 ```
 
-## Step 3: Set up the cron job
+</Step>
+
+<Step>
+
+### Set up the cron job
 
 Schedule it to run at 7:00 AM every day:
 
@@ -69,7 +81,11 @@ Verify it is scheduled:
 openclaw cron list
 ```
 
-## Step 4: Test it
+</Step>
+
+<Step>
+
+### Test it
 
 Run it manually first:
 
@@ -79,6 +95,10 @@ openclaw agent --message "Generate my daily briefing and send it to me"
 
 Review the output. If something is missing or the format is off, adjust your
 SOUL.md instructions and test again.
+
+</Step>
+
+</Steps>
 
 ## Tips
 

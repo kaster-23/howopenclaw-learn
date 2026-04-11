@@ -22,7 +22,11 @@ Slack is the best channel for work contexts. Socket Mode keeps your agent connec
 
 New to OpenClaw? Start with the [installation guide](/course/0-setup) to get the gateway running, then return here. If you want to connect Telegram first as a simpler test, [Module 2](/course/2-connecting-apps) covers that.
 
-## Creating Your Slack App
+<Steps>
+
+<Step>
+
+### Create your Slack app
 
 1. Go to [api.slack.com/apps](https://api.slack.com/apps) and click **Create New App**
 2. Choose **From scratch**
@@ -35,7 +39,13 @@ New to OpenClaw? Start with the [installation guide](/course/0-setup) to get the
    - `app_mentions:read` — detect @mentions
 6. Install the app to your workspace and copy the Bot Token
 
-Save your tokens as environment variables:
+</Step>
+
+<Step>
+
+### Save your tokens
+
+Store them as environment variables (never put real tokens directly in config files):
 
 ```bash
 export SLACK_BOT_TOKEN="xoxb-..."
@@ -43,7 +53,13 @@ export SLACK_APP_TOKEN="xapp-..."
 export SLACK_SIGNING_SECRET="..."
 ```
 
-## Configuration
+</Step>
+
+<Step>
+
+### Configure OpenClaw
+
+Add the Slack channel to `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -65,6 +81,32 @@ export SLACK_SIGNING_SECRET="..."
   }
 }
 ```
+
+</Step>
+
+<Step>
+
+### Restart and test
+
+```bash
+openclaw gateway restart
+```
+
+DM your bot or @mention it in your allowed channel:
+
+```
+Hey, are you there?
+```
+
+Check logs if it doesn't respond:
+
+```bash
+openclaw logs --follow | grep slack
+```
+
+</Step>
+
+</Steps>
 
 ## Socket Mode vs. Events API
 
@@ -146,26 +188,6 @@ Turn-local deduplication is now keyed by dispatch kind, and the final fallback r
 With `threadReplies: true`, your agent responds in threads rather than the main channel. This keeps channels clean and makes it easy to track conversations.
 
 To start a fresh conversation, message the bot directly (DM) rather than in a channel.
-
-## Testing
-
-After setup, DM your bot:
-
-```
-Hey, are you there?
-```
-
-Or @mention it in your allowed channel:
-
-```
-@YourBot what's the weather today?
-```
-
-Check logs if it doesn't respond:
-
-```bash
-openclaw logs --follow | grep slack
-```
 
 ---
 

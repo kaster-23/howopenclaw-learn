@@ -23,7 +23,11 @@ WhatsApp integration uses **Baileys**, an unofficial WhatsApp Web API library. I
 
 If stability is a priority, use Telegram or iMessage instead. If WhatsApp is where you actually communicate, here's how to set it up.
 
-## Step 1 — Create the session directory
+<Steps>
+
+<Step>
+
+### Create the session directory
 
 Do this first, before anything else. WhatsApp needs this directory to store its credentials:
 
@@ -33,7 +37,11 @@ mkdir -p ~/.openclaw/sessions/whatsapp
 
 If you skip this step, authentication will fail with a confusing error.
 
-## Step 2 — Configuration
+</Step>
+
+<Step>
+
+### Configure OpenClaw
 
 Add the WhatsApp channel to `~/.openclaw/openclaw.json`:
 
@@ -55,7 +63,11 @@ Add the WhatsApp channel to `~/.openclaw/openclaw.json`:
 }
 ```
 
-## Step 3 — First-Time Authentication
+</Step>
+
+<Step>
+
+### Scan the QR code
 
 Restart the gateway and watch the logs:
 
@@ -69,7 +81,25 @@ A QR code will appear in your terminal. Scan it with WhatsApp on your phone:
 2. Tap **Link a Device**
 3. Scan the QR code
 
-The session is now stored in your `sessionPath` directory. You won't need to scan again unless the session expires.
+The session is stored in your `sessionPath` directory. You won't need to scan again unless the session expires.
+
+</Step>
+
+<Step>
+
+### Test it
+
+Send a message from an allowed contact — the agent should reply within a few seconds.
+
+If it doesn't respond:
+
+```bash
+openclaw logs --filter whatsapp
+```
+
+</Step>
+
+</Steps>
 
 ## Phone Number Formatting
 

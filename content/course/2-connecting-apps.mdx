@@ -56,7 +56,11 @@ Telegram is the fastest channel to set up:
 You can add WhatsApp, Slack, Discord, and more later. See the
 [Channels guide](/channels) for all supported platforms.
 
-## Step 1: Create your bot
+<Steps>
+
+<Step>
+
+### Create your bot
 
 1. Open Telegram and search for **@BotFather**
 2. Send `/newbot`
@@ -66,7 +70,11 @@ You can add WhatsApp, Slack, Discord, and more later. See the
 
 Keep this token private — anyone with it can control your bot.
 
-## Step 2: Add the channel config
+</Step>
+
+<Step>
+
+### Add the channel config
 
 In your Terminal, open your OpenClaw configuration file:
 
@@ -116,7 +124,11 @@ In JSON, each section must be separated by a comma. If you get a "config invalid
 Run `openclaw config path` in your Terminal to see the file location (e.g. `/Users/yourname/.openclaw/openclaw.json`), then open that file in any text editor — TextEdit on Mac, Notepad on Windows, or VS Code if you have it installed.
 </Callout>
 
-## Step 3: Understand DM policies
+</Step>
+
+<Step>
+
+### Understand DM policies
 
 The `dmPolicy` setting controls who can message your agent:
 
@@ -146,7 +158,11 @@ For `allowlist` mode:
 }
 ```
 
-## Step 4: Restart and pair
+</Step>
+
+<Step>
+
+### Restart and pair
 
 Save your config file, then apply the changes in your Terminal:
 
@@ -185,7 +201,11 @@ Approve? [y/n]:
 
 Type `y` and press Enter. You are now paired and connected.
 
-## Step 5: Test it
+</Step>
+
+<Step>
+
+### Test it
 
 Send a message to your bot in Telegram:
 
@@ -194,6 +214,10 @@ Send a message to your bot in Telegram:
 You should get a response within a few seconds. The agent reads your SOUL.md and
 USER.md on each message, sends the request to your AI provider, and streams the
 response back.
+
+</Step>
+
+</Steps>
 
 ## Troubleshooting
 

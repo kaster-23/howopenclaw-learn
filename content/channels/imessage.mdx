@@ -112,6 +112,10 @@ Recommended group policies by use case:
 - **Dedicated work group:** `groupPolicy: always` — always respond
 - **Social groups:** `groupPolicy: never` — don't respond at all
 
+## Self-Chat Detection (<OpenClawVersion />)
+
+As of <OpenClawVersion />, OpenClaw correctly distinguishes between normal DM outbound messages and true self-chat. It uses `destination_caller_id` plus chat participants to identify self-chat scenarios, preserves multi-handle self-chat aliases, drops ambiguous reflected echoes, and strips wrapped RPC text fields. If you've had issues with the bot double-responding or ignoring self-addressed messages, this is resolved.
+
 ## Related channels
 
 - **[WhatsApp](/channels/whatsapp)** — Android users or those without a Mac running the agent

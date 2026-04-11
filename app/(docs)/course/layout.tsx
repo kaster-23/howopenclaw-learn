@@ -3,23 +3,10 @@ import { source } from "@/lib/source"
 import Image from "next/image"
 import type { ReactNode } from "react"
 import { SidebarFolderWithTooltip, SidebarSeparatorItem } from "@/components/sidebar-folder"
+import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 
-async function getLatestVersion(): Promise<string> {
-  try {
-    const res = await fetch("https://api.github.com/repos/OpenClaw/OpenClaw/releases/latest", {
-      next: { revalidate: 3600 },
-      headers: { Accept: "application/vnd.github+json" },
-    })
-    if (!res.ok) return "latest"
-    const data = await res.json()
-    return (data.tag_name as string) ?? "latest"
-  } catch {
-    return "latest"
-  }
-}
-
-export default async function CourseLayout({ children }: { children: ReactNode }) {
-  const version = await getLatestVersion()
+export default function CourseLayout({ children }: { children: ReactNode }) {
+  const version = OPENCLAW_VERSION
 
   return (
     <>

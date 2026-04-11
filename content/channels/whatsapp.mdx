@@ -129,6 +129,14 @@ Group echo suppression is now smarter: OpenClaw tracks recent gateway-sent messa
 
 Reply-to-bot detection in groups also works reliably with linked accounts. OpenClaw unwraps `botInvokeMessage` payloads and reads `selfLid` from `creds.json`, so reply-based mentions reach the bot in linked-account group chats.
 
+## CLI Media Sends (<OpenClawVersion />)
+
+As of <OpenClawVersion />, sending files via the CLI with `--media` is fixed. Gateway-mode outbound sends now route through the correct channel `sendMedia` path and preserve media access context — previously, WhatsApp document and attachment sends would silently drop the file while still delivering the caption.
+
+```bash
+openclaw send --channel whatsapp --to "+15551234567" --media /path/to/file.pdf "Here's the doc"
+```
+
 ## Reconnection Stability (<OpenClawVersion />)
 
 As of <OpenClawVersion />, WhatsApp reconnection has been improved:

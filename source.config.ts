@@ -9,7 +9,7 @@ const OPENCLAW_VERSION = (() => {
   try {
     return readFileSync(resolve(process.cwd(), ".openclaw-last-version"), "utf8").trim()
   } catch {
-    return "v2026.4.7"
+    return "v2026.4.10"
   }
 })()
 

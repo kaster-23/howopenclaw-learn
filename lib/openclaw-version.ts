@@ -12,6 +12,6 @@ export const OPENCLAW_VERSION: string = (() => {
       .readFileSync(path.resolve(process.cwd(), ".openclaw-last-version"), "utf8")
       .trim()
   } catch {
-    return "v2026.4.5" // fallback if file is missing
+    return "v2026.4.10" // fallback if file is missing
   }
 })()

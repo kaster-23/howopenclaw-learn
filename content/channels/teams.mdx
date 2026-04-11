@@ -194,6 +194,10 @@ Set `groupPolicy` to control how the bot behaves in groups:
 }
 ```
 
+## Message Actions (<OpenClawVersion />)
+
+As of <OpenClawVersion />, your agent can use Teams message actions: pin, unpin, read, react to a message, and list reactions. These are available as tools your agent can invoke during a conversation.
+
 ## Channel Threading (<OpenClawVersion />)
 
 As of <OpenClawVersion />, channel reply threading is now preserved in proactive fallback scenarios. This ensures that replies maintain proper conversation structure in Teams channels.
@@ -201,6 +205,16 @@ As of <OpenClawVersion />, channel reply threading is now preserved in proactive
 ## SDK Updates (<OpenClawVersion />)
 
 The deprecated Teams SDK `HttpPlugin` stub has been replaced with the modern `httpServerAdapter`. This eliminates recurring gateway deprecation warnings and keeps the Express 5 compatibility workaround on the supported SDK path.
+
+## Recent Fixes (<OpenClawVersion />)
+
+- Media downloads restored for personal DMs, Bot Framework `a:` conversations, OneDrive/SharePoint shared files, and Graph-backed chat IDs
+- Bot Framework audience tokens now accepted
+- Long tool chains kept alive with typing indicators
+- SSO sign-in callbacks added
+- Parent context injected for thread replies
+- Cron announcements delivered to Teams conversation IDs
+- Feedback-learning filename collisions prevented
 
 ## Related channels
 

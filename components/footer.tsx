@@ -1,18 +1,9 @@
 import Link from "next/link"
 import Image from "next/image"
-import fs from "fs"
-import path from "path"
-
-function getSyncedVersion(): string {
-  try {
-    return fs.readFileSync(path.resolve(process.cwd(), ".openclaw-last-version"), "utf8").trim()
-  } catch {
-    return ""
-  }
-}
+import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 
 export function Footer() {
-  const syncedVersion = getSyncedVersion()
+  const syncedVersion = OPENCLAW_VERSION
 
   return (
     <footer className="relative z-10 bg-zinc-950 border-t border-zinc-800">

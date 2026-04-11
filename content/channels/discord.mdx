@@ -172,6 +172,8 @@ If the inbound Discord worker times out before a final reply starts, OpenClaw no
 - Explicit reply-tag threading is honored during final delivery
 - Reply-to-batched delivery uses correct `replyToMode: "batched"` instead of legacy flags
 - Visible timeout replies sent when worker times out before final reply starts
+- Numeric Discord server and channel IDs in config are now auto-coerced to strings — no more startup failures if you paste a raw number into `allowedGuilds` or `allowedChannels`
+- Auto-thread names now work correctly with reasoning models (enough output budget for thinking + title text)
 
 ## Related channels
 

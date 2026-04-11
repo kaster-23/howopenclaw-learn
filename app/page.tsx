@@ -1,17 +1,8 @@
 import type { Metadata } from "next"
-import fs from "fs"
-import path from "path"
 import { LandingContent } from "@/components/landing-content"
 import { Footer } from "@/components/footer"
 import { BackgroundDotsLoader } from "@/components/background-dots-loader"
-
-function getSyncedVersion(): string {
-  try {
-    return fs.readFileSync(path.resolve(process.cwd(), ".openclaw-last-version"), "utf8").trim()
-  } catch {
-    return ""
-  }
-}
+import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 
 const description =
   "Build your own private AI assistant with OpenClaw — no subscriptions, no cloud. 10 beginner-friendly modules to go from zero to running in an hour."
@@ -121,7 +112,6 @@ const homepageFaqJsonLd = {
 }
 
 export default function LandingPage() {
-  const syncedVersion = getSyncedVersion()
   return (
     <>
       <script
@@ -129,7 +119,7 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqJsonLd) }}
       />
       <BackgroundDotsLoader />
-      <LandingContent syncedVersion={syncedVersion} />
+      <LandingContent syncedVersion={OPENCLAW_VERSION} />
       <Footer />
     </>
   )

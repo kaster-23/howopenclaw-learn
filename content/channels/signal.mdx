@@ -9,11 +9,11 @@ howToSteps:
   - "Restart the gateway with `openclaw gateway restart` and test by messaging the agent number from your personal Signal account"
 faqs:
   - q: "Why does Signal setup take so much longer than Telegram?"
-    a: "Signal doesn't have an official bot API. OpenClaw uses signal-cli, a command-line client that registers a real phone number with Signal's network. This requires getting a dedicated phone number, installing signal-cli, and registering via SMS verification — more steps than Telegram's simple token system."
+    a: "Signal doesn't have an official bot API. OpenClaw uses [signal-cli](https://github.com/AsamK/signal-cli), a command-line client that registers a real phone number with Signal's network. This requires getting a dedicated phone number, installing signal-cli, and registering via SMS verification — more steps than [Telegram's simple token system](https://t.me/botfather)."
   - q: "Can I use my existing personal Signal number?"
-    a: "No — strongly advised against it. signal-cli and the Signal app cannot share the same number simultaneously. Using your personal number for the bot would disconnect your Signal app. Always get a dedicated number (Google Voice, Twilio, or prepaid SIM) specifically for the agent."
+    a: "No — strongly advised against it. signal-cli and the Signal app cannot share the same number simultaneously. Using your personal number for the bot would disconnect your Signal app. Always get a dedicated number ([Google Voice](https://voice.google.com), [Twilio](https://www.twilio.com), or prepaid SIM) specifically for the agent."
   - q: "Are messages end-to-end encrypted?"
-    a: "Yes. Signal's end-to-end encryption applies to all messages, including those sent through signal-cli. Your messages are encrypted between your phone and the agent's Signal number — not even Signal's servers can read them. This makes Signal the most private OpenClaw channel available."
+    a: "Yes. [Signal's end-to-end encryption](https://signal.org/docs/) applies to all messages, including those sent through signal-cli. Your messages are encrypted between your phone and the agent's Signal number — not even Signal's servers can read them. This makes Signal the most private OpenClaw channel available."
 ---
 
 

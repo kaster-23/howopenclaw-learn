@@ -187,6 +187,8 @@ export default async function Page({ params }: PageProps) {
 
   const breadcrumbJsonLd = buildBreadcrumbList(fullSlug, page.data.title)
 
+  const stripLinks = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+
   const faqJsonLd = page.data.faqs?.length
     ? {
         "@context": "https://schema.org",
@@ -194,7 +196,7 @@ export default async function Page({ params }: PageProps) {
         mainEntity: page.data.faqs.map(({ q, a }: { q: string; a: string }) => ({
           "@type": "Question",
           name: q,
-          acceptedAnswer: { "@type": "Answer", text: a },
+          acceptedAnswer: { "@type": "Answer", text: stripLinks(a) },
         })),
       }
     : null

@@ -12,7 +12,7 @@ faqs:
   - q: "What is the difference between a built-in tool and a skill?"
     a: "Built-in tools (read, write, shell) are compiled into OpenClaw and enabled via config flags. Skills are external extensions — Markdown SKILL.md files that describe tools the agent can call. Skills are installed from ClawHub and can be added or removed without touching the core config."
   - q: "Are OpenClaw skills free to use?"
-    a: "The skills themselves are free and open source. However, some skills connect to external services that have their own costs — for example, a Google Calendar skill requires a Google account, and a web search skill may use a paid API. Check each skill's readme for dependencies."
+    a: "The skills themselves are free and open source. However, some skills connect to external services that have their own costs — for example, a Google Calendar skill requires a Google account, and a web search skill may use a paid API. Check each skill's readme for dependencies. See [ClawHub](https://docs.openclaw.ai/skills) for the full skill directory."
   - q: "Can I use multiple skills at the same time?"
     a: "Yes. You can have any number of skills installed and active at once. The agent selects which skills to invoke based on the task — it won't call your calendar skill when you ask a general knowledge question. Skills don't conflict with each other unless they share the same tool name."
   - q: "Do skills have access to my files or personal data?"

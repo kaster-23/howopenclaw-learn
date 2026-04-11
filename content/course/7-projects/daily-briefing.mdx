@@ -12,11 +12,11 @@ howToSteps:
   - "Test and refine the output format"
 faqs:
   - q: "Can I choose what time the daily briefing runs?"
-    a: "Yes. The cron expression controls exactly when the briefing fires. `0 7 * * *` runs at 7:00 AM every day. Change the hour number to set your preferred time — `0 6 * * *` for 6 AM, `0 8 * * *` for 8 AM. Times are in UTC by default, so account for your timezone offset."
+    a: "Yes. The cron expression controls exactly when the briefing fires. `0 7 * * *` runs at 7:00 AM every day. Change the hour number to set your preferred time — `0 6 * * *` for 6 AM, `0 8 * * *` for 8 AM. Times are in UTC by default, so account for your timezone offset. Use [crontab.guru](https://crontab.guru) to validate the cron expression."
   - q: "What information can the daily briefing include?"
     a: "Anything you install skills for: today's weather, calendar events, task list, news headlines, stock prices, sports scores, or a quote of the day. Each skill adds a data source the agent can pull from. Configure which ones appear by adding instructions to SOUL.md for your briefing format."
   - q: "Does the briefing run if my computer is asleep?"
-    a: "No — cron jobs only run while OpenClaw is running. If your machine sleeps at night, the morning briefing will be skipped. To ensure it always runs, deploy OpenClaw to a VPS (around $5/month) or use `caffeinate -d &` on Mac to prevent sleep overnight."
+    a: "No — cron jobs only run while OpenClaw is running. If your machine sleeps at night, the morning briefing will be skipped. To ensure it always runs, deploy OpenClaw to a [VPS](/reference/system-requirements) (around $5/month) or use `caffeinate -d &` on Mac to prevent sleep overnight."
 ---
 
 <ReadTime minutes={3} />

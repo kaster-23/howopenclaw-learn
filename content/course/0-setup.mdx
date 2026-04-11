@@ -61,6 +61,21 @@ AI model you choose (OpenAI, Claude, Ollama for fully local).
   B --> E[Skills & Tools]
 `} />
 
+## Before you start: quick requirements check
+
+OpenClaw is lightweight — it's a Node.js process, not a heavy application. Here's what you need:
+
+| What | Minimum | Notes |
+|---|---|---|
+| **Node.js** | 22.16 | Node 24 recommended — [download here](https://nodejs.org) |
+| **RAM** | 2 GB | 4 GB+ comfortable; 8 GB+ if using local models (Ollama) |
+| **OS** | macOS, Linux, Windows (WSL2) | Any modern 64-bit system |
+| **Internet** | Required for cloud AI | Not needed if using Ollama locally |
+
+No GPU required. No special hardware. If you're running macOS, Linux, or Windows with a few GB of RAM, you're good.
+
+→ Running a server, Raspberry Pi, or want 24/7 operation? See the full [System Requirements](/reference/system-requirements) for use-case specific guidance.
+
 ## Before you start: open your Terminal
 
 All commands in this course are run in the **Terminal** (also called the command line or shell). On macOS, press **Cmd + Space**, type "Terminal", and hit Enter. On Windows, use **PowerShell** or **Windows Terminal**. On Linux, use your system's terminal app.

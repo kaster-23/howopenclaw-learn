@@ -3,13 +3,13 @@ title: "System Requirements"
 description: "What hardware and software you need to run OpenClaw. Mac, Linux, and Windows supported. Runs on a Raspberry Pi — no dedicated GPU required."
 faqs:
   - q: "Does OpenClaw work on Windows?"
-    a: "Yes. OpenClaw runs on Windows 10/11 with Node.js 22.14 or later. The iMessage channel is the only exception — it requires macOS. All other channels work on Windows."
+    a: "Yes. OpenClaw runs on Windows with Node.js 22.16 or later. WSL2 is strongly recommended for the best experience. The iMessage channel is the only exception — it requires macOS. All other channels work on Windows."
   - q: "Does OpenClaw work on Raspberry Pi?"
-    a: "Yes, with at least 1GB RAM and a 64-bit OS. Use Node.js 22 LTS. Raspberry Pi 4 (2GB+) is recommended for comfortable performance with automations running. Pi Zero and older Pi 3 models may be too slow."
+    a: "Yes. Raspberry Pi 4 or 5 with 2 GB+ RAM (4 GB recommended) and a 64-bit OS. Use Node.js 24. All channels supported except iMessage."
   - q: "What Node.js version does OpenClaw require?"
-    a: "Node.js 22.14 or later. Node.js 24 LTS is recommended. Older versions (18, 20) are not supported. Check your version with `node --version` and upgrade via nvm if needed."
+    a: "Node.js 22.16 or later. Node.js 24 is recommended. Older versions (18, 20) are not supported. Check your version with `node --version` and upgrade via nvm if needed."
   - q: "Can I run OpenClaw in Docker?"
-    a: "Yes. OpenClaw runs in Docker. The official image handles all dependencies. The iMessage channel requires macOS and won't work inside a Linux container."
+    a: "Yes. OpenClaw runs in Docker with Docker Engine or Docker Desktop + Compose v2. Your host needs at least 2 GB RAM — 1 GB hosts may OOM-kill the build. The iMessage channel requires macOS and won't work inside a Linux container."
 ---
 
 
@@ -17,43 +17,43 @@ faqs:
 
 | Component | Minimum | Recommended |
 |---|---|---|
-| **Node.js** | 22.14 | 24 LTS |
-| **RAM** | 512MB | 1GB+ |
-| **Disk** | 200MB | 500MB+ (for logs and memory files) |
-| **OS** | macOS 12+, Ubuntu 20.04+, Windows 10+ | Any modern 64-bit OS |
+| **Node.js** | 22.16 | 24 |
+| **RAM** | 2 GB | 4 GB+ |
+| **Disk** | 512 MB | 1 GB+ (for logs and memory files) |
+| **OS** | macOS, Linux (64-bit), Windows (WSL2) | Any modern 64-bit OS |
 
 ---
 
 ## Supported operating systems
 
 ### macOS
-- macOS 12 Monterey or later
+- Any modern macOS version supported for the gateway
+- macOS 15+ required for the optional companion menu-bar app
 - All channels supported including iMessage
-- ARM (Apple Silicon M1/M2/M3) and Intel supported
+- ARM (Apple Silicon M1/M2/M3/M4) and Intel supported
 
 ### Linux
-- Ubuntu 20.04 LTS or later
-- Debian 11+
-- Any modern 64-bit distro with Node.js 22+
+- Any modern 64-bit distribution with Node.js 22.16+
+- Debian Bookworm or equivalent recommended
 - All channels supported except iMessage
 
 ### Windows
-- Windows 10 or Windows 11
-- WSL2 is supported and recommended for the best experience
+- WSL2 strongly recommended — more stable than native Windows
+- Native Windows CLI is supported but still improving
 - All channels supported except iMessage
 - iMessage requires macOS on the machine running the gateway
 
 ### Raspberry Pi
-- Raspberry Pi 4 (2GB RAM) recommended
-- Pi 3 works but is slow; Pi Zero is not recommended
-- Use a 64-bit OS (Raspberry Pi OS Bookworm 64-bit or Ubuntu 22.04)
+- Raspberry Pi 4 or 5 with 2 GB+ RAM (4 GB recommended)
+- 64-bit OS required — Raspberry Pi OS Bookworm 64-bit or Ubuntu 24.04
+- Pi 3 and earlier are not officially supported
 - All channels supported except iMessage
 
 ---
 
 ## Node.js
 
-OpenClaw requires **Node.js 22.14 or later**. Node.js 24 LTS is recommended.
+OpenClaw requires **Node.js 22.16 or later**. Node.js 24 is recommended.
 
 Check your version:
 ```bash

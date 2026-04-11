@@ -154,23 +154,13 @@ If your agent gives poor results:
 
 ## Hands-on: Improve a prompt
 
-<Steps>
-
-<Step>
-
-### Send a vague prompt
+Send the vague version first:
 
 ```bash
 openclaw agent --message "Tell me about the weather"
 ```
 
-Note how generic the response is.
-
-</Step>
-
-<Step>
-
-### Send the improved version
+Note how generic the response is. Now send the improved version:
 
 ```bash
 openclaw agent --message "What is the current weather and forecast for the next 3 days in my location? Give me temperature, rain probability, and a one-sentence summary for each day."
@@ -178,17 +168,7 @@ openclaw agent --message "What is the current weather and forecast for the next 
 
 The second version should be significantly more useful. Same model, same agent — just a better prompt.
 
-</Step>
-
-<Step>
-
-### Try it in your messaging app
-
 Test prompts directly through Telegram or whichever channel you connected in Module 2. The Terminal method is faster for iteration, but your daily use will be through chat — practice writing specific prompts there too.
-
-</Step>
-
-</Steps>
 
 <MarkComplete moduleId="4-prompts" />
 

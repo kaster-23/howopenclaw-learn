@@ -142,6 +142,16 @@ Enable streaming control if needed:
 
 ## Re-Authentication
 
+<Callout type="warn" title="Sessions expire after 2 weeks of inactivity">
+If you stop using the bot for two weeks, WhatsApp will disconnect the session. You'll see a reconnection prompt in the logs. Fix it with:
+
+```bash
+openclaw channels login --channel whatsapp
+```
+
+Re-scan the QR code and you're reconnected. This is normal — not a bug.
+</Callout>
+
 When the session expires, delete the session files and repeat the QR code scan:
 
 ```bash

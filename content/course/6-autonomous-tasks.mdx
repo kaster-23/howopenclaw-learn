@@ -129,29 +129,37 @@ Example: disable detailed planning for cost-sensitive automations
 ## Deployment: Keeping your agent online
 
 Your agent currently runs on your computer. If your laptop sleeps or shuts
-down, the agent stops. There are three ways to keep it running.
+down, the agent stops.
 
-### Option 1: Prevent sleep (simplest)
+## Choosing your deployment option
 
-If you want to keep using your current machine:
+Before setting up 24/7 operation, pick the approach that fits your situation:
 
-**macOS** — In your Terminal, run:
+| Option | Best for | Setup effort |
+|---|---|---|
+| **Keep on your machine** | Automations only when you're at your desk | None — already works |
+| **Prevent sleep** | More reliable, still on your machine | 2 minutes |
+| **Deploy to a VPS** | True 24/7 reliability, runs while you sleep | 20–30 minutes |
+
+If you just want to test automations, they already work — your machine is the server. Only set up a VPS if you need guaranteed uptime.
+
+### Option 1 — Keep on your machine (works now)
+
+Your cron jobs already run whenever the Gateway is running. If you're happy with automations firing only while your computer is on and awake, you're done with this section.
+
+### Option 2 — Prevent your machine from sleeping
+
+On macOS, prevent sleep while OpenClaw is running:
+
 ```bash
 caffeinate -d &
 ```
-This prevents your Mac from sleeping. The `&` at the end means "run this in the background" — it keeps running silently while you use your Terminal for other things. To stop it later, close the Terminal window or restart your Mac.
 
-**Linux** — Go to your desktop Settings → Power → disable automatic sleep. Or if you're comfortable in the Terminal:
-```bash
-sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
-```
-(`systemctl` is the Linux tool for managing system services. `mask` disables the sleep targets permanently until you unmask them.)
+On Windows: Settings → System → Power → Screen and sleep → set "When plugged in, put my device to sleep after" to **Never**.
 
-**Windows** — Go to Settings → System → Power & Sleep → set sleep to "Never".
+This gives you near-24/7 operation without any server setup, as long as your machine stays powered on.
 
-Simple, but your agent goes down if the machine restarts or loses power.
-
-### Option 2: Deploy to a VPS (most reliable)
+### Option 3 — Deploy to a VPS (most reliable)
 
 A small cloud server costs $5-6/month and runs 24/7.
 
@@ -205,7 +213,7 @@ openclaw gateway status
 
 The daemon registers as a system service automatically — it starts on boot and restarts on failure.
 
-### Option 3: Home server (no monthly cost)
+### Home server (no monthly cost)
 
 If you have a Raspberry Pi, old laptop, or NAS, you can run OpenClaw on it.
 Same setup as VPS, but the machine stays in your home. Your data never leaves

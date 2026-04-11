@@ -10,14 +10,15 @@ learningObjectives:
   - "Send your first message and get a real response"
 nextModule: "/course/1-architecture"
 howToSteps:
-  - "Check your Node.js version (Node 24 recommended, 22.16+ minimum)"
-  - "Install OpenClaw globally via npm: npm install -g openclaw@latest"
-  - "Run the onboarding wizard: openclaw onboard --install-daemon"
-  - "Choose your AI provider: OpenAI, Anthropic, or Ollama (local)"
-  - "Enter your API key (get it from platform.openai.com or console.anthropic.com)"
-  - "Select a model (gpt-4o or claude-sonnet-4-5 recommended for starters)"
-  - "Accept the default workspace location and let the daemon install"
-  - "Open the dashboard and send your first message"
+  - "Step 1: Open your Terminal (macOS: Cmd+Space → Terminal; Windows: PowerShell)"
+  - "Step 2: Check Node.js version with node --version (need 22.16+), then install OpenClaw: npm install -g openclaw@latest"
+  - "Step 3: Run the onboarding wizard: openclaw onboard --install-daemon"
+  - "Step 3a: Choose your AI provider — OpenAI, Anthropic, or Ollama (local)"
+  - "Step 3b: Enter your API key from platform.openai.com or console.anthropic.com"
+  - "Step 3c: Select a model (gpt-4o or claude-sonnet-4-5 recommended)"
+  - "Step 4: Open the dashboard with: openclaw dashboard"
+  - "Step 5: Send your first message: openclaw agent --message 'Hello! Tell me what you can do.'"
+  - "Step 6: Verify with openclaw doctor — all checks green means you're ready"
 faqs:
   - q: "Do I need coding experience to install OpenClaw?"
     a: "No coding required. The installation is three terminal commands — install Node.js, run npm install, and answer the setup wizard. The wizard walks you through choosing an AI provider, entering your API key, and picking a model. No programming knowledge needed."
@@ -80,7 +81,9 @@ No GPU required. No special hardware. If you're running macOS, Linux, or Windows
 
 → Running a server, Raspberry Pi, or want 24/7 operation? See the full [System Requirements](/reference/system-requirements) for use-case specific guidance.
 
-## Before you start: open your Terminal
+---
+
+## Step 1 — Open your Terminal
 
 All commands in this course are run in the **Terminal** (also called the command line or shell). On macOS, press **Cmd + Space**, type "Terminal", and hit Enter. On Windows, use **PowerShell** or **Windows Terminal**. On Linux, use your system's terminal app.
 
@@ -92,7 +95,7 @@ some command
 
 That means: click in your Terminal window, type that command exactly, and press **Enter**.
 
-## Install OpenClaw
+## Step 2 — Install OpenClaw
 
 You need **Node 24** (recommended) or Node 22.16+. Check your version first:
 
@@ -114,7 +117,7 @@ Verify the installation:
 openclaw --version
 ```
 
-## Run the onboarding wizard
+## Step 3 — Run the onboarding wizard
 
 The wizard walks you through initial configuration. It takes about two minutes:
 
@@ -213,7 +216,7 @@ The wizard then installs the background daemon and confirms:
 OpenClaw is running. Open the dashboard with: openclaw dashboard
 ```
 
-## Open the dashboard
+## Step 4 — Open the dashboard
 
 The OpenClaw dashboard runs in your browser:
 
@@ -224,7 +227,7 @@ openclaw dashboard
 This opens **http://127.0.0.1:18789/** — you should see the OpenClaw interface
 with your agent status, connected channels, and configuration options.
 
-## Send your first message
+## Step 5 — Send your first message
 
 Test that everything is working:
 
@@ -235,7 +238,7 @@ openclaw agent --message "Hello! Tell me what you can do."
 You should get a response within a few seconds. If you see a reply, your
 installation is working correctly.
 
-## Verify the installation
+## Step 6 — Verify the installation
 
 Run the built-in health check:
 

@@ -83,7 +83,11 @@ No GPU required. No special hardware. If you're running macOS, Linux, or Windows
 
 ---
 
-## Step 1 — Open your Terminal
+<Steps>
+
+<Step>
+
+### Open your Terminal
 
 All commands in this course are run in the **Terminal** (also called the command line or shell). On macOS, press **Cmd + Space**, type "Terminal", and hit Enter. On Windows, use **PowerShell** or **Windows Terminal**. On Linux, use your system's terminal app.
 
@@ -95,7 +99,11 @@ some command
 
 That means: click in your Terminal window, type that command exactly, and press **Enter**.
 
-## Step 2 — Install OpenClaw
+</Step>
+
+<Step>
+
+### Install OpenClaw
 
 You need **Node 24** (recommended) or Node 22.16+. Check your version first:
 
@@ -117,7 +125,11 @@ Verify the installation:
 openclaw --version
 ```
 
-## Step 3 — Run the onboarding wizard
+</Step>
+
+<Step>
+
+### Run the onboarding wizard
 
 The wizard walks you through initial configuration. It takes about two minutes:
 
@@ -125,11 +137,9 @@ The wizard walks you through initial configuration. It takes about two minutes:
 openclaw onboard --install-daemon
 ```
 
-The wizard has four steps. Here is exactly what you will see:
+The wizard has four prompts. Here is exactly what you will see:
 
----
-
-### Step 1 — Choose your AI provider
+**Prompt A — Choose your AI provider**
 
 ```
 ? Which AI provider do you want to use?
@@ -146,9 +156,7 @@ conversations and nuanced tasks. **Ollama** runs models locally with no API key
 and no cost, but requires more RAM (8 GB minimum, 16 GB recommended).
 </Callout>
 
----
-
-### Step 2 — Enter your API key
+**Prompt B — Enter your API key**
 
 If you chose OpenAI or Anthropic, the wizard will ask for your API key:
 
@@ -156,24 +164,19 @@ If you chose OpenAI or Anthropic, the wizard will ask for your API key:
 ? Paste your OpenAI API key (starts with sk-):
 ```
 
-**Where to get your key:**
+Where to get your key:
 
 - **OpenAI:** [platform.openai.com/api-keys](https://platform.openai.com/api-keys) → Create new secret key
 - **Anthropic:** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys) → Create key
 
-Your key is stored locally in `~/.openclaw/openclaw.json` — it never leaves your machine. OpenClaw only sends it to your chosen provider when making AI requests.
+Your key is stored locally in `~/.openclaw/openclaw.json` — it never leaves your machine. If you chose **Ollama**, skip this — no key needed.
 
-If you chose **Ollama**, skip this step — no key needed. The wizard will ask you to make sure Ollama is running (`ollama serve`).
-
----
-
-### Step 3 — Choose your model
+**Prompt C — Choose your model**
 
 ```
 ? Which model do you want to use?
 ❯ gpt-4o          (recommended — best balance of speed and quality)
   gpt-4o-mini     (faster and cheaper — good for simple tasks)
-  gpt-4-turbo     (older, higher cost)
 ```
 
 For Anthropic:
@@ -190,55 +193,54 @@ For Ollama:
 ```
 
 <Callout type="info" title="You can change this any time">
-Run `openclaw configure` to re-run the wizard and switch providers or models
-without losing any of your data, channels, or skills.
+Run `openclaw configure` to switch providers or models without losing any data.
 </Callout>
 
----
-
-### Step 4 — Set up your workspace
+**Prompt D — Set up your workspace**
 
 ```
 ? Where should OpenClaw store your workspace? (~/.openclaw/workspace)
   Press Enter to accept the default
 ```
 
-Hit **Enter** to use the default (`~/.openclaw/workspace`). This is where your agent's files, memory, and SOUL.md will live. You can explore this folder after setup — it is just plain Markdown files.
-
-The wizard then installs the background daemon and confirms:
+Hit **Enter**. The wizard then installs the daemon and confirms:
 
 ```
 ✓ Config saved
 ✓ Workspace created at ~/.openclaw/workspace
 ✓ Daemon installed (auto-starts on login)
 ✓ Gateway started
-
-OpenClaw is running. Open the dashboard with: openclaw dashboard
 ```
 
-## Step 4 — Open the dashboard
+</Step>
 
-The OpenClaw dashboard runs in your browser:
+<Step>
+
+### Open the dashboard
 
 ```bash
 openclaw dashboard
 ```
 
-This opens **http://127.0.0.1:18789/** — you should see the OpenClaw interface
-with your agent status, connected channels, and configuration options.
+This opens **http://127.0.0.1:18789/** in your browser — you should see the OpenClaw interface with your agent status, connected channels, and configuration.
 
-## Step 5 — Send your first message
+</Step>
 
-Test that everything is working:
+<Step>
+
+### Send your first message
 
 ```bash
 openclaw agent --message "Hello! Tell me what you can do."
 ```
 
-You should get a response within a few seconds. If you see a reply, your
-installation is working correctly.
+You should get a response within a few seconds. If you see a reply, your installation is working correctly.
 
-## Step 6 — Verify the installation
+</Step>
+
+<Step>
+
+### Verify the installation
 
 Run the built-in health check:
 
@@ -254,6 +256,10 @@ or run `openclaw doctor` to diagnose the problem.
 </Callout>
 
 Need a command reference? The [CLI Cheatsheet](/reference/cli) has every `openclaw` command with flags and examples.
+
+</Step>
+
+</Steps>
 
 <MarkComplete moduleId="0-setup" />
 

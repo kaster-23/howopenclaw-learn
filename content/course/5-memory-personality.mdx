@@ -324,22 +324,55 @@ For personal tasks: check workspace/personal/
 
 ## Testing your setup
 
-After editing SOUL.md and USER.md, restart the gateway in your Terminal so the changes load:
+<Steps>
+
+<Step>
+
+### Restart the gateway
+
+After editing SOUL.md and USER.md, changes only load after a restart:
 
 ```bash
 openclaw gateway restart
 ```
 
-Then open Telegram (or whichever channel you connected) and run these tests:
+</Step>
 
-1. Send **"What is my name?"** — the agent should answer with the name from your USER.md
-2. Ask **a question that would have an opinion** — the tone and style should match your SOUL.md
-3. Send **"Remember that I prefer morning meetings"** — the agent should confirm it saved this
-4. Close the conversation, start a fresh one, and ask **"Do I have any preferences about meetings?"** — it should recall the morning preference from MEMORY.md
+<Step>
 
-If a test fails, check that you saved the file and ran `openclaw gateway restart` after editing.
+### Test your USER.md
 
-The [Key Concepts reference](/reference/concepts) has precise definitions for SOUL.md, USER.md, MEMORY.md, and how they interact with the agent's context window.
+Send **"What is my name?"** — the agent should answer with the name you put in USER.md.
+
+</Step>
+
+<Step>
+
+### Test your SOUL.md
+
+Ask **a question that would have an opinion** — the tone and style should match the personality you defined in SOUL.md.
+
+</Step>
+
+<Step>
+
+### Test memory saving
+
+Send **"Remember that I prefer morning meetings"** — the agent should confirm it saved this to MEMORY.md.
+
+</Step>
+
+<Step>
+
+### Test memory recall
+
+Close the conversation, start a fresh one, and ask **"Do I have any preferences about meetings?"** — it should recall the morning preference from MEMORY.md.
+
+If a test fails, check that you saved the file and ran `openclaw gateway restart` after editing. The [Key Concepts reference](/reference/concepts) has precise definitions for SOUL.md, USER.md, MEMORY.md, and how they interact with the agent's context window.
+
+</Step>
+
+</Steps>
 
 <MarkComplete moduleId="5-memory-personality" />
 

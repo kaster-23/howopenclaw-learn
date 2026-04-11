@@ -126,7 +126,11 @@ only sees the messages you send it). You own everything.
 
 ## Hands-on: Check your components
 
-Open your Terminal and run the health check:
+<Steps>
+
+<Step>
+
+### Run the health check
 
 ```bash
 openclaw doctor
@@ -145,17 +149,31 @@ You should see output like this — green checks mean everything is working:
 
 If anything shows a red ✗, the output will tell you what to fix.
 
-Explore your workspace path:
+</Step>
+
+<Step>
+
+### Find your workspace
 
 ```bash
 openclaw config get workspace
 ```
 
-Then open that folder in Finder (macOS) or File Explorer (Windows) to see your agent's files.
+This prints the path to your agent's files — SOUL.md, USER.md, MEMORY.md, and your config. Open that folder in Finder (macOS) or File Explorer (Windows) to explore.
+
+</Step>
+
+<Step>
+
+### Read the reference
+
+For precise definitions of Gateway, Agent, SOUL.md, and every other OpenClaw concept, see the [Key Concepts reference](/reference/concepts).
 
 Right now you can only talk to your agent through the Terminal. In the next module you will connect it to your phone so you can message it like a regular app — no Terminal needed after that.
 
-For precise definitions of Gateway, Agent, SOUL.md, and every other OpenClaw concept, see the [Key Concepts reference](/reference/concepts).
+</Step>
+
+</Steps>
 
 <MarkComplete moduleId="1-architecture" />
 

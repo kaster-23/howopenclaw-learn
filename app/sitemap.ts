@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { execSync } from "child_process"
 import { source } from "@/lib/source"
+import { SITE_URL } from "@/lib/site-url"
 
 const INDEX_SLUGS = new Set([
   "/course",
@@ -26,7 +27,7 @@ function getGitLastModified(filePath: string): Date {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
+  const base = SITE_URL
 
   return [
     {

@@ -1,5 +1,6 @@
 import { source } from "@/lib/source"
 import { NextResponse } from "next/server"
+import { SITE_URL } from "@/lib/site-url"
 
 export const dynamic = "force-static"
 
@@ -12,7 +13,7 @@ const SECTION_LABELS: Record<string, string> = {
 }
 
 export function GET() {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
+  const base = SITE_URL
   const pages = source.getPages()
 
   // Group pages by top-level section

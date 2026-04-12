@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next"
+import { SITE_URL } from "@/lib/site-url"
 
 export default function robots(): MetadataRoute.Robots {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
+  const base = SITE_URL
   return {
     rules: [
       {

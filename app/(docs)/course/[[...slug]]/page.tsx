@@ -66,7 +66,7 @@ interface PageProps {
   params: Promise<{ slug?: string[] }>
 }
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
+const siteUrl = "https://www.howopenclaw.com"
 
 function getFullSlug(slug: string[] | undefined): string[] {
   return slug && slug.length > 0 ? ["course", ...slug] : ["course"]

@@ -7,7 +7,7 @@ import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 const description =
   "Build your own private AI assistant with OpenClaw — no subscriptions, no cloud. 10 beginner-friendly modules to go from zero to running in an hour."
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.howopenclaw.com").trim().replace(/\/$/, "").replace("://howopenclaw.com", "://www.howopenclaw.com")
+const siteUrl = "https://www.howopenclaw.com"
 
 export const metadata: Metadata = {
   title: "HowOpenClaw — Learn OpenClaw Step by Step",
@@ -65,7 +65,7 @@ const homepageFaqJsonLd = {
       name: "How do I install OpenClaw?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Install Node.js 22.16+, then run 'npm install -g openclaw@latest' in your terminal, then run 'openclaw onboard --install-daemon' and follow the wizard. The full setup takes about 15 minutes and requires no coding experience. A step-by-step guide is at howopenclaw.com/course/0-setup.",
+        text: "Install Node.js 22.16+, then run 'npm install -g openclaw@latest' in your terminal, then run 'openclaw onboard --install-daemon' and follow the wizard. The full setup takes about 15 minutes and requires no coding experience. A step-by-step guide is at www.howopenclaw.com/course/0-setup.",
       },
     },
     {

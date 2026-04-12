@@ -52,6 +52,37 @@ This isolation makes debugging much faster.
 
 WebChat only listens on localhost. It's not accessible from other devices on your network unless you've explicitly configured remote access.
 
+## Rich Output Display
+
+WebChat now renders assistant media, replies, and voice directives as structured chat bubbles, making responses more visually organized and interactive.
+
+### Embedded Content
+
+Your agent can embed rich media directly in messages using the `[embed ...]` tag:
+
+```
+[embed type="image" src="https://example.com/image.png" alt="Description"]
+[embed type="video" src="https://example.com/video.mp4"]
+[embed type="audio" src="https://example.com/audio.mp3"]
+[embed type="link" href="https://example.com" title="Example Site"]
+```
+
+### External Embed URL Security
+
+By default, external embed URLs are gated behind config to prevent unwanted external resource loads. To enable external embeds, configure:
+
+```json
+{
+  "channels": {
+    "webchat": {
+      "allowExternalEmbeds": true
+    }
+  }
+}
+```
+
+If disabled, only local and workspace-internal embeds are rendered. This is the recommended setting for privacy-conscious setups.
+
 ## Ready to connect a real channel?
 
 WebChat is for testing. When your agent is working correctly, connect an external channel:

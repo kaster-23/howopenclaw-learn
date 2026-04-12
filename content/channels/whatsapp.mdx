@@ -129,6 +129,17 @@ Group echo suppression is now smarter: OpenClaw tracks recent gateway-sent messa
 
 Reply-to-bot detection in groups also works reliably with linked accounts. OpenClaw unwraps `botInvokeMessage` payloads and reads `selfLid` from `creds.json`, so reply-based mentions reach the bot in linked-account group chats.
 
+## Message Reactions
+
+As of <OpenClawVersion />, message reactions are now properly routed through the gateway-owned action path. This means:
+
+- Reactions work in both direct messages and group chats
+- The live WhatsApp listener is used in both contexts
+- Reaction handling matches the reliability of standard message sending (`message send`)
+- Reply-based polling and sentiment reactions work consistently
+
+The gateway now routes `message react` through the same reliable path as `message send` and `message poll`, ensuring reactions stay synchronized with your live WhatsApp session.
+
 ## CLI Media Sends (<OpenClawVersion />)
 
 As of <OpenClawVersion />, sending files via the CLI with `--media` is fixed. Gateway-mode outbound sends now route through the correct channel `sendMedia` path and preserve media access context — previously, WhatsApp document and attachment sends would silently drop the file while still delivering the caption.
@@ -136,6 +147,14 @@ As of <OpenClawVersion />, sending files via the CLI with `--media` is fixed. Ga
 ```bash
 openclaw send --channel whatsapp --to "+15551234567" --media /path/to/file.pdf "Here's the doc"
 ```
+
+## Auto-Reply and Media Attachments (<OpenClawVersion />)
+
+Image attachment notes are now preserved after media understanding, so image edits keep the real saved media path instead of hallucinating a missing local path. This means:
+
+- Your agent can understand image content in auto-reply rules
+- Edits and modifications to images maintain proper file references
+- Media understanding doesn't break downstream file operations
 
 ## Reconnection Stability (<OpenClawVersion />)
 

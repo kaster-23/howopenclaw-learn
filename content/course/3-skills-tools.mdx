@@ -76,7 +76,7 @@ openclaw agent --message "Create an image of a cozy home office with plants"
 
 ### Video generation
 
-As of <OpenClawVersion />, your agent can generate videos. Configure a provider like Runway or xAI:
+As of <OpenClawVersion />, your agent can generate videos with rich options:
 
 ```json
 {
@@ -93,6 +93,36 @@ openclaw agent --message "Create a short video of a rocket launching"
 ```
 
 Your agent will use the `video_generate` tool to create the video and return it directly in the reply.
+
+#### Advanced video generation options
+
+The video generation tool now supports:
+
+**URL-only delivery** — Generate videos and receive only the URL without downloading large files into memory
+
+**Typed provider options** — Define provider-specific parameters with full type checking:
+
+```json
+{
+  "providers": {
+    "videoGeneration": {
+      "name": "runway",
+      "providerOptions": {
+        "webhookUrl": "https://example.com/video-ready",
+        "quality": "high"
+      }
+    }
+  }
+}
+```
+
+**Reference audio inputs** — Use audio files as input to guide video generation with music or voiceover
+
+**Per-asset role hints** — Tag generated assets with metadata about their intended use (background, foreground, overlay, etc.)
+
+**Adaptive aspect-ratio support** — Automatically adapt video dimensions to different platforms (16:9, 9:16, 1:1, etc.)
+
+**Higher image-input cap** — Video providers can now expose richer generation modes without forcing large image files into memory. Providers like Runway can work with more detailed input images.
 
 ### Music generation
 

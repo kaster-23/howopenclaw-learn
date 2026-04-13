@@ -119,7 +119,15 @@ With privacy mode disabled, the bot can read all messages in the group. With `re
 
 If you use Telegram groups with **Topics** enabled (forum-style groups), OpenClaw routes messages to the correct topic. The `#General` topic (topic ID `1`) is handled reliably even when Telegram omits forum metadata — native commands, interactive callbacks, inbound message context, and fallback error replies all route correctly.
 
-No special configuration is needed. Topic routing works automatically when Topics are enabled in the group.
+### Topic Session Routing (<OpenClawVersion />)
+
+As of <OpenClawVersion />, topic-scoped session initialization stays on the canonical topic transcript path when inbound turns omit `MessageThreadId`. This means:
+
+- One topic session no longer alternates between bare and topic-qualified transcript files
+- Session history remains consistent and traceable
+- Topic-specific context is preserved across messages
+
+No special configuration is needed. Topic routing works automatically and consistently when Topics are enabled in the group.
 
 ## Photo & Media Sending
 
@@ -144,6 +152,7 @@ QQBot-style media tags with HTML entity-encoded angle brackets (`&lt;`/`&gt;`) a
 - Fixed model picker current-model checks
 - HTML-formatted non-default `/model` confirmations
 - Explicit topic reply routing
+- Topic-scoped session initialization on canonical path
 - Persisted reaction ownership across restarts
 - Caption-media placeholder and `file_id` preservation on download failure
 - Improved handling in upgraded installations

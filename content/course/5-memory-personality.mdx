@@ -255,14 +255,20 @@ openclaw /dreaming
 
 This shows recent memory promotions, a structured timeline view of your diary entries, and insights from the dreaming process. The agent also writes consolidated memories to a `dreams.md` file in your workspace for explicit reads.
 
-The control UI now includes:
-- **Structured diary view** with timeline navigation
-- **Backfill and reset controls** for managing historical entries
-- **Traceable dreaming summaries** showing exactly what memories were promoted
-- **Grounded Scene lane** with promotion hints for backfilled content
-- **Safe clear-grounded action** for staged backfill signals
+### Imported Insights and Memory Palace
 
-### Diary commit and reset flows
+The Dreams UI now includes powerful features for understanding your memory ecosystem:
+
+**Imported Insights** — Import chat histories and automatically surface key insights from external sources like ChatGPT. You can inspect imported source chats directly from the UI, review compiled wiki pages, and cross-reference with your own memories. This lets your agent learn from conversations you've had elsewhere.
+
+```bash
+openclaw dreaming import --source chatgpt --path /path/to/export
+```
+
+**Memory Palace** — A structured view of your complete memory architecture. Browse and organize memories by topic, time period, and importance. The Memory Palace shows:
+- All imported source pages side-by-side with your own memories
+- Compiled wiki pages with cross-references
+- Full source pages for detailed inspection
 
 You can now manage your memory diary using explicit commit and reset operations:
 
@@ -270,6 +276,14 @@ You can now manage your memory diary using explicit commit and reset operations:
 openclaw diary commit [path]    # Commit historical entries to memory
 openclaw diary reset [path]     # Reset stale or incorrect entries
 ```
+
+The control UI now includes:
+- **Structured diary view** with timeline navigation
+- **Backfill and reset controls** for managing historical entries
+- **Traceable dreaming summaries** showing exactly what memories were promoted
+- **Grounded Scene lane** with promotion hints for backfilled content
+- **Safe clear-grounded action** for staged backfill signals
+- **Source page inspection** for imported chats and compiled wiki data
 
 Diary writes are stored with source-day labels so you can track when entries were added. The backfill process now cleans up durable-fact extraction and handles diary heading normalization automatically.
 

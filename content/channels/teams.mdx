@@ -139,6 +139,38 @@ When a user starts a conversation with your bot, they see a welcome card with su
 }
 ```
 
+## Message Reactions
+
+Your agent can now add reactions to messages and manage reactions in Teams. Reactions work in both 1:1 conversations and group chats.
+
+### Adding reactions
+
+Your agent can react to messages with emoji:
+
+```json
+{
+  "channels": {
+    "teams": {
+      "allowMessageReactions": true
+    }
+  }
+}
+```
+
+### Listing and managing reactions
+
+OpenClaw can list all reactions on a message and provide detailed metadata about who reacted with what emoji. This is useful for understanding conversation sentiment or polling responses.
+
+### Delegated OAuth setup
+
+Reaction support includes improved OAuth setup with delegated permissions. If you're setting up Teams OAuth, you can now:
+
+1. Grant delegated (user-based) OAuth scopes for sending reactions
+2. Preserve application-auth read paths so the bot can still read messages without user delegation
+3. Mix read and write permission models — reads use application auth while writes use delegated auth
+
+This gives you finer control over what the bot can do without requiring elevated application-level permissions for every operation.
+
 ## Message Editing & Deletion
 
 You can edit or delete messages your agent has sent. This includes in-thread fallbacks when no explicit target is provided.
@@ -193,6 +225,10 @@ Set `groupPolicy` to control how the bot behaves in groups:
   }
 }
 ```
+
+## Graph Pagination (<OpenClawVersion />)
+
+As of <OpenClawVersion />, Microsoft Graph API pagination is fully supported. When the bot fetches large result sets (like message histories or user lists), results are automatically paginated so you don't hit API limits.
 
 ## Message Actions (<OpenClawVersion />)
 

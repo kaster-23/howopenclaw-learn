@@ -158,6 +158,28 @@ If `openclaw onboard` loops or fails in a fresh Docker container, update to v202
 
 ---
 
+## Audio and Transcription Issues
+
+### Audio transcription failures
+
+As of <OpenClawVersion />, audio transcription has been improved:
+
+- **OpenAI, Groq, and Mistral** transcription works reliably without weakening request validation
+- DNS pinning is disabled only for OpenAI-compatible multipart requests, while hostname validation is still maintained
+- Other request paths continue to validate hostnames as before
+
+If you see transcription errors with specific providers, ensure your network configuration allows outbound connections to those services' APIs.
+
+### Voice note transcription on Telegram
+
+Voice notes should transcribe automatically when sent to your Telegram bot. If you see `<media:audio>` placeholders instead of transcribed text:
+
+1. Check `openclaw logs --filter telegram` for transcription errors
+2. Verify your audio transcription provider is configured
+3. Ensure the audio file isn't corrupted
+
+---
+
 ## Automation issues
 
 ### Automations not firing
@@ -220,9 +242,13 @@ New built-in tools include `video_generate` and `music_generate` for media creat
 
 **OpenAI:** Missing reasoning effort now defaults to `high` on OpenAI Responses, WebSocket, and compatible completions transports — explicit per-run reasoning levels are still honored.
 
-**Ollama:** Models using the native `api: "ollama"` path can now optionally display thinking output when `/think` is set to a non-off level.
+**Ollama:** 
+- Models using the native `api: "ollama"` path can now optionally display thinking output when `/think` is set to a non-off level
+- Model discovery caching is improved: `/api/show` context-window and capability metadata are cached during model discovery, so repeated picker refreshes stop refetching unchanged models while still retrying after empty responses and invalidating on digest changes
 
 **Codex CLI:** System prompts are now passed through Codex's `model_instructions_file` config override so fresh Codex CLI sessions receive the same prompt guidance as Claude CLI sessions.
+
+**OpenAI Codex OAuth:** Upstream authorize URL scopes are no longer rewritten, so new Codex sign-ins no longer fail with `invalid_scope` before returning an authorization code.
 
 ### Agent execution reporting accuracy
 
@@ -233,6 +259,10 @@ New built-in tools include `video_generate` and `music_generate` for media creat
 - **Sandbox environment**: `deny/off` (deny execution or off)
 
 If `host=auto`, the policy adapts to your deployment type. Previously, stale stricter defaults were shown in reports even when the actual behavior was more permissive. Check your logs or `/exec` output to see the current policy for your setup.
+
+### OpenAI-compatible endpoint debugging
+
+Configured OpenAI-compatible endpoints are now classified in embedded-agent debug logs, making local and proxy routing issues easier to diagnose. Check your logs to see how your custom endpoints are being classified.
 
 ---
 
@@ -250,7 +280,7 @@ cat ~/.openclaw/openclaw.json
 openclaw config validate
 ```
 
-This checks JSON syntax and required fields.
+This checks JSON syntax and required fields. As of <OpenClawVersion />, `asyncCompletion` is now properly recognized in the generated zod schema, so documented async completion config no longer fails with an unrecognized-key error.
 
 ### Resetting to defaults
 
@@ -374,6 +404,34 @@ Clear stale setup-code auth on new QR scans. The system now:
 - Pauses pairing auto-retry while the app is backgrounded
 
 This makes scan-once Android pairing more reliable.
+
+### macOS Talk Mode
+
+After granting microphone permission on first enable, Talk Mode continues to start instead of requiring a second toggle. The permission grant workflow is now more intuitive on macOS.
+
+---
+
+## Video and Media Generation
+
+### Google Veo video generation failures
+
+As of <OpenClawVersion />, Google Veo video generation no longer sends the unsupported `numberOfVideos` request field, allowing Gemini Developer API Veo runs to complete successfully.
+
+---
+
+## QA and Testing Issues
+
+### Packaged CLI startup issues
+
+As of <OpenClawVersion />, packaged CLI startup and completion cache generation no longer read repo-only QA scenario markdown. The bundled QA scenario pack is shipped in npm releases, and `openclaw completion --write-state` keeps working even if QA setup is broken.
+
+---
+
+## MiniMax OAuth Issues
+
+### MiniMax portal authentication fails
+
+As of <OpenClawVersion />, `openclaw configure` now writes `api: "anthropic-messages"` and `authHeader: true` into the `minimax-portal` config patch during setup. This ensures re-authenticated portal setups keep Bearer auth routing working correctly.
 
 ---
 

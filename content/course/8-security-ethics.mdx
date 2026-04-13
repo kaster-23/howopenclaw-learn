@@ -12,6 +12,14 @@ prerequisites:
   - "Completed Module 7 (Real-World Projects)"
 prevModule: "/course/7-projects"
 nextModule: "/course/9-next-steps"
+howToSteps:
+  - "Set dmPolicy to 'allowlist' in openclaw.json and add your Telegram user ID to allowedUsers"
+  - "Enable the shell tool with confirm: true and an explicit command allowlist — never allow rm, sudo, or wildcards"
+  - "Restrict file access to ~/.openclaw/workspace/ in the tools.read and tools.write config"
+  - "Run chmod 600 ~/.openclaw/openclaw.json to lock down API key file permissions"
+  - "Add prompt injection protection to SOUL.md — instruct the agent to ignore instructions embedded in fetched content"
+  - "Run openclaw config audit after every config change to review enabled tools and permission levels"
+  - "Test security with openclaw agent --message commands for shell access, file scope, and injection resistance"
 faqs:
   - q: "Is my OpenClaw agent accessible from the internet by default?"
     a: "No. By default, the Gateway only listens on 127.0.0.1 (localhost) — your own machine. It is completely unreachable from the internet unless you explicitly expose it. This means even if you're running on a public server, no one can reach your agent without you first opening network access."

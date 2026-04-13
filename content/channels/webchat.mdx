@@ -8,6 +8,11 @@ faqs:
     a: "Not directly — WebChat only listens on localhost (your own machine). Other devices on your network can't reach it without additional configuration. For mobile access, connect a proper channel like [Telegram](/channels/telegram) or [iMessage](/channels/imessage) instead. Those channels work from any device anywhere."
   - q: "Does WebChat remember my previous conversations?"
     a: "No — each time you open WebChat, it starts a fresh session with no memory of previous chats. For persistent memory across sessions, configure [MEMORY.md](https://docs.openclaw.ai/memory) as covered in [Module 5](/course/5-memory-personality). MEMORY.md persists facts between sessions regardless of which channel you use, including WebChat."
+howToSteps:
+  - "Start the OpenClaw Gateway with `openclaw gateway start`"
+  - "Open http://localhost:3000 in any browser on the same machine"
+  - "Send a test message to confirm your agent responds"
+  - "Use WebChat to verify SOUL.md, skills, and memory before connecting external channels"
 ---
 
 

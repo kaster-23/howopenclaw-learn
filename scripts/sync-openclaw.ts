@@ -1,7 +1,11 @@
 /**
  * sync-openclaw.ts
  *
- * Detects new OpenClaw releases and uses Claude to update affected docs.
+ * Three-phase doc sync using two models:
+ *   Phase 1 — Haiku:  triage release notes → identify affected files + what to change
+ *   Phase 2 — Sonnet: execute the plan → read targeted files, write updates
+ *   Phase 3 — Sonnet: audit all written files → verify correctness, fix anything off
+ *
  * Run via GitHub Actions on a schedule, or locally:
  *   ANTHROPIC_API_KEY=sk-... pnpm tsx scripts/sync-openclaw.ts
  */
@@ -15,6 +19,9 @@ const client = new Anthropic()
 const CONTENT_DIR = path.resolve(process.cwd(), "content")
 const VERSION_FILE = path.resolve(process.cwd(), ".openclaw-last-version")
 const OPENCLAW_REPO = "OpenClaw/OpenClaw"
+
+const MODEL_TRIAGE = "claude-haiku-4-5-20251001"
+const MODEL_WRITER = "claude-sonnet-4-6"
 
 // ─── GitHub helpers ──────────────────────────────────────────────────────────
 
@@ -94,9 +101,9 @@ function setOutput(name: string, value: string) {
   console.log(`[output] ${name}=${value.slice(0, 80)}`)
 }
 
-// ─── Claude tools ─────────────────────────────────────────────────────────────
+// ─── Tool definitions ─────────────────────────────────────────────────────────
 
-const tools: Anthropic.Tool[] = [
+const readOnlyTools: Anthropic.Tool[] = [
   {
     name: "list_docs",
     description: "List all documentation .mdx files available in the content directory",
@@ -116,6 +123,10 @@ const tools: Anthropic.Tool[] = [
       required: ["path"],
     },
   },
+]
+
+const writeTools: Anthropic.Tool[] = [
+  ...readOnlyTools,
   {
     name: "write_file",
     description: "Write updated content to a documentation .mdx file. Only call this when changes are actually needed.",
@@ -144,6 +155,227 @@ function executeTool(name: string, input: Record<string, string>): string {
   }
 }
 
+// ─── Agentic loop ─────────────────────────────────────────────────────────────
+
+async function runAgentLoop(
+  model: string,
+  system: string,
+  userMessage: string,
+  tools: Anthropic.Tool[],
+  maxIter: number,
+  label: string,
+): Promise<string> {
+  const messages: Anthropic.MessageParam[] = [
+    { role: "user", content: userMessage },
+  ]
+
+  let lastText = ""
+
+  for (let i = 0; i < maxIter; i++) {
+    const response = await client.messages.create({
+      model,
+      max_tokens: 8096,
+      system,
+      tools,
+      messages,
+    })
+
+    messages.push({ role: "assistant", content: response.content })
+
+    // Collect any text output
+    for (const block of response.content) {
+      if (block.type === "text") lastText = block.text
+    }
+
+    if (response.stop_reason === "end_turn") {
+      console.log(`  [${label}] finished.`)
+      break
+    }
+
+    const toolCalls = response.content.filter(
+      (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
+    )
+    if (toolCalls.length === 0) break
+
+    const results: Anthropic.ToolResultBlockParam[] = toolCalls.map((tool) => ({
+      type: "tool_result",
+      tool_use_id: tool.id,
+      content: executeTool(tool.name, tool.input as Record<string, string>),
+    }))
+
+    messages.push({ role: "user", content: results })
+  }
+
+  return lastText
+}
+
+// ─── Phase 1: Haiku triage ────────────────────────────────────────────────────
+
+async function triageRelease(
+  releaseTag: string,
+  releaseNotes: string,
+  lastVersion: string,
+): Promise<string> {
+  console.log(`\n[Phase 1 — Haiku] Triaging release ${releaseTag}...`)
+
+  const system = `You are a triage assistant for HowOpenClaw, an educational site about OpenClaw.
+
+The site has these doc files:
+- content/course/       — 10-module course (0-setup through 9-next-steps)
+- content/channels/     — per-channel setup guides (telegram, slack, discord, whatsapp, imessage, signal, teams, webchat)
+- content/reference/    — CLI reference, concepts, troubleshooting, pricing, system-requirements
+
+Your job: given a release's changelog, identify which doc files need updating and what specifically to change in each.
+
+Be precise and conservative — only flag files where the release notes directly affect the content. Output a structured plan.`
+
+  const userMessage = `OpenClaw released **${releaseTag}** (previous: ${lastVersion || "unknown"}).
+
+Release notes:
+---
+${releaseNotes || "(no release notes provided)"}
+---
+
+1. Call list_docs to see all available files
+2. Read any files where you're uncertain about the current content
+3. Output a triage plan as a markdown list with this format:
+
+## Files to update
+
+### content/path/to/file.mdx
+**Reason:** (why this file needs updating)
+**Changes needed:**
+- (specific change 1)
+- (specific change 2)
+
+## Files with no changes needed
+- content/path/file.mdx — (one-line reason)`
+
+  return runAgentLoop(
+    MODEL_TRIAGE,
+    system,
+    userMessage,
+    readOnlyTools,
+    15,
+    "triage",
+  )
+}
+
+// ─── Phase 2: Sonnet writes ───────────────────────────────────────────────────
+
+async function executeUpdates(
+  releaseTag: string,
+  releaseNotes: string,
+  triagePlan: string,
+): Promise<string[]> {
+  console.log(`\n[Phase 2 — Sonnet] Executing updates...`)
+
+  const writtenFiles: string[] = []
+
+  const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw (an open-source self-hosted AI assistant).
+
+The site is structured as a 10-module course (content/course/) plus secondary reference sections (content/channels/, content/reference/).
+
+Rules:
+- Only update the files identified in the triage plan
+- Preserve all existing MDX structure and frontmatter — including course-specific fields: title, description, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, faqs, howToSteps
+- Preserve all component syntax — both Fumadocs components (Callout, Steps, Step, Cards, Card, Tabs, Tab) and course components (ReadTime, LearningObjectives, ModuleNav, MarkComplete, VideoEmbed) and Mermaid fenced code blocks
+- Keep the same writing style and tone — calm, professional, beginner-friendly, step-by-step
+- If a feature changed, update the relevant steps/descriptions
+- If a feature is new, add it in the appropriate module section using version-tagged Callouts: <Callout type="info" title="New in ${releaseTag}">
+- If a feature was removed, note the removal with a Callout
+- Do not change moduleNumber, readTime, nextModule, prevModule, or moduleId values
+- After writing all files, output a plain list of the file paths you updated, one per line`
+
+  const userMessage = `OpenClaw released **${releaseTag}**.
+
+Release notes:
+---
+${releaseNotes || "(no release notes provided)"}
+---
+
+Triage plan from Phase 1:
+---
+${triagePlan}
+---
+
+Execute the triage plan:
+1. For each file marked for update: read it, apply the specified changes, write it back
+2. Skip files marked as no changes needed
+3. After all writes, list the updated file paths`
+
+  const finalText = await runAgentLoop(
+    MODEL_WRITER,
+    system,
+    userMessage,
+    writeTools,
+    30,
+    "writer",
+  )
+
+  // Extract written file paths from the final output
+  for (const line of finalText.split("\n")) {
+    const trimmed = line.replace(/^[-*]\s*/, "").trim()
+    if (trimmed.startsWith("content/") && trimmed.endsWith(".mdx")) {
+      writtenFiles.push(trimmed)
+    }
+  }
+
+  return writtenFiles
+}
+
+// ─── Phase 3: Sonnet audit ────────────────────────────────────────────────────
+
+async function auditUpdates(
+  releaseTag: string,
+  releaseNotes: string,
+  writtenFiles: string[],
+): Promise<void> {
+  if (writtenFiles.length === 0) {
+    console.log(`\n[Phase 3 — Sonnet] No files to audit.`)
+    return
+  }
+
+  console.log(`\n[Phase 3 — Sonnet] Auditing ${writtenFiles.length} updated file(s)...`)
+
+  const system = `You are a senior documentation auditor for HowOpenClaw.
+
+Your job: review recently updated documentation files and fix any issues you find.
+
+Check for:
+- Broken MDX syntax (unclosed tags, malformed components, missing frontmatter fields)
+- Version numbers that still reference old versions instead of ${releaseTag}
+- Incomplete sentences or truncated content
+- Callout titles that don't include the version tag
+- Any leftover placeholder text like <OpenClawVersion /> that should be a literal version string
+- Content that contradicts the release notes
+- Anything that looks wrong or out of place
+
+If a file looks correct, do not rewrite it. Only write_file when you find a real issue.`
+
+  const fileList = writtenFiles.join("\n")
+
+  const userMessage = `Files updated during the ${releaseTag} sync:
+${fileList}
+
+Audit each file:
+1. Read it
+2. Check for issues listed above
+3. If you find issues, fix them with write_file
+4. If it looks correct, move on
+
+After reviewing all files, summarize what you found and fixed (or confirmed as correct).`
+
+  await runAgentLoop(
+    MODEL_WRITER,
+    system,
+    userMessage,
+    writeTools,
+    20,
+    "auditor",
+  )
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -164,78 +396,26 @@ async function main() {
 
   console.log(`\nNew release: ${release.tag} (previous: ${lastVersion || "none"})\n`)
 
-  // ── Agentic doc-update loop ──────────────────────────────────────────────
+  // Phase 1 — Haiku: cheap triage to identify what needs changing
+  const triagePlan = await triageRelease(release.tag, release.notes, lastVersion)
+  console.log(`\nTriage plan:\n${triagePlan}\n`)
 
-  const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw (an open-source self-hosted AI assistant).
-
-The site is structured as a 10-module course (content/course/) plus secondary reference sections (content/channels/, content/reference/).
-
-Your task: update the documentation to reflect changes introduced in a new OpenClaw release.
-
-Rules:
-- Only update files that are directly affected by the release notes
-- Preserve all existing MDX structure and frontmatter — including course-specific fields: title, description, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, faqs, howToSteps
-- Preserve all component syntax — both Fumadocs components (Callout, Steps, Step, Cards, Card, Tabs, Tab) and course components (ReadTime, LearningObjectives, ModuleNav, MarkComplete, VideoEmbed) and Mermaid fenced code blocks
-- Keep the same writing style and tone — calm, professional, beginner-friendly, step-by-step
-- If a feature changed, update the relevant steps/descriptions
-- If a feature is new, add it in the appropriate module section
-- If a feature was removed, note the removal with a Callout
-- Focus on: content/course/, content/channels/, content/reference/
-- Do not update meta.json files
-- Do not change moduleNumber, readTime, nextModule, prevModule, or moduleId values`
-
-  const userMessage = `OpenClaw released **${release.tag}**.
-
-Release notes:
----
-${release.notes || "(no release notes provided)"}
----
-
-Previous version: ${lastVersion || "unknown"}
-
-Steps:
-1. list_docs to see all available files
-2. Based on the release notes, identify which course modules or reference pages are most likely affected (e.g. install changes → content/course/0-setup.mdx, channel changes → content/channels/ + content/course/2-connecting-apps.mdx, memory changes → content/course/5-memory-personality.mdx)
-3. Read those files
-4. write_file for any file that needs updating — preserve all frontmatter and component tags
-5. Stop when done — only update what genuinely changed`
-
-  const messages: Anthropic.MessageParam[] = [
-    { role: "user", content: userMessage },
-  ]
-
-  // Cap at 25 iterations to prevent runaway loops
-  for (let i = 0; i < 25; i++) {
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 8096,
-      system,
-      tools,
-      messages,
-    })
-
-    messages.push({ role: "assistant", content: response.content })
-
-    if (response.stop_reason === "end_turn") {
-      console.log("\nClaude finished.")
-      break
-    }
-
-    const toolCalls = response.content.filter(
-      (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
-    )
-    if (toolCalls.length === 0) break
-
-    const results: Anthropic.ToolResultBlockParam[] = toolCalls.map((tool) => ({
-      type: "tool_result",
-      tool_use_id: tool.id,
-      content: executeTool(tool.name, tool.input as Record<string, string>),
-    }))
-
-    messages.push({ role: "user", content: results })
+  // Check if anything actually needs updating
+  if (!triagePlan.includes("## Files to update") || triagePlan.match(/## Files to update\s*\n\s*## /)) {
+    console.log("Triage found no files to update — nothing to do.")
+    saveVersion(release.tag)
+    setOutput("updated", "false")
+    return
   }
 
-  // ── Save version + set GH Actions outputs ───────────────────────────────
+  // Phase 2 — Sonnet: execute the triage plan
+  const writtenFiles = await executeUpdates(release.tag, release.notes, triagePlan)
+  console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
+
+  // Phase 3 — Sonnet: audit all written files
+  await auditUpdates(release.tag, release.notes, writtenFiles)
+
+  // Save version + set outputs
   saveVersion(release.tag)
   setOutput("updated", "true")
   setOutput("version", release.tag)

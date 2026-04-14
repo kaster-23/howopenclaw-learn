@@ -119,9 +119,9 @@ With privacy mode disabled, the bot can read all messages in the group. With `re
 
 If you use Telegram groups with **Topics** enabled (forum-style groups), OpenClaw routes messages to the correct topic. The `#General` topic (topic ID `1`) is handled reliably even when Telegram omits forum metadata — native commands, interactive callbacks, inbound message context, and fallback error replies all route correctly.
 
-### Topic Session Routing (<OpenClawVersion />)
+### Topic Session Routing (v2026.4.12)
 
-As of <OpenClawVersion />, topic-scoped session initialization stays on the canonical topic transcript path when inbound turns omit `MessageThreadId`. This means:
+As of v2026.4.12, topic-scoped session initialization stays on the canonical topic transcript path when inbound turns omit `MessageThreadId`. This means:
 
 - One topic session no longer alternates between bare and topic-qualified transcript files
 - Session history remains consistent and traceable
@@ -135,7 +135,11 @@ When your agent sends images, OpenClaw preflights Telegram's photo dimension and
 
 ## Voice Notes & Audio
 
-Voice note transcription in direct messages has been restored. When you send a voice message to your bot, it will transcribe the audio and respond naturally — no longer arriving as raw `<media:audio>` placeholders.
+Voice note transcription in direct messages has been restored (v2026.4.12). When you send a voice message to your bot, it will transcribe the audio and respond naturally — no longer arriving as raw `<media:audio>` placeholders.
+
+## Commands & Threading
+
+Native Telegram commands (like `/start`, `/help`) now preserve reply threading for QA verification and testing purposes. Command callbacks are routed to a separate sequentializer lane so approval button clicks resolve immediately instead of deadlocking.
 
 ## Improved Error Handling
 
@@ -145,9 +149,10 @@ Outbound delivery errors now preserve actionable details (e.g., 403 membership/b
 
 QQBot-style media tags with HTML entity-encoded angle brackets (`&lt;`/`&gt;`) are now correctly parsed and normalized, as are URL slashes in attributes and self-closing media tags.
 
-## Recent Improvements (<OpenClawVersion />)
+## Recent Improvements (v2026.4.12)
 
 - Voice note transcription in DMs restored — voice messages now transcribe and respond
+- Photo dimension validation improved — invalid images fall back to document sends
 - HTML entity-encoded media tags properly parsed
 - Fixed model picker current-model checks
 - HTML-formatted non-default `/model` confirmations

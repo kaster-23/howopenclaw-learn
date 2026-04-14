@@ -62,7 +62,7 @@ openclaw logs --filter error --tail 200
 
 If it's crashing on startup with a channel error, try disabling all channels temporarily and re-enabling them one at a time to find the bad config.
 
-<Callout type="info" title="Channel isolation">
+<Callout type="info" title="Channel isolation (v2026.4.12)">
 Channel startup failures are now isolated — one broken channel no longer blocks later channels from starting. Check logs for the specific channel that failed; the rest will continue to operate normally.
 </Callout>
 
@@ -98,6 +98,10 @@ openclaw gateway restart
 4. Make sure you sent `/start` to the bot before messaging
 5. Voice notes should transcribe automatically — if you see `<media:audio>` placeholders, check logs for transcription errors
 
+<Callout type="info" title="Improved Telegram handling (v2026.4.12)">
+As of v2026.4.12, photo dimension validation has been improved. If an image doesn't meet Telegram's requirements, it automatically falls back to sending as a document. Voice note transcription in direct messages is now restored. Telegram command reply threading is preserved for QA verification.
+</Callout>
+
 ### WhatsApp disconnected
 
 WhatsApp sessions expire if unused for too long.
@@ -115,7 +119,9 @@ rm -rf ~/.openclaw/sessions/whatsapp
 openclaw channels login --channel whatsapp
 ```
 
-Watchdog timeouts are reset after reconnect, so quiet chats should no longer fall into reconnect loops.
+<Callout type="info" title="Improved WhatsApp stability (v2026.4.12)">
+Watchdog timeouts are reset after reconnect, so quiet chats should no longer fall into reconnect loops. Per-account connection ownership is now centralized, so reconnects and login recovery stay attached to the live socket. Message reactions now route properly through the gateway-owned action path in both DMs and groups. Fallback now properly uses the first `mediaUrls` entry when `mediaUrl` is empty, restoring silently dropped media attachments.
+</Callout>
 
 ### Slack "not_in_channel" error
 
@@ -143,14 +149,28 @@ openclaw channels setup imessage
 
 Re-grant permissions when prompted.
 
+<Callout type="info" title="Improved iMessage startup (v2026.4.12)">
+Startup failures now retry transient `watch.subscribe` errors before tearing down the monitor. Startup error logging is sanitized so brief local transport stalls don't bounce the channel or leak raw imsg RPC payloads into logs.
+</Callout>
+
 ### Discord timeouts
 
 If your Discord worker times out before a reply starts, OpenClaw now sends a visible timeout reply to the user — including in auto-created threads. Previously, timeouts resulted in silent failures with no feedback.
+
+<Callout type="info" title="Better Discord media handling (v2026.4.12)">
+Media cap is now 100MB (previously 25MB), so larger video and audio files upload correctly. Generated images are tracked with real file paths. Text-plus-video deliveries intelligently split so both arrive properly. Numeric Discord server and channel IDs in config are auto-coerced to strings.
+</Callout>
 
 ### Teams media and threading
 
 - Channel reply threading is now preserved in proactive fallback scenarios
 - Inline DM images are downloaded via Graph API correctly
+
+### Matrix mentions
+
+<Callout type="info" title="Improved Matrix room mentions (v2026.4.12)">
+Room mention gating stays strict while accepting visible `@displayName` Matrix URI labels, so `requireMention` works for non-OpenClaw Matrix clients again.
+</Callout>
 
 ### Docker fresh install fails
 
@@ -162,7 +182,7 @@ If `openclaw onboard` loops or fails in a fresh Docker container, update to v202
 
 ### Audio transcription failures
 
-As of <OpenClawVersion />, audio transcription has been improved:
+As of v2026.4.12, audio transcription has been improved:
 
 - **OpenAI, Groq, and Mistral** transcription works reliably without weakening request validation
 - DNS pinning is disabled only for OpenAI-compatible multipart requests, while hostname validation is still maintained
@@ -248,7 +268,11 @@ New built-in tools include `video_generate` and `music_generate` for media creat
 
 **Codex CLI:** System prompts are now passed through Codex's `model_instructions_file` config override so fresh Codex CLI sessions receive the same prompt guidance as Claude CLI sessions.
 
-**OpenAI Codex OAuth:** Upstream authorize URL scopes are no longer rewritten, so new Codex sign-ins no longer fail with `invalid_scope` before returning an authorization code.
+**Codex OAuth:** Upstream authorize URL scopes are no longer rewritten, so new Codex sign-ins no longer fail with `invalid_scope` before returning an authorization code.
+
+<Callout type="info" title="New local model options (v2026.4.12)">
+OpenClaw now includes bundled **LM Studio** provider with onboarding, runtime model discovery, stream preload support, and memory-search embeddings for local/self-hosted OpenAI-compatible models. A bundled **Codex** provider is also available with plugin-owned app-server harness so `codex/gpt-*` models use Codex-managed auth and native threads.
+</Callout>
 
 ### Agent execution reporting accuracy
 
@@ -280,7 +304,7 @@ cat ~/.openclaw/openclaw.json
 openclaw config validate
 ```
 
-This checks JSON syntax and required fields. As of <OpenClawVersion />, `asyncCompletion` is now properly recognized in the generated zod schema, so documented async completion config no longer fails with an unrecognized-key error.
+This checks JSON syntax and required fields. As of v2026.4.12, `asyncCompletion` is now properly recognized in the generated zod schema, so documented async completion config no longer fails with an unrecognized-key error.
 
 ### Resetting to defaults
 
@@ -301,6 +325,10 @@ openclaw doctor --fix
 ```
 
 This will apply migrations and show you exactly what changed. Test your setup after running this command.
+
+<Callout type="info" title="Doctor improvements (v2026.4.12)">
+`openclaw doctor` now warns when on-disk agent directories still exist under `~/.openclaw/agents/<id>/agent` but the matching `agents.list[]` entries are missing from config. This helps catch stale agent state. The `--fix` flag no longer rewrites legacy Discord preview-streaming config into the nested modern shape, so downgrades can recover without hand-editing.
+</Callout>
 
 ### Auth profile persistence
 
@@ -328,6 +356,10 @@ openclaw update
 
 If you have a mixed Homebrew-plus-nvm setup, `openclaw update` now prefers the npm binary that owns the installed global OpenClaw prefix. This ensures mixed setups update the right install.
 
+<Callout type="info" title="Improved plugin refresh (v2026.4.12)">
+`openclaw update` now respawns tracked plugin refresh from the updated entrypoint after package self-updates, so update stops failing on stale hashed `dist/install.runtime-*.js` chunk imports.
+</Callout>
+
 ---
 
 ## Memory & Dreaming issues
@@ -351,6 +383,10 @@ Check the Dreams UI in your Control Panel or run:
 ```bash
 openclaw /dreaming
 ```
+
+<Callout type="info" title="Improved dreaming stability (v2026.4.12)">
+Dreaming now properly consumes managed heartbeat events exactly once, stages light-sleep confidence from all recorded short-term signals instead of recall-only counts, and stops dreaming from re-ingesting its own narrative transcripts. Transient narrative cleanup is more robust with retry logic for timed-out deletes and stale session artifact scrubbing. Dream diary timestamps now use host local timezone when `dreaming.timezone` is unset and include timezone abbreviation in `DREAMS.md`.
+</Callout>
 
 ### Memory too large or too old
 
@@ -380,6 +416,30 @@ openclaw diary reset [path]     # Reset stale or incorrect entries
 
 The backfill process now normalizes diary headings and tightens claim splitting automatically.
 
+<Callout type="info" title="Better memory file handling (v2026.4.12)">
+`memory` directory watching now works reliably on macOS + Node 25, ignoring non-markdown churn so nested note changes still sync. Unicode letters, digits, and combining marks in wiki slugs are now preserved with safe byte-length caps. Channel sessions are now allowed in the shipped default QMD scope. The legacy lowercase root memory file is no longer registered as a separate default collection. Nested daily notes under `memory/**/YYYY-MM-DD.md` now feed short-term recall properly.
+</Callout>
+
+### Active Memory not pulling in context
+
+If Active Memory is enabled but not surfacing relevant memories, try adjusting the mode:
+
+```json
+{
+  "memory": {
+    "activeMemory": {
+      "enabled": true,
+      "mode": "search",
+      "maxResults": 5
+    }
+  }
+}
+```
+
+<Callout type="info" title="Active Memory (v2026.4.12)">
+New optional Active Memory plugin gives your agent a dedicated memory sub-agent right before the main reply, pulling in relevant preferences without manual "remember this" prompts. Includes configurable message/recent/full context modes, live `/verbose` inspection, and advanced prompt/thinking overrides for tuning. Memory recall now defaults to search mode with better search-path telemetry for more predictable out-of-the-box behavior.
+</Callout>
+
 ---
 
 ## Network issues
@@ -387,6 +447,55 @@ The backfill process now normalizes diary headings and tightens claim splitting 
 ### Sandbox connectivity with HTTP proxy
 
 The network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
+
+---
+
+## Plugin and Skill issues
+
+### Plugins not loading
+
+<Callout type="info" title="Plugin loading narrowed (v2026.4.12)">
+Plugin loading has been tightened to manifest-declared needs. CLI, provider, and channel activation are now narrowed to what plugins explicitly declare, preserving explicit scope and trust boundaries. This means plugins no longer load unrelated runtime code on startup — only what's needed.
+</Callout>
+
+Check that plugins are enabled:
+
+```bash
+openclaw plugins list
+```
+
+If a plugin isn't showing up, verify it's listed in your config and check logs for activation errors:
+
+```bash
+openclaw logs --filter plugin
+```
+
+### Skills not showing up
+
+Skills require both the npm package and optional auth setup:
+
+```bash
+openclaw skills list
+openclaw skills info [skill-name]
+```
+
+The info command shows whether dependencies are met and where to get required API keys.
+
+### Memory-wiki not recognized
+
+<Callout type="info" title="Memory-wiki CLI fix (v2026.4.12)">
+`openclaw wiki` now properly honors `memory-wiki` when `plugins.allow` is set, and passes the active app config into the metadata registrar so plugin-owned wiki commands resolve the live plugin config instead of falling back to defaults.
+</Callout>
+
+Ensure the `memory-wiki` plugin is enabled:
+
+```json
+{
+  "plugins": {
+    "allow": ["memory-wiki"]
+  }
+}
+```
 
 ---
 
@@ -409,13 +518,17 @@ This makes scan-once Android pairing more reliable.
 
 After granting microphone permission on first enable, Talk Mode continues to start instead of requiring a second toggle. The permission grant workflow is now more intuitive on macOS.
 
+<Callout type="info" title="New Talk Mode speech provider (v2026.4.12)">
+Experimental local MLX speech provider for Talk Mode on macOS with explicit provider selection, local utterance playback, interruption handling, and system-voice fallback.
+</Callout>
+
 ---
 
 ## Video and Media Generation
 
 ### Google Veo video generation failures
 
-As of <OpenClawVersion />, Google Veo video generation no longer sends the unsupported `numberOfVideos` request field, allowing Gemini Developer API Veo runs to complete successfully.
+As of v2026.4.12, Google Veo video generation no longer sends the unsupported `numberOfVideos` request field, allowing Gemini Developer API Veo runs to complete successfully.
 
 ---
 
@@ -423,7 +536,7 @@ As of <OpenClawVersion />, Google Veo video generation no longer sends the unsup
 
 ### Packaged CLI startup issues
 
-As of <OpenClawVersion />, packaged CLI startup and completion cache generation no longer read repo-only QA scenario markdown. The bundled QA scenario pack is shipped in npm releases, and `openclaw completion --write-state` keeps working even if QA setup is broken.
+As of v2026.4.12, packaged CLI startup and completion cache generation no longer read repo-only QA scenario markdown. The bundled QA scenario pack is shipped in npm releases, and `openclaw completion --write-state` keeps working even if QA setup is broken.
 
 ---
 
@@ -431,7 +544,23 @@ As of <OpenClawVersion />, packaged CLI startup and completion cache generation 
 
 ### MiniMax portal authentication fails
 
-As of <OpenClawVersion />, `openclaw configure` now writes `api: "anthropic-messages"` and `authHeader: true` into the `minimax-portal` config patch during setup. This ensures re-authenticated portal setups keep Bearer auth routing working correctly.
+As of v2026.4.12, `openclaw configure` now writes `api: "anthropic-messages"` and `authHeader: true` into the `minimax-portal` config patch during setup. This ensures re-authenticated portal setups keep Bearer auth routing working correctly.
+
+---
+
+## Security issues
+
+<Callout type="warn" title="Gateway credential security (v2026.4.12)">
+The shipped example gateway credential in `.env.example` is now blanked, and startup fails when a copied placeholder token or password is still configured. This prevents operators from accidentally launching with a publicly known secret.
+</Callout>
+
+Check that your `.env` file uses real credentials:
+
+```bash
+cat ~/.openclaw/.env.example
+```
+
+If you copied the example file, ensure all placeholder values are replaced with real credentials before starting the gateway.
 
 ---
 

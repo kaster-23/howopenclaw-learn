@@ -127,6 +127,20 @@ openclaw cron edit [id]                # Edit an existing automation
 
 ---
 
+## Execution Policy Management (v2026.4.12)
+
+Use `exec-policy` to manage tool execution permissions and see what your agent is allowed to do.
+
+```bash
+openclaw exec-policy show              # Display current exec policy
+openclaw exec-policy preset [name]     # Load a preset policy (e.g., "safe", "full")
+openclaw exec-policy set [path]        # Set custom policy from a file
+```
+
+The exec policy controls what tools and system commands your agent can execute. `show` displays your current settings, `preset` loads a predefined safe or permissive mode, and `set` lets you customize the policy with your own file.
+
+---
+
 ## Skills & Tools
 
 Use when adding new capabilities. Skills connect to external services (Gmail, GitHub); tools are built-in capabilities (`web_search`, `exec`).

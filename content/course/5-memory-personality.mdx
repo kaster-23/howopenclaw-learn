@@ -209,10 +209,70 @@ HEARTBEAT.md is for things the agent should always know. Keep it under 50 lines:
 - Team uses Slack, not email
 ```
 
+## Active Memory
+
+<Callout type="info" title="New in v2026.4.12 — Optional Active Memory Plugin">
+OpenClaw now includes an optional **Active Memory** plugin that gives your agent a dedicated memory sub-agent. This lets ongoing chats automatically pull in relevant preferences, context, and past details without you having to manually say "remember this" or "search memory" first.
+</Callout>
+
+Active Memory is an advanced feature that you can optionally enable. If you're just getting started, skip this section and come back after you've been using OpenClaw for a few weeks.
+
+### What Active Memory does
+
+With Active Memory enabled, your agent runs a lightweight memory-search step right before responding to you. This means:
+
+- The agent automatically pulls in relevant past conversations without you asking
+- Preferences and context surface naturally in the response
+- No more "I don't remember" — the agent proactively searches your memory files
+- Configurable modes for different recall strategies
+
+### Enabling Active Memory
+
+Add this to your `openclaw.json`:
+
+```json
+{
+  "memory": {
+    "activeMemory": {
+      "enabled": true,
+      "mode": "search"
+    }
+  }
+}
+```
+
+The `mode` setting controls how the memory sub-agent searches:
+
+- **`search`** (recommended) — Smart semantic search of memory files, pulls in the most relevant context
+- **`recent`** — Most recent entries in MEMORY.md
+- **`full`** — Load all available memory (use sparingly, costs more)
+
+### Fine-tuning Active Memory
+
+For advanced use, you can customize the memory search with:
+
+```json
+{
+  "memory": {
+    "activeMemory": {
+      "enabled": true,
+      "mode": "search",
+      "maxResults": 5,
+      "verboseInspection": true,
+      "transcriptPersistence": false
+    }
+  }
+}
+```
+
+- `maxResults` — How many memory entries to surface (default: 5)
+- `verboseInspection` — Enable with `/verbose` flag to see which memories were pulled in
+- `transcriptPersistence` — Save active memory search logs for debugging (off by default for privacy)
+
 ## Memory Dreaming
 
-<Callout type="info" title="Optional — skip if you're just getting started">
-Dreaming is an advanced feature that helps your agent consolidate memories over time. You don't need to enable it now. Come back to this section after you've been using OpenClaw for a few weeks and want smarter long-term recall.
+<Callout type="info" title="Stable Feature">
+Dreaming is now a stable feature as of v2026.4.12. It helps your agent consolidate memories over time. You don't need to enable it if you're just getting started, but it's safe and reliable when you do.
 </Callout>
 
 OpenClaw includes a **memory dreaming** system that helps your agent consolidate and recall important memories more naturally. When enabled, the agent periodically reviews recent conversations and promotes important insights into long-term memory.
@@ -306,8 +366,8 @@ If your agent is forgetting recent things too quickly or holding onto things too
 - `recencyHalfLifeDays`: How quickly recent events fade in importance (default: 30 days)
 - `maxAgeDays`: Maximum age before memories are considered stale (default: 365 days)
 
-<Callout type="info" title="Stable feature">
-Memory dreaming is now a stable feature as of <OpenClawVersion />. It's safe to enable and use for production workloads. Configuration and behavior are well-tested.
+<Callout type="info" title="Improved recall accuracy (v2026.4.12)">
+As of v2026.4.12, memory recall defaults to search mode and surfaces better search-path telemetry, so memory-backed recall works more predictably out of the box. Nested daily notes under `memory/**/YYYY-MM-DD.md` now feed short-term recall properly, while dreaming output is excluded so the agent doesn't re-ingest its own narrative transcripts.
 </Callout>
 
 ## Organizing memory at scale

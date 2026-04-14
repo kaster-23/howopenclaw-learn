@@ -14,7 +14,7 @@ const CFG = {
   repelRadiusRatio: 0.23,
   dotSize: 1.7,
   opacity: 0.61,
-  opacityMobile: 0.43, // 30% less than desktop (0.61 × 0.70)
+  opacityMobile: 0.3,
   color: "#d95000",
 }
 

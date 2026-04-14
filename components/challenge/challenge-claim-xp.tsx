@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { CHALLENGES, TOTAL_XP, calcXP, markComplete, getCompleted } from "@/lib/challenge/challenges"
 
@@ -10,12 +10,8 @@ interface ChallengeClaimXPProps {
 
 export function ChallengeClaimXP({ challengeId }: ChallengeClaimXPProps) {
   const challenge = CHALLENGES.find((c) => c.id === challengeId)
-  const [completed, setCompleted] = useState<string[]>([])
+  const [completed, setCompleted] = useState<string[]>(getCompleted)
   const [justClaimed, setJustClaimed] = useState(false)
-
-  useEffect(() => {
-    setCompleted(getCompleted())
-  }, [])
 
   if (!challenge) return null
 

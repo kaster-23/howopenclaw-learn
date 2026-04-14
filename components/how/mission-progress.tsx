@@ -5,10 +5,9 @@ import Link from "next/link"
 import { MISSIONS, TOTAL_XP, STORAGE_KEY, calcXP, currentRank, getCompleted } from "@/lib/how/missions"
 
 export function MissionProgress() {
-  const [completed, setCompleted] = useState<string[]>([])
+  const [completed, setCompleted] = useState<string[]>(getCompleted)
 
   useEffect(() => {
-    setCompleted(getCompleted())
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setCompleted(getCompleted())
     }

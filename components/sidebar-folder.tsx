@@ -134,7 +134,8 @@ export function SidebarFolderWithTooltip({
   )
 }
 
-export function SidebarSeparatorItem(_: { item: unknown }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function SidebarSeparatorItem(_props: { item: unknown }) {
   return (
     <div className="my-1 mx-3 h-px bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
   )

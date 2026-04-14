@@ -18,6 +18,15 @@ const CFG = {
   color: "#d95000",
 }
 
+// Pre-computed random seeds — stable across renders, no impure calls in render
+const SEEDS = new Float32Array(DOT_COUNT * 4)
+for (let i = 0; i < DOT_COUNT; i++) {
+  SEEDS[i * 4] = (Math.random() - 0.5)
+  SEEDS[i * 4 + 1] = (Math.random() - 0.5)
+  SEEDS[i * 4 + 2] = Math.random() * Math.PI * 2
+  SEEDS[i * 4 + 3] = Math.random() * Math.PI * 2
+}
+
 function DotsField({ opacity }: { opacity: number }) {
   const { viewport, camera } = useThree()
   const pointsRef = useRef<THREE.Points>(null!)
@@ -29,16 +38,16 @@ function DotsField({ opacity }: { opacity: number }) {
     const initPos = new Float32Array(DOT_COUNT * 3)
     const seeds = new Float32Array(DOT_COUNT * 2)
     for (let i = 0; i < DOT_COUNT; i++) {
-      initPos[i * 3] = (Math.random() - 0.5) * w
-      initPos[i * 3 + 1] = (Math.random() - 0.5) * h
+      initPos[i * 3] = SEEDS[i * 4] * w
+      initPos[i * 3 + 1] = SEEDS[i * 4 + 1] * h
       initPos[i * 3 + 2] = 0
-      seeds[i * 2] = Math.random() * Math.PI * 2
-      seeds[i * 2 + 1] = Math.random() * Math.PI * 2
+      seeds[i * 2] = SEEDS[i * 4 + 2]
+      seeds[i * 2 + 1] = SEEDS[i * 4 + 3]
     }
     return { initPos, seeds }
   }, [viewport.width, viewport.height])
 
-  const vel = useMemo(() => new Float32Array(DOT_COUNT * 2), [])
+  const velRef = useRef(new Float32Array(DOT_COUNT * 2))
 
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry()
@@ -66,6 +75,7 @@ function DotsField({ opacity }: { opacity: number }) {
     if (!pointsRef.current) return
     const t = clock.getElapsedTime()
     const arr = pointsRef.current.geometry.attributes.position.array as Float32Array
+    const vel = velRef.current
     const mx = mouse.current.x
     const my = mouse.current.y
     const repelR = viewport.width * CFG.repelRadiusRatio

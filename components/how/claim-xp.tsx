@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { MISSIONS, TOTAL_XP, calcXP, markComplete, getCompleted } from "@/lib/how/missions"
 
@@ -10,12 +10,8 @@ interface ClaimXPProps {
 
 export function ClaimXP({ missionId }: ClaimXPProps) {
   const mission = MISSIONS.find((m) => m.id === missionId)
-  const [completed, setCompleted] = useState<string[]>([])
+  const [completed, setCompleted] = useState<string[]>(getCompleted)
   const [justClaimed, setJustClaimed] = useState(false)
-
-  useEffect(() => {
-    setCompleted(getCompleted())
-  }, [])
 
   if (!mission) return null
 

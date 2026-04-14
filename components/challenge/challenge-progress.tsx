@@ -5,10 +5,9 @@ import Link from "next/link"
 import { CHALLENGES, TOTAL_XP, STORAGE_KEY, calcXP, getCompleted } from "@/lib/challenge/challenges"
 
 export function ChallengeProgress() {
-  const [completed, setCompleted] = useState<string[]>([])
+  const [completed, setCompleted] = useState<string[]>(getCompleted)
 
   useEffect(() => {
-    setCompleted(getCompleted())
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setCompleted(getCompleted())
     }

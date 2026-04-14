@@ -200,7 +200,7 @@ Steps:
 4. write_file for any file that needs updating — preserve all frontmatter and component tags
 5. Stop when done — only update what genuinely changed`
 
-  let messages: Anthropic.MessageParam[] = [
+  const messages: Anthropic.MessageParam[] = [
     { role: "user", content: userMessage },
   ]
 

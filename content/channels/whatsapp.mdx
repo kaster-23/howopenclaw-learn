@@ -131,7 +131,7 @@ Reply-to-bot detection in groups also works reliably with linked accounts. OpenC
 
 ## Message Reactions
 
-As of <OpenClawVersion />, message reactions are now properly routed through the gateway-owned action path. This means:
+As of v2026.4.12, message reactions are now properly routed through the gateway-owned action path. This means:
 
 - Reactions work in both direct messages and group chats
 - The live WhatsApp listener is used in both contexts
@@ -140,15 +140,15 @@ As of <OpenClawVersion />, message reactions are now properly routed through the
 
 The gateway now routes `message react` through the same reliable path as `message send` and `message poll`, ensuring reactions stay synchronized with your live WhatsApp session.
 
-## CLI Media Sends (<OpenClawVersion />)
+## CLI Media Sends (v2026.4.12)
 
-As of <OpenClawVersion />, sending files via the CLI with `--media` is fixed. Gateway-mode outbound sends now route through the correct channel `sendMedia` path and preserve media access context — previously, WhatsApp document and attachment sends would silently drop the file while still delivering the caption.
+Sending files via the CLI with `--media` is now fixed. Gateway-mode outbound sends route through the correct channel `sendMedia` path and preserve media access context — previously, WhatsApp document and attachment sends would silently drop the file while still delivering the caption.
 
 ```bash
 openclaw send --channel whatsapp --to "+15551234567" --media /path/to/file.pdf "Here's the doc"
 ```
 
-## Auto-Reply and Media Attachments (<OpenClawVersion />)
+## Auto-Reply and Media Attachments (v2026.4.12)
 
 Image attachment notes are now preserved after media understanding, so image edits keep the real saved media path instead of hallucinating a missing local path. This means:
 
@@ -156,12 +156,13 @@ Image attachment notes are now preserved after media understanding, so image edi
 - Edits and modifications to images maintain proper file references
 - Media understanding doesn't break downstream file operations
 
-## Reconnection Stability (<OpenClawVersion />)
+## Reconnection Stability (v2026.4.12)
 
-As of <OpenClawVersion />, WhatsApp reconnection has been improved:
+As of v2026.4.12, WhatsApp reconnection has been significantly improved:
 
 - The `blockStreaming` setting has been restored and controls streaming behavior
 - Watchdog timeouts are now reset after reconnect, so quiet chats no longer fall into reconnect loops
+- Per-account connection ownership is centralized, so reconnects and login recovery stay attached to the live socket
 - Disconnection and reconnection are more graceful overall
 
 Enable streaming control if needed:

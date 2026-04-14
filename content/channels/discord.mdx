@@ -147,18 +147,18 @@ Enable reconnection logic in your config:
 
 This automatically detects and recovers from dropped connections.
 
-## Timeouts
+## Timeouts (v2026.4.12)
 
 If the inbound Discord worker times out before a final reply starts, OpenClaw now sends a visible timeout reply to the user — including in auto-created threads and queued runs. Previously, timeouts could result in silent failures with no feedback in the channel.
 
-## Media Handling
+## Media Handling (v2026.4.12)
 
 - **Media cap raised to 100MB** (previously 25MB), bringing Discord closer to Telegram's limits for large video and audio attachments
 - Generated images are now properly tracked with real `MEDIA:` paths instead of missing local files
 - Component-only media sends are preserved without extra plain-output requeueing
 - Text-plus-video deliveries are intelligently split into a text reply followed by a media-only send, ensuring video attachments render properly
 
-## Recent Fixes (<OpenClawVersion />)
+## Recent Fixes (v2026.4.12)
 
 - Media cap raised to 100MB — supports larger generated videos and audio files
 - Generated images properly tracked with real file paths

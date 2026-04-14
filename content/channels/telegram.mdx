@@ -129,6 +129,10 @@ As of v2026.4.12, topic-scoped session initialization stays on the canonical top
 
 No special configuration is needed. Topic routing works automatically and consistently when Topics are enabled in the group.
 
+### Topic Names in Agent Context (v2026.4.14)
+
+As of v2026.4.14, OpenClaw surfaces human-readable forum topic names in agent context, prompt metadata, and plugin hook metadata. Topic names are learned from Telegram forum service messages and persisted to the session sidecar store — so your agent sees the real topic name (e.g. "Support" or "Announcements") instead of a raw numeric ID, even after a restart.
+
 ## Photo & Media Sending
 
 When your agent sends images, OpenClaw preflights Telegram's photo dimension and aspect-ratio rules. If an image doesn't meet Telegram's requirements (or metadata is unavailable), it automatically falls back to sending as a document — so photo uploads no longer fail with `PHOTO_INVALID_DIMENSIONS`.
@@ -149,21 +153,23 @@ Outbound delivery errors now preserve actionable details (e.g., 403 membership/b
 
 QQBot-style media tags with HTML entity-encoded angle brackets (`&lt;`/`&gt;`) are now correctly parsed and normalized, as are URL slashes in attributes and self-closing media tags.
 
-## Recent Improvements (v2026.4.12)
+## Recent Improvements (v2026.4.14)
+
+- Forum topic names surfaced in agent context and plugin metadata — no more raw numeric IDs
+- Topic names persisted across restarts via session sidecar store
+- AAC voice notes remapped to `.m4a` for upload — AAC audio transcription no longer fails
+- Read-only status slash commands bypass busy topic turns for faster responses
+- Heartbeat replies stay in the correct topic when `target=last`
+
+### Previous: v2026.4.12
 
 - Voice note transcription in DMs restored — voice messages now transcribe and respond
 - Photo dimension validation improved — invalid images fall back to document sends
 - HTML entity-encoded media tags properly parsed
-- Fixed model picker current-model checks
-- HTML-formatted non-default `/model` confirmations
-- Explicit topic reply routing
 - Topic-scoped session initialization on canonical path
-- Persisted reaction ownership across restarts
-- Caption-media placeholder and `file_id` preservation on download failure
-- Improved handling in upgraded installations
 - Outbound delivery errors preserve actionable details
 - Permanently failed chats stop auto-retrying
-- `allowFrom` sender validation tightened — `/whoami` allowlist reporting now stays in sync with command auth checks, closing a gap where a user could appear allowlisted in one surface but not another
+- `allowFrom` sender validation tightened
 
 ## Related channels
 

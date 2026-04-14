@@ -102,6 +102,10 @@ openclaw gateway restart
 As of v2026.4.12, photo dimension validation has been improved. If an image doesn't meet Telegram's requirements, it automatically falls back to sending as a document. Voice note transcription in direct messages is now restored. Telegram command reply threading is preserved for QA verification.
 </Callout>
 
+<Callout type="info" title="Telegram improvements (v2026.4.14)">
+Forum topic names are now surfaced in agent context and persisted across restarts. AAC voice notes are remapped to `.m4a` so they transcribe correctly on strict endpoints. Read-only status commands bypass busy topic turns so `/status` responds immediately without waiting for an in-flight reply.
+</Callout>
+
 ### WhatsApp disconnected
 
 WhatsApp sessions expire if unused for too long.
@@ -134,6 +138,10 @@ Your bot isn't in the channel you're trying to post to. In Slack:
 Also check the bot's OAuth scopes — it needs `chat:write` at minimum.
 
 Live DM replies now route correctly to the concrete inbound DM channel, so assistant replies should no longer disappear when pairing.
+
+<Callout type="info" title="Slack interaction security (v2026.4.14)">
+As of v2026.4.14, the global `allowFrom` owner allowlist is enforced on Slack block-action and modal interactive events. If you have interactive components (buttons, modals) in your Slack integration, make sure your `allowFrom` list includes all users who should be able to trigger them.
+</Callout>
 
 ### Slack in proxy-only deployments
 
@@ -265,6 +273,9 @@ New built-in tools include `video_generate` and `music_generate` for media creat
 **Ollama:** 
 - Models using the native `api: "ollama"` path can now optionally display thinking output when `/think` is set to a non-off level
 - Model discovery caching is improved: `/api/show` context-window and capability metadata are cached during model discovery, so repeated picker refreshes stop refetching unchanged models while still retrying after empty responses and invalidating on digest changes
+- *(v2026.4.14)* The configured embedded-run timeout is now forwarded into the global stream timeout, so slow local Ollama runs no longer hit the default cutoff instead of your configured `timeoutSeconds`
+- *(v2026.4.14)* `stream_options.include_usage` is now sent for streaming completions, so Ollama reports real token usage instead of bogus counts that triggered premature compaction
+- *(v2026.4.14)* Vision capability detection reads from `/api/show` response, so valid Ollama vision models are no longer rejected by image/PDF tools
 
 **Codex CLI:** System prompts are now passed through Codex's `model_instructions_file` config override so fresh Codex CLI sessions receive the same prompt guidance as Claude CLI sessions.
 
@@ -438,6 +449,10 @@ If Active Memory is enabled but not surfacing relevant memories, try adjusting t
 
 <Callout type="info" title="Active Memory (v2026.4.12)">
 New optional Active Memory plugin gives your agent a dedicated memory sub-agent right before the main reply, pulling in relevant preferences without manual "remember this" prompts. Includes configurable message/recent/full context modes, live `/verbose` inspection, and advanced prompt/thinking overrides for tuning. Memory recall now defaults to search mode with better search-path telemetry for more predictable out-of-the-box behavior.
+</Callout>
+
+<Callout type="info" title="Active Memory context path (v2026.4.14)">
+As of v2026.4.14, recalled memories are placed on the hidden untrusted prompt-prefix path rather than injected into the system prompt. This is a security and reliability improvement — it means Active Memory context is properly isolated and labeled in gateway debug logs, so you can see exactly what the model received.
 </Callout>
 
 ---

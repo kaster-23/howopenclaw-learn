@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check if update needed
         id: check
@@ -61,31 +60,22 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: pnpm tsx scripts/sync-openclaw.ts
 
-      - name: Commit version file to main
+      - name: Lint
+        if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'true'
+        run: pnpm lint
+
+      - name: Build
+        if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'true'
+        run: pnpm build
+
+      - name: Commit and push to main
         if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'true'
         run: |
           git config user.name "kaster-23"
           git config user.email "francoierace.dev@gmail.com"
-          git add .openclaw-last-version
-          git commit -m "chore: track OpenClaw ${{ steps.sync.outputs.version }}"
-          git push
-
-      - name: Create pull request
-        if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
-          branch: "docs/sync-openclaw-${{ steps.sync.outputs.version }}"
-          title: "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
-          body: |
-            Auto-generated documentation update for OpenClaw release `${{ steps.sync.outputs.version }}`.
-
-            **What changed:**
-            ${{ steps.sync.outputs.release_notes }}
-
-            > Please review the diff before merging. Claude may have missed things or made minor errors — a human review pass is recommended.
-          labels: "documentation,automated"
-          delete-branch: true
+          git add -A
+          git commit -m "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
+          git push origin main

@@ -1,13 +1,17 @@
 {
   "title": "Course",
   "pages": [
+    "index",
+    "---Foundation---",
     "0-setup",
     "1-architecture",
     "2-connecting-apps",
+    "---Configure---",
     "3-skills-tools",
     "4-prompts",
     "5-memory-personality",
     "6-autonomous-tasks",
+    "---Advanced---",
     "7-projects",
     "8-security-ethics",
     "9-next-steps"

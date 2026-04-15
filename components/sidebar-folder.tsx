@@ -1,7 +1,7 @@
 "use client"
 
 import type * as PageTree from "fumadocs-core/page-tree"
-import { useState, useRef, type ReactNode } from "react"
+import React, { useState, useRef, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 import {
   SidebarFolder,
@@ -134,9 +134,16 @@ export function SidebarFolderWithTooltip({
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function SidebarSeparatorItem(_props: { item: unknown }) {
+export function SidebarSeparatorItem({ item }: { item: { name?: React.ReactNode } }) {
+  if (!item.name) {
+    return <div className="my-1 mx-3 h-px bg-fd-border/60" aria-hidden="true" />
+  }
+
   return (
-    <div className="my-1 mx-3 h-px bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
+    <div className="flex items-center gap-2 px-3 pt-4 pb-1">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-fd-muted-foreground/60 select-none">
+        {item.name}
+      </span>
+    </div>
   )
 }

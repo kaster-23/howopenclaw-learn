@@ -3,6 +3,7 @@ import { source } from "@/lib/source"
 import Image from "next/image"
 import type { ReactNode } from "react"
 import { SidebarFolderWithTooltip, SidebarSeparatorItem } from "@/components/sidebar-folder"
+import { SidebarFooterLinks } from "@/components/sidebar-footer-links"
 import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 
 export default function CourseLayout({ children }: { children: ReactNode }) {
@@ -26,6 +27,7 @@ export default function CourseLayout({ children }: { children: ReactNode }) {
         githubUrl="https://github.com/OpenClaw"
         sidebar={{
           defaultOpenLevel: 1,
+          footer: <SidebarFooterLinks />,
           components: {
             Folder: SidebarFolderWithTooltip,
             Separator: SidebarSeparatorItem,

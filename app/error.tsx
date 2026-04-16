@@ -29,7 +29,7 @@ export default function Error({ error, reset }: ErrorProps) {
           Try again
         </button>
         <Link
-          href="/foundation"
+          href="/course"
           className="border-fd-border rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-fd-accent"
         >
           Go to docs

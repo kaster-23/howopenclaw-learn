@@ -36,50 +36,52 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Getting Started → Foundation
-      { source: "/getting-started/what-is-openclaw", destination: "/foundation/what-is-openclaw", permanent: true },
-      { source: "/getting-started/installation", destination: "/foundation/install", permanent: true },
-      { source: "/getting-started/first-24-hours", destination: "/foundation/soul-md", permanent: true },
+      // ── Phase-1 legacy paths → final course destinations (no chains) ──
 
-      // Core Concepts → scattered
-      { source: "/core-concepts/soul-md", destination: "/foundation/soul-md", permanent: true },
-      { source: "/core-concepts/memory", destination: "/level-up/memory", permanent: true },
-      { source: "/core-concepts/skills", destination: "/level-up/skills", permanent: true },
-      { source: "/core-concepts/automation", destination: "/goals/daily-briefing/setup", permanent: true },
+      // Getting Started → course
+      { source: "/getting-started/what-is-openclaw", destination: "/course/0-setup", permanent: true },
+      { source: "/getting-started/installation", destination: "/course/0-setup", permanent: true },
+      { source: "/getting-started/first-24-hours", destination: "/course/5-memory-personality", permanent: true },
 
-      // Security → Foundation (moved from Level Up)
-      { source: "/level-up/security", destination: "/foundation/security", permanent: true },
-      { source: "/security/dm-policies", destination: "/foundation/security", permanent: true },
-      { source: "/security/sandboxing", destination: "/foundation/security", permanent: true },
-      { source: "/security/api-keys", destination: "/foundation/security", permanent: true },
-      { source: "/security/clawhub-vetting", destination: "/level-up/skills", permanent: true },
-      { source: "/security/network-security", destination: "/foundation/security", permanent: true },
+      // Core Concepts → course
+      { source: "/core-concepts/soul-md", destination: "/course/5-memory-personality", permanent: true },
+      { source: "/core-concepts/memory", destination: "/course/5-memory-personality", permanent: true },
+      { source: "/core-concepts/skills", destination: "/course/3-skills-tools", permanent: true },
+      { source: "/core-concepts/automation", destination: "/course/7-projects/daily-briefing", permanent: true },
 
-      // Troubleshooting → Reference (moved from Level Up)
+      // Security → course
+      { source: "/level-up/security", destination: "/course/8-security-ethics", permanent: true },
+      { source: "/security/dm-policies", destination: "/course/8-security-ethics", permanent: true },
+      { source: "/security/sandboxing", destination: "/course/8-security-ethics", permanent: true },
+      { source: "/security/api-keys", destination: "/course/8-security-ethics", permanent: true },
+      { source: "/security/clawhub-vetting", destination: "/course/3-skills-tools", permanent: true },
+      { source: "/security/network-security", destination: "/course/8-security-ethics", permanent: true },
+
+      // Troubleshooting → reference (no chain)
       { source: "/level-up/troubleshooting", destination: "/reference/troubleshooting", permanent: true },
 
-      // Channels (previously under level-up, now top-level reference)
+      // Channels (no chain)
       { source: '/level-up/channels/:path*', destination: '/channels/:path*', permanent: true },
 
-      // Advanced → Level Up / Goals
-      { source: "/advanced/sub-agents", destination: "/level-up/sub-agents", permanent: true },
-      { source: "/advanced/voice", destination: "/goals/voice/setup", permanent: true },
-      { source: "/advanced/deployment", destination: "/level-up/deployment", permanent: true },
-      { source: "/advanced/cost-management", destination: "/level-up/models", permanent: true },
+      // Advanced → course
+      { source: "/advanced/sub-agents", destination: "/course/6-autonomous-tasks", permanent: true },
+      { source: "/advanced/voice", destination: "/course/7-projects/personal-assistant", permanent: true },
+      { source: "/advanced/deployment", destination: "/course/6-autonomous-tasks", permanent: true },
+      { source: "/advanced/cost-management", destination: "/course/1-architecture", permanent: true },
 
-      // More
+      // Misc legacy → final destinations
       { source: "/cheatsheet", destination: "/reference/cli", permanent: true },
       { source: "/openclaw-vs-claude-code", destination: "/reference/concepts", permanent: true },
-      { source: "/playbooks", destination: "/foundation/set-your-goal", permanent: true },
+      { source: "/playbooks", destination: "/course/7-projects", permanent: true },
 
-      // Old challenge paths → Module 0
+      // Old challenge paths → course
       { source: "/challenge", destination: "/course/0-setup", permanent: true },
       { source: "/challenge/install", destination: "/course/0-setup", permanent: true },
       { source: "/challenge/deploy", destination: "/course/0-setup", permanent: true },
       { source: "/challenge/execute", destination: "/course/2-connecting-apps", permanent: true },
       { source: "/challenge/complete", destination: "/course", permanent: true },
 
-      // Old how (missions) paths → course modules
+      // Old how (missions) paths → course
       { source: "/how", destination: "/course", permanent: true },
       { source: "/how/mission-1", destination: "/course/0-setup", permanent: true },
       { source: "/how/mission-2", destination: "/course/2-connecting-apps", permanent: true },
@@ -90,7 +92,7 @@ const nextConfig: NextConfig = {
       { source: "/how/mission-7", destination: "/course/6-autonomous-tasks", permanent: true },
       { source: "/how/certificate", destination: "/course/9-next-steps", permanent: true },
 
-      // Old foundation paths → course modules
+      // Old foundation paths → course
       { source: "/foundation", destination: "/course", permanent: true },
       { source: "/foundation/what-is-openclaw", destination: "/course/0-setup", permanent: true },
       { source: "/foundation/install", destination: "/course/0-setup", permanent: true },
@@ -99,7 +101,7 @@ const nextConfig: NextConfig = {
       { source: "/foundation/security", destination: "/course/8-security-ethics", permanent: true },
       { source: "/foundation/set-your-goal", destination: "/course/7-projects", permanent: true },
 
-      // Old goals paths → Module 7 projects
+      // Old goals paths → course projects
       { source: "/goals", destination: "/course/7-projects", permanent: true },
       { source: "/goals/daily-briefing/:path*", destination: "/course/7-projects/daily-briefing", permanent: true },
       { source: "/goals/personal-assistant/:path*", destination: "/course/7-projects/personal-assistant", permanent: true },
@@ -108,7 +110,7 @@ const nextConfig: NextConfig = {
       { source: "/goals/work-hub/:path*", destination: "/course/7-projects", permanent: true },
       { source: "/goals/content/:path*", destination: "/course/7-projects/content-creator", permanent: true },
 
-      // Old level-up paths → course modules
+      // Old level-up paths → course
       { source: "/level-up", destination: "/course", permanent: true },
       { source: "/level-up/memory", destination: "/course/5-memory-personality", permanent: true },
       { source: "/level-up/skills", destination: "/course/3-skills-tools", permanent: true },

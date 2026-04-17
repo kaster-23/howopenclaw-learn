@@ -156,7 +156,7 @@ Image attachment notes are now preserved after media understanding, so image edi
 - Edits and modifications to images maintain proper file references
 - Media understanding doesn't break downstream file operations
 
-## Reconnection Stability (v2026.4.12)
+## Reconnection Stability
 
 As of v2026.4.12, WhatsApp reconnection has been significantly improved:
 
@@ -164,6 +164,10 @@ As of v2026.4.12, WhatsApp reconnection has been significantly improved:
 - Watchdog timeouts are now reset after reconnect, so quiet chats no longer fall into reconnect loops
 - Per-account connection ownership is centralized, so reconnects and login recovery stay attached to the live socket
 - Disconnection and reconnection are more graceful overall
+
+<Callout type="info" title="New in v2026.4.15">
+The pending per-auth credentials save queue is now drained before sockets are reopened. Previously, a reconnect could race against in-flight `creds.json` writes, causing auth bootstrap to falsely restore from backup and potentially invalidate a valid session. This is fixed — credentials are fully persisted before the new socket is established.
+</Callout>
 
 Enable streaming control if needed:
 
@@ -176,6 +180,12 @@ Enable streaming control if needed:
   }
 }
 ```
+
+## Large Media Sends (v2026.4.15)
+
+<Callout type="info" title="New in v2026.4.15">
+Encrypted upload handling for large outbound media sends has been hardened. Buffer spikes and reliability regressions that could affect large file sends are now resolved, making outbound media delivery more stable for large attachments.
+</Callout>
 
 ## Related channels
 

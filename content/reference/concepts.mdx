@@ -127,3 +127,9 @@ Quick reference. Terms are listed in the order you'll encounter them. For a full
 **ClawHub** — The community skill directory at [clawhub.ai](https://clawhub.ai). Browse and install skills for specific services.
 
 **Workspace** — The directory at `~/.openclaw/workspace/`. The agent's read/write sandbox. MEMORY.md, task files, and any files the agent creates live here.
+
+**Model Auth Status** — A monitoring card in the Control UI Overview (added in v2026.4.15) that shows OAuth token health and provider rate-limit pressure at a glance. The card surfaces attention callouts when OAuth tokens for configured providers are expiring soon or have already expired, so you can re-authenticate before requests start failing. Powered by the `models.authStatus` gateway method, which strips all credential material before returning status data and caches results for 60 seconds to avoid hammering provider endpoints.
+
+<Callout type="info" title="New in v2026.4.15">
+The **Model Auth Status** card is new in v2026.4.15. If you don't see it in your Control UI Overview, ensure you have upgraded to at least v2026.4.15. To re-authenticate an expiring provider, run `openclaw configure` or use the provider setup flow in the Control UI.
+</Callout>

@@ -120,6 +120,10 @@ As of v2026.4.12, iMessage startup has been improved:
 - Startup error logging is sanitized so brief local transport stalls don't bounce the channel or leak raw imsg RPC payloads into logs
 - The channel is now more resilient to temporary network hiccups during initialization
 
+<Callout type="info" title="New in v2026.4.15">
+The startup reliability improvements from v2026.4.12 remain the current baseline. If you are upgrading from a version prior to v2026.4.12 and experiencing startup issues with the iMessage channel, ensure you have completed the upgrade fully — the retry logic and sanitized error logging described above require at least v2026.4.12.
+</Callout>
+
 ## Self-Chat Detection
 
 OpenClaw correctly distinguishes between normal DM outbound messages and true self-chat. It uses `destination_caller_id` plus chat participants to identify self-chat scenarios, preserves multi-handle self-chat aliases, drops ambiguous reflected echoes, and strips wrapped RPC text fields.

@@ -139,6 +139,12 @@ Options:
 
 This renders as clickable buttons in Slack. Interactive setup defaults have been improved and reply controls are isolated from plugin interactive handlers, so custom plugins won't interfere with standard reply buttons.
 
+## Slash Command Menus (v2026.4.15)
+
+<Callout type="info" title="New in v2026.4.15">
+Option menus for slash commands such as `/verbose` now work correctly when Slack renders them as native buttons. Each button is now given a unique action ID while still routing through the shared `openclaw_cmdarg*` listener. Previously, Slack could reject or misroute option selections when multiple buttons shared the same action ID.
+</Callout>
+
 ## Direct Message Routing
 
 Live DM replies now correctly route back to the concrete inbound DM channel while keeping persisted routing metadata user-scoped. This ensures that normal assistant replies arrive reliably when pairing, and system messages continue to work as expected.
@@ -155,7 +161,7 @@ Slack ACP (Advanced Channel Platform) block replies are now treated as visible d
 
 Turn-local deduplication is now keyed by dispatch kind, and the final fallback reply path stays active when preview finalization fails. This prevents stale preview text from suppressing the actual final answer.
 
-## Recent Fixes (<OpenClawVersion />)
+## Recent Fixes (v2026.4.15)
 
 - Live DM replies route to the correct concrete inbound DM channel
 - Persisted routing metadata remains user-scoped for consistency  
@@ -164,6 +170,7 @@ Turn-local deduplication is now keyed by dispatch kind, and the final fallback r
 - SecretRef-backed bot tokens resolve correctly for file operations
 - ACP block replies are treated as visible delivered output
 - Partial streaming deduplication is correct and doesn't suppress final answers
+- Slash command option menus now work correctly with unique action IDs per button
 
 ## Security Recommendations
 

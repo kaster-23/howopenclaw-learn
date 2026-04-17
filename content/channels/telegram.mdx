@@ -133,6 +133,12 @@ No special configuration is needed. Topic routing works automatically and consis
 
 As of v2026.4.14, OpenClaw surfaces human-readable forum topic names in agent context, prompt metadata, and plugin hook metadata. Topic names are learned from Telegram forum service messages and persisted to the session sidecar store — so your agent sees the real topic name (e.g. "Support" or "Announcements") instead of a raw numeric ID, even after a restart.
 
+### Command-Sync Cache (v2026.4.15)
+
+<Callout type="info" title="New in v2026.4.15">
+The Telegram command-sync cache is now process-local. When the gateway restarts, OpenClaw re-registers the slash command menu with Telegram instead of trusting stale on-disk sync state. This means your bot's command menu stays accurate even if Telegram cleared it out-of-band between restarts.
+</Callout>
+
 ## Photo & Media Sending
 
 When your agent sends images, OpenClaw preflights Telegram's photo dimension and aspect-ratio rules. If an image doesn't meet Telegram's requirements (or metadata is unavailable), it automatically falls back to sending as a document — so photo uploads no longer fail with `PHOTO_INVALID_DIMENSIONS`.
@@ -145,6 +151,18 @@ Voice note transcription in direct messages has been restored (v2026.4.12). When
 
 Native Telegram commands (like `/start`, `/help`) now preserve reply threading for QA verification and testing purposes. Command callbacks are routed to a separate sequentializer lane so approval button clicks resolve immediately instead of deadlocking.
 
+### Native Command Auto-Registration (v2026.4.15)
+
+<Callout type="info" title="New in v2026.4.15">
+Plugin-registry-backed auto-defaults for native commands and native skills are now restored. Telegram slash commands keep registering automatically when `commands.native` and `commands.nativeSkills` are set to `auto` (the default). Previously, this was broken and commands could silently stop appearing in the slash command menu after a restart.
+</Callout>
+
+## Document & File Uploads
+
+<Callout type="info" title="New in v2026.4.15">
+Binary document handling has been significantly improved. When users upload documents such as `.mobi` or `.epub` files, leaked binary caption bytes are now stripped from inbound Telegram text handling. This prevents binary content from inflating prompt token counts. Additionally, binary reply context and ZIP-like archive extraction are sanitized so `.epub` and `.mobi` uploads can no longer leak raw binary into prompt context through reply metadata or archive-to-`text/plain` coercion.
+</Callout>
+
 ## Improved Error Handling
 
 Outbound delivery errors now preserve actionable details (e.g., 403 membership/block/kick reasons), and permanently failed chats (such as when the bot has been blocked or kicked) stop retrying automatically instead of looping.
@@ -153,7 +171,13 @@ Outbound delivery errors now preserve actionable details (e.g., 403 membership/b
 
 QQBot-style media tags with HTML entity-encoded angle brackets (`&lt;`/`&gt;`) are now correctly parsed and normalized, as are URL slashes in attributes and self-closing media tags.
 
-## Recent Improvements (v2026.4.14)
+## Recent Improvements (v2026.4.15)
+
+- Binary document uploads (`.mobi`, `.epub`) no longer leak binary bytes into prompt context or inflate token counts
+- Native Telegram commands auto-register from the plugin registry when `commands.native`/`commands.nativeSkills` are `auto`
+- Command-sync cache is now process-local — gateway restarts re-register the slash menu instead of using stale on-disk state
+
+### Previous: v2026.4.14
 
 - Forum topic names surfaced in agent context and plugin metadata — no more raw numeric IDs
 - Topic names persisted across restarts via session sidecar store

@@ -158,6 +158,12 @@ If the inbound Discord worker times out before a final reply starts, OpenClaw no
 - Component-only media sends are preserved without extra plain-output requeueing
 - Text-plus-video deliveries are intelligently split into a text reply followed by a media-only send, ensuring video attachments render properly
 
+## Tool-Call Text Handling (v2026.4.15)
+
+<Callout type="info" title="New in v2026.4.15">
+Standalone Gemma-style `<function>...</function>` tool-call payloads are now stripped from visible assistant text in Discord. This prevents raw tool-call XML from appearing in your Discord channel when using models that emit that format (such as Gemma). Prose examples that mention `<function>` tags and trailing replies after tool calls are preserved correctly — only the actual standalone tool-call payloads are removed.
+</Callout>
+
 ## Recent Fixes (v2026.4.12)
 
 - Media cap raised to 100MB — supports larger generated videos and audio files

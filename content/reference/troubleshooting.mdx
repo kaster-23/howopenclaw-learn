@@ -3,7 +3,7 @@ title: "Fix It When It Breaks"
 description: "Fix OpenClaw errors fast. Gateway not starting, bot not responding, API key issues, connection drops — solutions for the most common problems."
 faqs:
   - q: "What should I check first when OpenClaw stops working?"
-    a: "Always start with the logs: run `openclaw logs --tail 100` and look for ERROR lines. The error message usually identifies the exact problem. From there, check gateway status with `openclaw gateway status`. See the full [troubleshooting guide](https://docs.openclaw.ai/troubleshooting) for common issues."
+    a: "Always start with the logs: run `openclaw logs --tail 100` and look for ERROR lines. The error message usually identifies the exact problem. From there, check gateway status with `openclaw gateway status`. See the full [troubleshooting guide](https://docs.openclaw.ai/help/troubleshooting) for common issues."
   - q: "Why is my Telegram bot not responding?"
     a: "Check that the gateway shows `telegram: connected` in `openclaw gateway status`. Verify the bot token in config has no extra spaces. Make sure you sent `/start` to the bot before messaging it. Also confirm [BotFather](https://t.me/botfather) hasn't revoked the token."
   - q: "How do I fix a WhatsApp disconnection in OpenClaw?"
@@ -106,6 +106,10 @@ As of v2026.4.12, photo dimension validation has been improved. If an image does
 Forum topic names are now surfaced in agent context and persisted across restarts. AAC voice notes are remapped to `.m4a` so they transcribe correctly on strict endpoints. Read-only status commands bypass busy topic turns so `/status` responds immediately without waiting for an in-flight reply.
 </Callout>
 
+<Callout type="info" title="Telegram improvements (v2026.4.15)">
+Binary document uploads (`.mobi`, `.epub`) no longer leak binary bytes into prompt context or inflate token counts. Native Telegram commands keep auto-registering when `commands.native` and `commands.nativeSkills` are `auto`. The command-sync cache is now process-local — gateway restarts re-register the slash menu instead of relying on stale on-disk state.
+</Callout>
+
 ### WhatsApp disconnected
 
 WhatsApp sessions expire if unused for too long.
@@ -127,6 +131,10 @@ openclaw channels login --channel whatsapp
 Watchdog timeouts are reset after reconnect, so quiet chats should no longer fall into reconnect loops. Per-account connection ownership is now centralized, so reconnects and login recovery stay attached to the live socket. Message reactions now route properly through the gateway-owned action path in both DMs and groups. Fallback now properly uses the first `mediaUrls` entry when `mediaUrl` is empty, restoring silently dropped media attachments.
 </Callout>
 
+<Callout type="info" title="WhatsApp reconnection fix (v2026.4.15)">
+The pending per-auth credentials save queue is now drained before sockets are reopened, preventing a reconnect-time race that could cause auth bootstrap to falsely restore from backup. Large outbound media send reliability has also been improved.
+</Callout>
+
 ### Slack "not_in_channel" error
 
 Your bot isn't in the channel you're trying to post to. In Slack:
@@ -141,6 +149,10 @@ Live DM replies now route correctly to the concrete inbound DM channel, so assis
 
 <Callout type="info" title="Slack interaction security (v2026.4.14)">
 As of v2026.4.14, the global `allowFrom` owner allowlist is enforced on Slack block-action and modal interactive events. If you have interactive components (buttons, modals) in your Slack integration, make sure your `allowFrom` list includes all users who should be able to trigger them.
+</Callout>
+
+<Callout type="info" title="Slack slash command menus (v2026.4.15)">
+Option menus for slash commands such as `/verbose` now work correctly when Slack renders native buttons. Each button is given a unique action ID while still routing through the shared `openclaw_cmdarg*` listener — previously, option selections could be rejected or misrouted when multiple buttons shared the same action ID.
 </Callout>
 
 ### Slack in proxy-only deployments
@@ -167,6 +179,10 @@ If your Discord worker times out before a reply starts, OpenClaw now sends a vis
 
 <Callout type="info" title="Better Discord media handling (v2026.4.12)">
 Media cap is now 100MB (previously 25MB), so larger video and audio files upload correctly. Generated images are tracked with real file paths. Text-plus-video deliveries intelligently split so both arrive properly. Numeric Discord server and channel IDs in config are auto-coerced to strings.
+</Callout>
+
+<Callout type="info" title="Discord tool-call text fix (v2026.4.15)">
+Standalone Gemma-style `<function>...</function>` tool-call payloads are now stripped from visible assistant text in Discord. This prevents raw tool-call XML from appearing in your channel when using Gemma-format models. Prose text and trailing replies are preserved — only actual standalone tool-call payloads are removed.
 </Callout>
 
 ### Teams media and threading
@@ -276,10 +292,15 @@ New built-in tools include `video_generate` and `music_generate` for media creat
 - *(v2026.4.14)* The configured embedded-run timeout is now forwarded into the global stream timeout, so slow local Ollama runs no longer hit the default cutoff instead of your configured `timeoutSeconds`
 - *(v2026.4.14)* `stream_options.include_usage` is now sent for streaming completions, so Ollama reports real token usage instead of bogus counts that triggered premature compaction
 - *(v2026.4.14)* Vision capability detection reads from `/api/show` response, so valid Ollama vision models are no longer rejected by image/PDF tools
+- *(v2026.4.15)* The `ollama/` provider prefix is now automatically stripped from model IDs in chat requests, so configured refs like `ollama/qwen3:14b-q8_0` no longer 404 against the Ollama API
 
 **Codex CLI:** System prompts are now passed through Codex's `model_instructions_file` config override so fresh Codex CLI sessions receive the same prompt guidance as Claude CLI sessions.
 
 **Codex OAuth:** Upstream authorize URL scopes are no longer rewritten, so new Codex sign-ins no longer fail with `invalid_scope` before returning an authorization code.
+
+<Callout type="info" title="New in v2026.4.15">
+The Codex plugin is now auto-enabled when `codex` is selected as an embedded agent harness runtime (including forced default, per-agent, and `OPENCLAW_AGENT_RUNTIME` paths). Previously, you had to manually enable the Codex plugin in your config even when selecting Codex as your runtime.
+</Callout>
 
 <Callout type="info" title="New local model options (v2026.4.12)">
 OpenClaw now includes bundled **LM Studio** provider with onboarding, runtime model discovery, stream preload support, and memory-search embeddings for local/self-hosted OpenAI-compatible models. A bundled **Codex** provider is also available with plugin-owned app-server harness so `codex/gpt-*` models use Codex-managed auth and native threads.
@@ -298,6 +319,12 @@ If `host=auto`, the policy adapts to your deployment type. Previously, stale str
 ### OpenAI-compatible endpoint debugging
 
 Configured OpenAI-compatible endpoints are now classified in embedded-agent debug logs, making local and proxy routing issues easier to diagnose. Check your logs to see how your custom endpoints are being classified.
+
+### Model Auth status
+
+<Callout type="info" title="New in v2026.4.15">
+The Control UI Overview now includes a **Model Auth** status card showing OAuth token health and provider rate-limit pressure at a glance. The card surfaces attention callouts when OAuth tokens are expiring or have already expired. If you see a warning on this card, re-authenticate the affected provider using `openclaw configure` or the Control UI setup flow. See [Key Concepts](/reference/concepts) for more detail on what the Model Auth status card monitors.
+</Callout>
 
 ---
 
@@ -461,7 +488,7 @@ As of v2026.4.14, recalled memories are placed on the hidden untrusted prompt-pr
 
 ### Sandbox connectivity with HTTP proxy
 
-The network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
+The network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
 
 ---
 

@@ -20,11 +20,12 @@ jobs:
         id: check
         run: |
           LAST=$(cat .openclaw-last-version 2>/dev/null | tr -d '[:space:]' || echo "")
+          # List releases (includes prereleases); pick the most recent non-draft.
           LATEST=$(curl -sf \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/OpenClaw/OpenClaw/releases/latest \
-            | python3 -c "import json,sys; print(json.load(sys.stdin).get('tag_name',''))" 2>/dev/null || echo "")
+            "https://api.github.com/repos/OpenClaw/OpenClaw/releases?per_page=10" \
+            | python3 -c "import json,sys; rs=[r for r in json.load(sys.stdin) if not r.get('draft')]; print(rs[0]['tag_name'] if rs else '')" 2>/dev/null || echo "")
           echo "last=$LAST"
           echo "latest=$LATEST"
           echo "latest=$LATEST" >> $GITHUB_OUTPUT

@@ -26,8 +26,10 @@ const MODEL_WRITER = "claude-sonnet-4-6"
 // ─── GitHub helpers ──────────────────────────────────────────────────────────
 
 async function getLatestRelease(): Promise<{ tag: string; notes: string } | null> {
+  // List releases (includes prereleases); skip drafts. The GitHub API returns
+  // them ordered by created_at desc, so [0] is the most recent.
   const res = await fetch(
-    `https://api.github.com/repos/${OPENCLAW_REPO}/releases/latest`,
+    `https://api.github.com/repos/${OPENCLAW_REPO}/releases?per_page=10`,
     {
       headers: {
         Accept: "application/vnd.github+json",
@@ -39,8 +41,13 @@ async function getLatestRelease(): Promise<{ tag: string; notes: string } | null
     console.log(`GitHub API returned ${res.status} — no releases or rate limited`)
     return null
   }
-  const data = await res.json() as { tag_name: string; body?: string }
-  return { tag: data.tag_name, notes: data.body ?? "" }
+  const releases = await res.json() as Array<{ tag_name: string; body?: string; draft: boolean }>
+  const latest = releases.find((r) => !r.draft)
+  if (!latest) {
+    console.log("No non-draft releases found")
+    return null
+  }
+  return { tag: latest.tag_name, notes: latest.body ?? "" }
 }
 
 // ─── Version tracking ─────────────────────────────────────────────────────────

@@ -1,11 +1,17 @@
 import type { Metadata } from "next"
 import fs from "fs"
 import path from "path"
+import { headers } from "next/headers"
+import Script from "next/script"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import { SITE_URL as siteUrl } from "@/lib/site-url"
+import { i18nUI } from "@/lib/i18n"
+import { LOCALE_TO_LANG } from "@/lib/i18n"
 import "./globals.css"
+
+const GA_ID = "G-PHXR859DRF"
 const siteDescription =
   "Step-by-step guides to set up OpenClaw, your self-hosted AI assistant. Connect Telegram, Discord, WhatsApp — no cloud subscription needed."
 
@@ -43,7 +49,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "en_US", // Static metadata — dynamic locale set in page-level metadata
     siteName: "HowOpenClaw",
     url: siteUrl,
     title: "HowOpenClaw",
@@ -69,56 +75,59 @@ export const metadata: Metadata = {
   },
 }
 
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "@id": `${siteUrl}/#website`,
-  name: "HowOpenClaw",
-  url: siteUrl,
-  description: siteDescription,
-  inLanguage: "en-US",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${siteUrl}/search?q={search_term_string}`,
-    },
-    "query-input": "required name=search_term_string",
-  },
-}
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": `${siteUrl}/#organization`,
-  name: "HowOpenClaw",
-  url: siteUrl,
-  logo: {
-    "@type": "ImageObject",
-    url: `${siteUrl}/clawlogo.png`,
-    width: 512,
-    height: 512,
-  },
-  sameAs: [
-    "https://github.com/kaster-23/howopenclaw-learn",
-    "https://x.com/imfrancoierace",
-  ],
-  knowsAbout: [
-    "OpenClaw self-hosted AI assistant",
-    "Self-hosted AI",
-    "Local AI models",
-    "Telegram bots",
-    "Discord AI bots",
-    "Personal AI assistants",
-    "Ollama",
-  ],
-}
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const headerList = await headers()
+  const lang = headerList.get("x-locale") ?? "en"
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
+    name: "HowOpenClaw",
+    url: siteUrl,
+    description: siteDescription,
+    inLanguage: LOCALE_TO_LANG[lang] ?? "en-US",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  }
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${siteUrl}/#organization`,
+    name: "HowOpenClaw",
+    url: siteUrl,
+    logo: {
+      "@type": "ImageObject",
+      url: `${siteUrl}/clawlogo.png`,
+      width: 512,
+      height: 512,
+    },
+    sameAs: [
+      "https://github.com/kaster-23/howopenclaw-learn",
+      "https://x.com/imfrancoierace",
+    ],
+    knowsAbout: [
+      "OpenClaw self-hosted AI assistant",
+      "Self-hosted AI",
+      "Local AI models",
+      "Telegram bots",
+      "Discord AI bots",
+      "Personal AI assistants",
+      "Ollama",
+    ],
+  }
+
   let softwareVersion = ""
   try {
     softwareVersion = fs
@@ -169,7 +178,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang={lang}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
@@ -178,7 +187,7 @@ export default async function RootLayout({
         <a href="#main-content" className="skip-nav">
           Skip to main content
         </a>
-        <RootProvider theme={{ defaultTheme: "dark" }}>
+        <RootProvider theme={{ defaultTheme: "dark" }} i18n={i18nUI.provider(lang)}>
 {children}
         </RootProvider>
         <script
@@ -193,6 +202,18 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }}
         />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}');
+          `}
+        </Script>
       </body>
     </html>
   )

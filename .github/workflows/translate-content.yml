@@ -1,0 +1,68 @@
+name: Translate content
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**/*.mdx"
+      - "content/**/meta.json"
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Translate content
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+        run: pnpm tsx scripts/translate-content.ts
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "✅ No new translations needed"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📝 New translations generated"
+          fi
+
+      - name: Lint
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm lint
+
+      - name: Build
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm build
+
+      - name: Commit and push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "kaster-23"
+          git config user.email "francoierace.dev@gmail.com"
+          git add "content/**/*.es.mdx" "content/**/*.pt.mdx" "content/**/*.ja.mdx"
+          git add "content/**/meta.es.json" "content/**/meta.pt.json" "content/**/meta.ja.json"
+          git commit -m "i18n: auto-translate content to es/pt/ja"
+          git push origin main

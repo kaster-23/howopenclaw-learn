@@ -7,13 +7,20 @@ import { SidebarFooterLinks } from "@/components/sidebar-footer-links"
 import { SidebarBanner } from "@/components/sidebar-banner"
 import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 
-export default function CourseLayout({ children }: { children: ReactNode }) {
+export default async function CourseLayout({
+  children,
+  params,
+}: {
+  children: ReactNode
+  params: Promise<{ lang: string }>
+}) {
+  const { lang } = await params
   const version = OPENCLAW_VERSION
 
   return (
     <>
       <DocsLayout
-        tree={source.pageTree}
+        tree={source.pageTree[lang]}
         nav={{
           title: (
             <span className="flex items-center gap-2 text-sm font-semibold tracking-tight">

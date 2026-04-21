@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 import { execSync } from "child_process"
 import { source } from "@/lib/source"
 import { SITE_URL } from "@/lib/site-url"
+import { i18n } from "@/lib/i18n"
 
 const INDEX_SLUGS = new Set([
   "/course",
@@ -26,26 +27,50 @@ function getGitLastModified(filePath: string): Date {
   return new Date()
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const base = SITE_URL
+function localizedUrl(pagePath: string, lang: string): string {
+  if (lang === i18n.defaultLanguage) return `${SITE_URL}${pagePath}`
+  return `${SITE_URL}/${lang}${pagePath}`
+}
 
-  return [
-    {
-      url: base,
+export default function sitemap(): MetadataRoute.Sitemap {
+  const entries: MetadataRoute.Sitemap = []
+
+  // Homepage for each locale
+  for (const lang of i18n.languages) {
+    entries.push({
+      url: localizedUrl("", lang),
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1.0,
-    },
-    ...source.getPages().map((page) => {
-      const lastModified = page.absolutePath
-        ? getGitLastModified(page.absolutePath)
-        : new Date()
-      return {
-        url: `${base}${page.url}`,
+      alternates: {
+        languages: Object.fromEntries(
+          i18n.languages.map((l) => [l, localizedUrl("", l)])
+        ),
+      },
+    })
+  }
+
+  // All content pages — English source pages with locale variants
+  const pages = source.getPages("en")
+  for (const page of pages) {
+    const lastModified = page.absolutePath
+      ? getGitLastModified(page.absolutePath)
+      : new Date()
+
+    for (const lang of i18n.languages) {
+      entries.push({
+        url: localizedUrl(page.url, lang),
         lastModified,
         changeFrequency: "weekly" as const,
         priority: getPriority(page.url),
-      }
-    }),
-  ]
+        alternates: {
+          languages: Object.fromEntries(
+            i18n.languages.map((l) => [l, localizedUrl(page.url, l)])
+          ),
+        },
+      })
+    }
+  }
+
+  return entries
 }

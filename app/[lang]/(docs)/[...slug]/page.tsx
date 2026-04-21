@@ -10,6 +10,7 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs"
 import { Mermaid } from "@/components/mdx/mermaid"
 import { Table } from "@/components/mdx/table"
 import { notFound } from "next/navigation"
+import { hreflangAlternates, inLanguage, localizedUrl, ogLocale, SITE_URL } from "@/lib/i18n-url"
 
 import {
   ArrowRightLeft,
@@ -55,14 +56,12 @@ import {
 import type { Metadata } from "next"
 
 interface PageProps {
-  params: Promise<{ slug: string[] }>
+  params: Promise<{ slug: string[]; lang: string }>
 }
 
-const siteUrl = "https://www.howopenclaw.com"
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const page = source.getPage(slug)
+  const { slug, lang } = await params
+  const page = source.getPage(slug, lang)
   if (!page) return {}
 
   const pageTitle = `${page.data.title} – HowOpenClaw`
@@ -73,14 +72,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: page.data.title,
     description,
-    authors: [{ name: "HowOpenClaw Community", url: siteUrl }],
+    authors: [{ name: "HowOpenClaw Community", url: SITE_URL }],
     openGraph: {
       title: pageTitle,
       description,
-      url: `${siteUrl}${page.url}`,
+      url: localizedUrl(slug, lang),
       type: "article",
       siteName: "HowOpenClaw",
-      locale: "en_US",
+      locale: ogLocale(lang),
       images: [{ url: "/og-image.png", width: 2414, height: 1274, alt: pageTitle }],
     },
     twitter: {
@@ -90,17 +89,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       creator: "@imfrancoierace",
       images: ["/og-image.png"],
     },
-    alternates: { canonical: `${siteUrl}${page.url}` },
+    alternates: {
+      canonical: localizedUrl(slug, lang),
+      languages: hreflangAlternates(slug),
+    },
   }
 }
 
-function buildBreadcrumbList(slug: string[], pageTitle: string) {
+function buildBreadcrumbList(slug: string[], lang: string, pageTitle: string) {
   const items: { "@type": string; position: number; name: string; item: string }[] = [
-    { "@type": "ListItem", position: 1, name: "HowOpenClaw", item: siteUrl },
+    { "@type": "ListItem", position: 1, name: "HowOpenClaw", item: SITE_URL },
   ]
   let pos = 2
   for (let i = 0; i < slug.length - 1; i++) {
-    const parent = source.getPage(slug.slice(0, i + 1))
+    const parent = source.getPage(slug.slice(0, i + 1), lang)
     const name =
       parent?.data.title ??
       slug[i].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
@@ -108,14 +110,14 @@ function buildBreadcrumbList(slug: string[], pageTitle: string) {
       "@type": "ListItem",
       position: pos++,
       name,
-      item: `${siteUrl}/${slug.slice(0, i + 1).join("/")}`,
+      item: localizedUrl(slug.slice(0, i + 1), lang),
     })
   }
   items.push({
     "@type": "ListItem",
     position: pos,
     name: pageTitle,
-    item: `${siteUrl}/${slug.join("/")}`,
+    item: localizedUrl(slug, lang),
   })
   return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items }
 }
@@ -184,14 +186,14 @@ function getGitDate(filePath: string): string {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { slug } = await params
-  const page = source.getPage(slug)
+  const { slug, lang } = await params
+  const page = source.getPage(slug, lang)
   if (!page) notFound()
 
   const MDX = page.data.body
 
   const dateModified = page.absolutePath ? getGitDate(page.absolutePath) : new Date().toISOString().split("T")[0]
-  const pageUrl = `${siteUrl}${page.url}`
+  const pageUrl = localizedUrl(slug, lang)
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
@@ -201,22 +203,22 @@ export default async function Page({ params }: PageProps) {
     url: pageUrl,
     datePublished: "2025-03-01",
     dateModified,
-    inLanguage: "en-US",
+    inLanguage: inLanguage(lang),
     ...(page.data.readTime ? { timeRequired: `PT${page.data.readTime}M` } : {}),
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     publisher: {
       "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
+      "@id": `${SITE_URL}/#organization`,
       name: "HowOpenClaw",
-      url: siteUrl,
-      logo: { "@type": "ImageObject", url: `${siteUrl}/clawlogo.png` },
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/clawlogo.png` },
     },
     author: {
       "@type": "Organization",
       name: "HowOpenClaw Community",
-      url: siteUrl,
+      url: SITE_URL,
     },
-    isPartOf: { "@type": "WebSite", "@id": `${siteUrl}/#website`, name: "HowOpenClaw", url: siteUrl },
+    isPartOf: { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: "HowOpenClaw", url: SITE_URL },
     about: {
       "@type": "SoftwareApplication",
       "@id": "https://openclaw.ai/#app",
@@ -235,7 +237,7 @@ export default async function Page({ params }: PageProps) {
     },
   }
 
-  const breadcrumbJsonLd = buildBreadcrumbList(slug, page.data.title)
+  const breadcrumbJsonLd = buildBreadcrumbList(slug, lang, page.data.title)
 
   const stripLinks = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
 

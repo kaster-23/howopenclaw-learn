@@ -14,7 +14,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 export function GET() {
   const base = SITE_URL
-  const pages = source.getPages()
+  const pages = source.getPages("en")
 
   // Group pages by top-level section
   const sections: Record<string, typeof pages> = {}

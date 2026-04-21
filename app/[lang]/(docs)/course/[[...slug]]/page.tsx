@@ -17,6 +17,7 @@ import { VideoEmbed } from "@/components/course/video-embed"
 import { Mermaid } from "@/components/mdx/mermaid"
 import { Table } from "@/components/mdx/table"
 import { notFound } from "next/navigation"
+import { hreflangAlternates, inLanguage, localizedUrl, ogLocale, SITE_URL } from "@/lib/i18n-url"
 
 // No-op stubs for legacy gamification components still referenced in old MDX files
 function Noop() { return null }
@@ -63,19 +64,17 @@ import {
 import type { Metadata } from "next"
 
 interface PageProps {
-  params: Promise<{ slug?: string[] }>
+  params: Promise<{ slug?: string[]; lang: string }>
 }
-
-const siteUrl = "https://www.howopenclaw.com"
 
 function getFullSlug(slug: string[] | undefined): string[] {
   return slug && slug.length > 0 ? ["course", ...slug] : ["course"]
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
+  const { slug, lang } = await params
   const fullSlug = getFullSlug(slug)
-  const page = source.getPage(fullSlug)
+  const page = source.getPage(fullSlug, lang)
   if (!page) return {}
 
   const pageTitle = `${page.data.title} – HowOpenClaw`
@@ -84,14 +83,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: page.data.title,
     description,
-    authors: [{ name: "HowOpenClaw Community", url: siteUrl }],
+    authors: [{ name: "HowOpenClaw Community", url: SITE_URL }],
     openGraph: {
       title: pageTitle,
       description,
-      url: `${siteUrl}${page.url}`,
+      url: localizedUrl(fullSlug, lang),
       type: "article",
       siteName: "HowOpenClaw",
-      locale: "en_US",
+      locale: ogLocale(lang),
       images: [{ url: "/og-image.png", width: 2414, height: 1274, alt: pageTitle }],
     },
     twitter: {
@@ -102,22 +101,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: ["/og-image.png"],
     },
     alternates: {
-      canonical: `${siteUrl}${page.url}`,
+      canonical: localizedUrl(fullSlug, lang),
+      languages: hreflangAlternates(fullSlug),
     },
   }
 }
 
-function buildBreadcrumbList(slug: string[], pageTitle: string) {
+function buildBreadcrumbList(slug: string[], lang: string, pageTitle: string) {
   const items: { "@type": string; position: number; name: string; item: string }[] = [
-    { "@type": "ListItem", position: 1, name: "HowOpenClaw", item: siteUrl },
+    { "@type": "ListItem", position: 1, name: "HowOpenClaw", item: SITE_URL },
   ]
   let pos = 2
   for (let i = 0; i < slug.length - 1; i++) {
-    const parent = source.getPage(slug.slice(0, i + 1))
+    const parent = source.getPage(slug.slice(0, i + 1), lang)
     const name = parent?.data.title ?? slug[i].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    items.push({ "@type": "ListItem", position: pos++, name, item: `${siteUrl}/${slug.slice(0, i + 1).join("/")}` })
+    items.push({ "@type": "ListItem", position: pos++, name, item: localizedUrl(slug.slice(0, i + 1), lang) })
   }
-  items.push({ "@type": "ListItem", position: pos, name: pageTitle, item: `${siteUrl}/${slug.join("/")}` })
+  items.push({ "@type": "ListItem", position: pos, name: pageTitle, item: localizedUrl(slug, lang) })
   return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items }
 }
 
@@ -133,15 +133,15 @@ function getGitDate(filePath: string): string {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { slug } = await params
+  const { slug, lang } = await params
   const fullSlug = getFullSlug(slug)
-  const page = source.getPage(fullSlug)
+  const page = source.getPage(fullSlug, lang)
   if (!page) notFound()
 
   const MDX = page.data.body
 
   const dateModified = page.absolutePath ? getGitDate(page.absolutePath) : new Date().toISOString().split("T")[0]
-  const pageUrl = `${siteUrl}${page.url}`
+  const pageUrl = localizedUrl(fullSlug, lang)
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
@@ -151,22 +151,22 @@ export default async function Page({ params }: PageProps) {
     url: pageUrl,
     datePublished: "2025-03-01",
     dateModified,
-    inLanguage: "en-US",
+    inLanguage: inLanguage(lang),
     ...(page.data.readTime ? { timeRequired: `PT${page.data.readTime}M` } : {}),
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     publisher: {
       "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
+      "@id": `${SITE_URL}/#organization`,
       name: "HowOpenClaw",
-      url: siteUrl,
-      logo: { "@type": "ImageObject", url: `${siteUrl}/clawlogo.png` },
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/clawlogo.png` },
     },
     author: {
       "@type": "Organization",
       name: "HowOpenClaw Community",
-      url: siteUrl,
+      url: SITE_URL,
     },
-    isPartOf: { "@type": "WebSite", "@id": `${siteUrl}/#website`, name: "HowOpenClaw", url: siteUrl },
+    isPartOf: { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: "HowOpenClaw", url: SITE_URL },
     about: {
       "@type": "SoftwareApplication",
       "@id": "https://openclaw.ai/#app",
@@ -185,7 +185,7 @@ export default async function Page({ params }: PageProps) {
     },
   }
 
-  const breadcrumbJsonLd = buildBreadcrumbList(fullSlug, page.data.title)
+  const breadcrumbJsonLd = buildBreadcrumbList(fullSlug, lang, page.data.title)
 
   const stripLinks = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
 
@@ -305,5 +305,5 @@ export default async function Page({ params }: PageProps) {
 export async function generateStaticParams() {
   return source.generateParams()
     .filter((p: { slug: string[] }) => p.slug.length > 0 && p.slug[0] === "course")
-    .map((p: { slug: string[] }) => ({ slug: p.slug.slice(1) }))
+    .map((p: { slug: string[]; lang: string }) => ({ slug: p.slug.slice(1), lang: p.lang }))
 }

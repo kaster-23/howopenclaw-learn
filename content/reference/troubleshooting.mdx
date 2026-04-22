@@ -155,6 +155,10 @@ As of v2026.4.14, the global `allowFrom` owner allowlist is enforced on Slack bl
 Option menus for slash commands such as `/verbose` now work correctly when Slack renders native buttons. Each button is given a unique action ID while still routing through the shared `openclaw_cmdarg*` listener — previously, option selections could be rejected or misrouted when multiple buttons shared the same action ID.
 </Callout>
 
+<Callout type="info" title="Slack thread alias fix (v2026.4.21)">
+As of v2026.4.21, thread aliases are preserved in runtime outbound sends. Generic runtime sends now correctly stay in the intended Slack thread when the caller supplies `threadTs`. If your custom replies or automations were landing in the wrong thread, upgrading to v2026.4.21 resolves this. (#62947)
+</Callout>
+
 ### Slack in proxy-only deployments
 
 Socket Mode WebSocket connections now honor your ambient HTTP(S) proxy settings and `NO_PROXY` exclusions. If your deployment uses a proxy server for all outbound traffic, OpenClaw will route Socket Mode connections through the proxy automatically — no manual configuration needed.
@@ -195,6 +199,14 @@ Standalone Gemma-style `<function>...</function>` tool-call payloads are now str
 <Callout type="info" title="Improved Matrix room mentions (v2026.4.12)">
 Room mention gating stays strict while accepting visible `@displayName` Matrix URI labels, so `requireMention` works for non-OpenClaw Matrix clients again.
 </Callout>
+
+### Browser accessibility refs
+
+<Callout type="info" title="New in v2026.4.21">
+Invalid `ax<N>` accessibility refs in browser act paths are now rejected immediately on receipt instead of waiting for the full browser action timeout to expire. If your agent or a skill passes a malformed accessibility ref, you'll see a fast, descriptive error in the logs rather than a long silence followed by a timeout. (#69924)
+</Callout>
+
+If you encounter browser action timeouts in logs, check that any `ax<N>` refs being passed to browser tools are well-formed. The immediate rejection makes these failures much faster to diagnose.
 
 ### Docker fresh install fails
 
@@ -368,6 +380,10 @@ This will apply migrations and show you exactly what changed. Test your setup af
 `openclaw doctor` now warns when on-disk agent directories still exist under `~/.openclaw/agents/<id>/agent` but the matching `agents.list[]` entries are missing from config. This helps catch stale agent state. The `--fix` flag no longer rewrites legacy Discord preview-streaming config into the nested modern shape, so downgrades can recover without hand-editing.
 </Callout>
 
+<Callout type="info" title="Doctor dependency repair (v2026.4.21)">
+As of v2026.4.21, `openclaw doctor --fix` can now repair bundled plugin runtime dependencies from doctor paths. This means packaged installs can recover missing channel or provider dependencies without triggering broad core dependency installs. If a channel or provider plugin was silently failing to load after a packaged install, run `openclaw doctor --fix` to restore the missing dependencies.
+</Callout>
+
 ### Auth profile persistence
 
 Explicit auth-profile upserts are now persisted directly without stale external credential state. Profile changes are saved without requiring external CLI sync for local writes.
@@ -396,6 +412,10 @@ If you have a mixed Homebrew-plus-nvm setup, `openclaw update` now prefers the n
 
 <Callout type="info" title="Improved plugin refresh (v2026.4.12)">
 `openclaw update` now respawns tracked plugin refresh from the updated entrypoint after package self-updates, so update stops failing on stale hashed `dist/install.runtime-*.js` chunk imports.
+</Callout>
+
+<Callout type="info" title="npm install deprecation warning fix (v2026.4.21)">
+As of v2026.4.21, the `node-domexception` alias is mirrored into the root `package.json` `overrides`. npm installs no longer surface the deprecated `google-auth-library → gaxios → node-fetch → fetch-blob → node-domexception` dependency chain pulled through Pi/Google runtime dependencies. If you were seeing this deprecation warning on `npm install`, upgrading to v2026.4.21 resolves it. Thanks @vincentkoc.
 </Callout>
 
 ---
@@ -488,7 +508,7 @@ As of v2026.4.14, recalled memories are placed on the hidden untrusted prompt-pr
 
 ### Sandbox connectivity with HTTP proxy
 
-The network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
+The network fetch guard now correctly handles trusted environment proxy mode. If you're using a trusted proxy for outbound connections, DNS pinning is automatically disabled so the proxy can resolve outbound hostnames. This ensures proxy-only sandbox deployments can reach external hosts without manual workarounds.
 
 ---
 
@@ -603,6 +623,29 @@ cat ~/.openclaw/.env.example
 ```
 
 If you copied the example file, ensure all placeholder values are replaced with real credentials before starting the gateway.
+
+### Auth/Commands owner enforcement
+
+<Callout type="warn" title="Security fix in v2026.4.21">
+As of v2026.4.21, owner-enforced commands require explicit owner identity — either an owner-candidate match or the internal `operator.admin` role — when `enforceOwnerForCommands` is `true`.
+
+**What changed:** Previously, a wildcard `allowFrom` setting or an empty `commands.ownerAllowFrom` list could act as a permissive fallback, allowing non-owner senders to reach owner-only commands. This fallback has been removed. (#69774) Thanks @drobison00.
+
+**Who is affected:** If you have `enforceOwnerForCommands: true` set and have not explicitly configured `commands.ownerAllowFrom`, review your setup. Non-owner users who previously reached owner-only commands through a permissive `allowFrom` wildcard will now be correctly rejected.
+
+**What to do:** Explicitly list your intended owner identities in `commands.ownerAllowFrom`:
+
+```json
+{
+  "commands": {
+    "enforceOwnerForCommands": true,
+    "ownerAllowFrom": ["telegram:123456789", "slack:U0123ABCDEF"]
+  }
+}
+```
+
+If you intentionally want multiple users to reach certain commands, use role-based `allowFrom` on those specific commands rather than relying on the owner enforcement path.
+</Callout>
 
 ---
 

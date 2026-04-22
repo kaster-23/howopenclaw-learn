@@ -96,6 +96,14 @@ Quick reference. Terms are listed in the order you'll encounter them. For a full
 
 **Session** — A single conversation thread. The agent maintains context within a session. MEMORY.md persists context across sessions.
 
+**Owner-enforced commands** — When `enforceOwnerForCommands` is `true` in your config, commands designated as owner-only require the sender to be a verified owner: either a match against `commands.ownerAllowFrom` (your explicit owner identity list) or the internal `operator.admin` role. A permissive `allowFrom` wildcard or an empty `commands.ownerAllowFrom` list is not sufficient — those do not grant owner identity. This prevents non-owner users from reaching privileged commands through overly broad channel allowlists.
+
+*In practice: If you set `enforceOwnerForCommands: true`, make sure `commands.ownerAllowFrom` explicitly lists your identity on each channel (e.g., `"telegram:123456789"`). See the [troubleshooting guide](/reference/troubleshooting#authcommands-owner-enforcement) if commands stop responding after upgrading to v2026.4.21.*
+
+<Callout type="info" title="New in v2026.4.21">
+The owner-enforcement behavior for commands was tightened in v2026.4.21. If you have `enforceOwnerForCommands: true` set and relied on a wildcard `allowFrom` or an unset `commands.ownerAllowFrom` to reach owner-only commands, those commands will now correctly require explicit owner identity. Update `commands.ownerAllowFrom` with your channel-specific user IDs to restore access. (#69774) Thanks @drobison00.
+</Callout>
+
 ---
 
 ## Automation concepts

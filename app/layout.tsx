@@ -1,14 +1,11 @@
 import type { Metadata } from "next"
 import fs from "fs"
 import path from "path"
-import { headers } from "next/headers"
 import Script from "next/script"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import { SITE_URL as siteUrl } from "@/lib/site-url"
-import { i18nUI } from "@/lib/i18n"
-import { LOCALE_TO_LANG } from "@/lib/i18n"
 import "./globals.css"
 
 const GA_ID = "G-PHXR859DRF"
@@ -75,14 +72,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const headerList = await headers()
-  const lang = headerList.get("x-locale") ?? "en"
-
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -90,7 +84,7 @@ export default async function RootLayout({
     name: "HowOpenClaw",
     url: siteUrl,
     description: siteDescription,
-    inLanguage: LOCALE_TO_LANG[lang] ?? "en-US",
+    inLanguage: "en-US",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -178,7 +172,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={lang}
+      lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
@@ -187,7 +181,7 @@ export default async function RootLayout({
         <a href="#main-content" className="skip-nav">
           Skip to main content
         </a>
-        <RootProvider theme={{ defaultTheme: "dark" }} i18n={i18nUI.provider(lang)}>
+        <RootProvider theme={{ defaultTheme: "dark" }}>
 {children}
         </RootProvider>
         <script

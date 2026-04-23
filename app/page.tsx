@@ -3,56 +3,41 @@ import { LandingContent } from "@/components/landing-content"
 import { Footer } from "@/components/footer"
 import { BackgroundDotsLoader } from "@/components/background-dots-loader"
 import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
-import { hreflangAlternates, localizedUrl, ogLocale } from "@/lib/i18n-url"
-import { i18n } from "@/lib/i18n"
 
 const description =
   "Build your own private AI assistant with OpenClaw — no subscriptions, no cloud. 10 beginner-friendly modules to go from zero to running in an hour."
 
 const siteUrl = "https://www.howopenclaw.com"
 
-interface PageProps {
-  params: Promise<{ lang: string }>
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { lang } = await params
-
-  return {
+export const metadata: Metadata = {
+  title: "HowOpenClaw — Learn OpenClaw Step by Step",
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "HowOpenClaw",
+    locale: "en_US",
     title: "HowOpenClaw — Learn OpenClaw Step by Step",
     description,
-    openGraph: {
-      type: "website",
-      siteName: "HowOpenClaw",
-      locale: ogLocale(lang),
-      title: "HowOpenClaw — Learn OpenClaw Step by Step",
-      description,
-      url: localizedUrl([], lang),
-      images: [
-        {
-          url: `${siteUrl}/og-image.png`,
-          width: 2414,
-          height: 1274,
-          alt: "HowOpenClaw — Learn OpenClaw Step by Step",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "HowOpenClaw — Learn OpenClaw Step by Step",
-      description,
-      creator: "@imfrancoierace",
-      images: [`${siteUrl}/og-image.png`],
-    },
-    alternates: {
-      canonical: localizedUrl([], lang),
-      languages: hreflangAlternates([]),
-    },
-  }
-}
-
-export function generateStaticParams() {
-  return i18n.languages.map((lang) => ({ lang }))
+    url: siteUrl,
+    images: [
+      {
+        url: `${siteUrl}/og-image.png`,
+        width: 2414,
+        height: 1274,
+        alt: "HowOpenClaw — Learn OpenClaw Step by Step",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HowOpenClaw — Learn OpenClaw Step by Step",
+    description,
+    creator: "@imfrancoierace",
+    images: [`${siteUrl}/og-image.png`],
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
 }
 
 const homepageFaqJsonLd = {

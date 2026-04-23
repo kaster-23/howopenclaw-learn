@@ -36,6 +36,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // ── Locale prefixes → English (i18n was rolled back; only English is published) ──
+      { source: "/es", destination: "/", permanent: true },
+      { source: "/pt", destination: "/", permanent: true },
+      { source: "/ja", destination: "/", permanent: true },
+      { source: "/es/:path*", destination: "/:path*", permanent: true },
+      { source: "/pt/:path*", destination: "/:path*", permanent: true },
+      { source: "/ja/:path*", destination: "/:path*", permanent: true },
+
       // ── Phase-1 legacy paths → final course destinations (no chains) ──
 
       // Getting Started → course

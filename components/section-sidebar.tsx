@@ -58,42 +58,18 @@ const SECTIONS: Record<string, SectionData> = {
   },
 }
 
-const LOCALE_PREFIXES = ["/es", "/pt", "/ja"]
-
-/** Strip locale prefix from pathname for section matching */
-function stripLocale(pathname: string): string {
-  for (const prefix of LOCALE_PREFIXES) {
-    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
-      return pathname.slice(prefix.length) || "/"
-    }
-  }
-  return pathname
-}
-
 function getSection(pathname: string): (SectionData & { key: string }) | null {
-  const bare = stripLocale(pathname)
   for (const [key, data] of Object.entries(SECTIONS)) {
-    if (bare === `/${key}` || bare.startsWith(`/${key}/`)) {
+    if (pathname === `/${key}` || pathname.startsWith(`/${key}/`)) {
       return { key, ...data }
     }
   }
   return null
 }
 
-/** Get the locale prefix from pathname (empty string for English) */
-function getLocalePrefix(pathname: string): string {
-  for (const prefix of LOCALE_PREFIXES) {
-    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
-      return prefix
-    }
-  }
-  return ""
-}
-
 export function SectionLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const section = getSection(pathname)
-  const localePrefix = getLocalePrefix(pathname)
 
   if (!section) {
     return (
@@ -103,8 +79,7 @@ export function SectionLayout({ children }: { children: ReactNode }) {
     )
   }
 
-  const barePath = stripLocale(pathname)
-  const isIndex = barePath === section.indexHref
+  const isIndex = pathname === section.indexHref
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
@@ -113,7 +88,7 @@ export function SectionLayout({ children }: { children: ReactNode }) {
         <aside className="hidden lg:block w-44 shrink-0" aria-label="Section navigation">
           <div className="sticky top-[calc(3.5rem+2rem)] space-y-1">
             <Link
-              href={`${localePrefix}${section.indexHref}`}
+              href={section.indexHref}
               className={`block rounded-md px-2.5 py-1.5 text-sm font-semibold transition-colors mb-3 ${
                 isIndex
                   ? "text-fd-foreground"
@@ -123,11 +98,11 @@ export function SectionLayout({ children }: { children: ReactNode }) {
               {section.label}
             </Link>
             {section.pages.map((page) => {
-              const isActive = barePath === page.href
+              const isActive = pathname === page.href
               return (
                 <Link
                   key={page.href}
-                  href={`${localePrefix}${page.href}`}
+                  href={page.href}
                   className={`block rounded-md px-2.5 py-1.5 text-sm transition-colors ${
                     isActive
                       ? "bg-[var(--color-fd-primary)]/10 text-[var(--color-fd-primary)] font-medium"

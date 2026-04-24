@@ -143,6 +143,12 @@ The Telegram command-sync cache is now process-local. When the gateway restarts,
 
 When your agent sends images, OpenClaw preflights Telegram's photo dimension and aspect-ratio rules. If an image doesn't meet Telegram's requirements (or metadata is unavailable), it automatically falls back to sending as a document — so photo uploads no longer fail with `PHOTO_INVALID_DIMENSIONS`.
 
+### Markdown Image Syntax in Groups (v2026.4.23)
+
+<Callout type="info" title="New in v2026.4.23">
+Telegram group chats now parse remote markdown image syntax (`![alt](url)`) into outbound media payloads on the final reply path. Previously, when the model or a tool emitted markdown image syntax instead of a `MEDIA:` token, group deliveries fell back to plain-text image URLs. Images referenced this way now render natively in the group. (Fixes #66191) Thanks @apezam and @vincentkoc.
+</Callout>
+
 ## Voice Notes & Audio
 
 Voice note transcription in direct messages has been restored (v2026.4.12). When you send a voice message to your bot, it will transcribe the audio and respond naturally — no longer arriving as raw `<media:audio>` placeholders.

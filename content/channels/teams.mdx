@@ -242,6 +242,12 @@ As of <OpenClawVersion />, channel reply threading is now preserved in proactive
 
 The deprecated Teams SDK `HttpPlugin` stub has been replaced with the modern `httpServerAdapter`. This eliminates recurring gateway deprecation warnings and keeps the Express 5 compatibility workaround on the supported SDK path.
 
+## Bot Framework Audience Token Validation (v2026.4.23)
+
+<Callout type="warn" title="Security fix in v2026.4.23">
+Shared Bot Framework audience tokens are now required to name the configured Teams app via a verified `appid` or `azp` claim. This blocks cross-bot token replay through the shared global Bot Framework audience — a token issued for a different Teams app can no longer be accepted on your bot. No config change is required if your `appId` matches the audience tokens your tenant actually issues. (#70724) Thanks @vincentkoc.
+</Callout>
+
 ## Recent Fixes (<OpenClawVersion />)
 
 - Media downloads restored for personal DMs, Bot Framework `a:` conversations, OneDrive/SharePoint shared files, and Graph-backed chat IDs

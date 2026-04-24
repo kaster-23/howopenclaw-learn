@@ -1,6 +1,6 @@
 ---
-title: "System Requirements"
-description: "What hardware you need to run OpenClaw — from a Raspberry Pi to a Mac Studio. Requirements depend on whether you use cloud models, local models, or run multi-agent orchestration 24/7."
+title: "OpenClaw System Requirements: Node.js, RAM, OS, Docker"
+description: "OpenClaw minimum requirements: Node.js 22.14+, 512 MB RAM, macOS 12+, Linux, Windows, ARM64, Apple Silicon, Docker, Raspberry Pi. Tiered specs for cloud vs. local Ollama."
 faqs:
   - q: "Does OpenClaw require a GPU?"
     a: "No — not for cloud API mode. OpenClaw is a Node.js orchestration gateway. When you use [Claude](https://www.anthropic.com), GPT-4, or Gemini via API, the model runs on the provider's hardware. Your machine only routes messages. A GPU is only needed if you run local models via [Ollama](https://ollama.com). For local models, an NVIDIA GPU with 8–24 GB VRAM accelerates inference significantly over CPU-only, but CPU+RAM works at slower speeds."

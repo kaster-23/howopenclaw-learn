@@ -164,6 +164,16 @@ If the inbound Discord worker times out before a final reply starts, OpenClaw no
 Standalone Gemma-style `<function>...</function>` tool-call payloads are now stripped from visible assistant text in Discord. This prevents raw tool-call XML from appearing in your Discord channel when using models that emit that format (such as Gemma). Prose examples that mention `<function>` tags and trailing replies after tool calls are preserved correctly — only the actual standalone tool-call payloads are removed.
 </Callout>
 
+## Slash Command Access Policy (v2026.4.23)
+
+<Callout type="warn" title="Security fix in v2026.4.23">
+Native slash-command channel policy no longer bypasses configured owner or member restrictions. Previously, a permissive channel policy could unintentionally override owner or member allowlists for native slash commands; now the stricter access rule wins. Channel-policy fallback still applies when no stricter rule exists, so legitimate allowlist setups are unaffected. (#70711) Thanks @vincentkoc.
+</Callout>
+
+<Callout type="info" title="Reply routing preserved (v2026.4.23)">
+Final-reply permission context is now carried through outbound delivery, so Discord replies keep the same channel and member routing rules at send time that applied when the reply was generated.
+</Callout>
+
 ## Recent Fixes (v2026.4.12)
 
 - Media cap raised to 100MB — supports larger generated videos and audio files

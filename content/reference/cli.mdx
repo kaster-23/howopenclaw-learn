@@ -1,6 +1,6 @@
 ---
-title: "CLI Cheatsheet"
-description: "Complete OpenClaw CLI cheatsheet — every command, flag, and shortcut for the terminal. From gateway start to cron, skills, and config."
+title: "OpenClaw CLI Reference: Commands, Flags, Logs, Cron, Tools"
+description: "OpenClaw CLI reference with every command and flag: gateway, logs, cron list, tools list, skills, channels, config. Real output examples and syntax for each command."
 faqs:
   - q: "How do I start the OpenClaw gateway?"
     a: "Run `openclaw gateway` to start in the foreground, or `openclaw gateway install` to set it up as a system daemon that auto-starts on boot."
@@ -123,6 +123,46 @@ openclaw cron status                   # Status and next run times
 openclaw cron run [id]                 # Run an automation immediately (for testing)
 openclaw cron add                      # Add a new cron automation
 openclaw cron edit [id]                # Edit an existing automation
+openclaw cron delete [id]              # Remove an automation
+openclaw cron logs [id]                # View recent runs for one job
+```
+
+### What `openclaw cron list` shows
+
+`cron list` prints every scheduled job the gateway knows about — its ID, cron expression, next fire time in your configured timezone, whether it's enabled, and the action it calls. This is the fastest way to answer "why didn't my morning briefing fire?"
+
+Expect a row per job with these fields:
+
+- **ID** — the job identifier you pass to `cron run`, `cron edit`, `cron delete`, `cron logs`
+- **Schedule** — the cron expression (e.g. `0 7 * * *` for every day at 07:00)
+- **Next run** — the next scheduled fire time, resolved in your configured timezone
+- **Status** — `enabled` or `disabled`
+- **Agent** — which agent receives the invocation
+- **Action** — the command or slash action that runs when the job fires
+
+If no jobs exist, the output is empty. Use `openclaw cron add` to create your first one.
+
+### Checking whether a job actually ran
+
+Use `openclaw cron status` to see run history alongside the schedule — each job's last run timestamp, whether it succeeded or failed, and duration. If the last run failed, the error message appears inline so you don't need to dig through `openclaw logs`.
+
+For per-job history:
+
+```bash
+openclaw cron logs morning-brief       # Recent runs of a single job
+```
+
+If a job is enabled but never firing, common causes:
+
+1. The gateway wasn't running at the scheduled time (sleeping laptop, stopped daemon). Check `openclaw gateway status`.
+2. The cron expression is invalid — validate at [crontab.guru](https://crontab.guru).
+3. Timezone mismatch — `cron list` shows the resolved timezone in the footer; confirm it matches what you intended.
+4. The action references a channel or agent that no longer exists. `cron logs [id]` will show the exact error.
+
+Test a job immediately without waiting for the schedule:
+
+```bash
+openclaw cron run morning-brief        # Fires the job once, now
 ```
 
 ---
@@ -150,13 +190,40 @@ openclaw skills list                   # List installed skills
 openclaw skills info [skill-name]      # Show skill details, requirements, and API key setup guidance
 openclaw skills install [package]      # Install a skill from npm
 openclaw skills auth [skill-name]      # Authenticate a skill (OAuth)
-openclaw tools list                    # List tools the current agent can use right now (compact view)
-openclaw tools list --detailed         # Show full tool details including parameters
 ```
 
 `openclaw skills info` shows whether a skill's dependencies are met, where to get required API keys, the CLI command to save them, and the storage path. Skills that are missing requirements are labeled "needs setup" (not "missing").
 
-`openclaw tools list` shows a compact view of tools available to the current agent by default. Use `--detailed` for full parameter information.
+---
+
+## `openclaw tools list` command
+
+The `openclaw tools list` command prints every tool the current agent can call right now. This includes three categories:
+
+- **Built-in tools** — compiled into OpenClaw, enabled via config flags (e.g. `read`, `write`, `exec`, `web_search`)
+- **Skill-provided tools** — contributed by installed skills from ClawHub or npm (e.g. `gmail.send`, `calendar.create`)
+- **MCP-server tools** — surfaced from any Model Context Protocol servers you've connected
+
+Use it to confirm what your agent actually has access to before debugging "why didn't it do X?" problems.
+
+```bash
+openclaw tools list                    # Compact view — one line per tool
+openclaw tools list --detailed         # Full parameter schemas for each tool
+openclaw tools list --agent [name]     # Tools available to a specific agent
+openclaw tools list --json             # Machine-readable output
+```
+
+### What the compact view shows
+
+Each row is a tool name and a one-line description. Tools are grouped by source (built-in, skills, MCP), so you can see at a glance whether a missing capability is a built-in that's disabled or a skill that isn't installed.
+
+### What `--detailed` adds
+
+`--detailed` expands each tool with its parameter schema — name, type, required vs. optional, and description — which is useful when you're writing prompts and need the exact parameter names the agent will call with. This is the same metadata the model sees at tool-call time.
+
+### Tool listed but agent won't call it?
+
+If a tool appears in `tools list` but the agent refuses to invoke it, check your execution policy — `openclaw exec-policy show` often reveals the tool is gated behind `safe` or a custom policy. The Execution Policy Management section above covers the commands.
 
 ---
 

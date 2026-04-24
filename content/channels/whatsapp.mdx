@@ -187,6 +187,20 @@ Enable streaming control if needed:
 Encrypted upload handling for large outbound media sends has been hardened. Buffer spikes and reliability regressions that could affect large file sends are now resolved, making outbound media delivery more stable for large attachments.
 </Callout>
 
+## Packaged QuickStart Setup (v2026.4.23)
+
+<Callout type="info" title="New in v2026.4.23">
+First-run WhatsApp setup is now kept off the Baileys runtime dependency path, so packaged QuickStart installs can show the WhatsApp setup screen before runtime deps are staged. If your packaged install was getting stuck on the WhatsApp step during onboarding, upgrading to v2026.4.23 resolves it. (Fixes #70932)
+
+Outbound media normalization has also been unified across direct sends and auto-replies — the same path now handles both, eliminating drift between the two delivery modes. Thanks @mcaxtr.
+</Callout>
+
+## Prompt-Injection Hardening (v2026.4.23)
+
+<Callout type="warn" title="Security hardening in v2026.4.23">
+Channel-sourced contact, vCard, and location metadata (names, phone fields, location labels and comments) are no longer inlined into the message body. They are now rendered through a fenced untrusted-metadata JSON block, which limits the blast radius of hidden prompt-injection payloads delivered through contact card or location share messages. No action needed — this applies automatically after upgrade.
+</Callout>
+
 ## Related channels
 
 **Want an official API instead of an unofficial one?** [Telegram](/channels/telegram) uses Telegram's official Bot API — no QR codes, no session expiry, more reliable.

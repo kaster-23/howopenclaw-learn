@@ -200,6 +200,12 @@ To start a fresh conversation, message the bot directly (DM) rather than in a ch
 As of v2026.4.21, thread aliases are preserved in runtime outbound sends. If you supply `threadTs` in a custom reply or automation, the message now correctly stays in the intended thread — previously, generic runtime sends could drop the thread context and post to the channel root instead. (#62947) Thanks @bek91.
 </Callout>
 
+## Group DMs (v2026.4.23)
+
+<Callout type="info" title="New in v2026.4.23">
+Multi-person group DMs (MPIMs) are now classified as group chat context. OpenClaw suppresses verbose tool and plan progress messages on non-DM Slack surfaces, so internal "Working…" traces no longer leak into group rooms. Tool-call progress still shows in 1:1 DMs where the owner expects it. (Fixes #70912)
+</Callout>
+
 ---
 
 

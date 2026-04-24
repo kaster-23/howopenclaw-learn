@@ -1,6 +1,6 @@
 ---
-title: "Fix It When It Breaks"
-description: "Fix OpenClaw errors fast. Gateway not starting, bot not responding, API key issues, connection drops — solutions for the most common problems."
+title: "OpenClaw Troubleshooting: Gateway Errors & Bot Fixes"
+description: "Fix OpenClaw errors: gateway won't start, Telegram/WhatsApp bot not responding, Slack pairing fails, API key invalid, cron not firing. Exact commands and step-by-step fixes."
 faqs:
   - q: "What should I check first when OpenClaw stops working?"
     a: "Always start with the logs: run `openclaw logs --tail 100` and look for ERROR lines. The error message usually identifies the exact problem. From there, check gateway status with `openclaw gateway status`. See the full [troubleshooting guide](https://docs.openclaw.ai/help/troubleshooting) for common issues."
@@ -110,6 +110,10 @@ Forum topic names are now surfaced in agent context and persisted across restart
 Binary document uploads (`.mobi`, `.epub`) no longer leak binary bytes into prompt context or inflate token counts. Native Telegram commands keep auto-registering when `commands.native` and `commands.nativeSkills` are `auto`. The command-sync cache is now process-local — gateway restarts re-register the slash menu instead of relying on stale on-disk state.
 </Callout>
 
+<Callout type="info" title="Telegram group image fix (v2026.4.23)">
+Telegram group chats now parse remote markdown image syntax (`![alt](url)`) into outbound media payloads on the final reply path. If the model or a tool emitted markdown image syntax instead of a `MEDIA:` token, group deliveries previously fell back to plain-text image URLs. Images now render natively in groups. (Fixes #66191)
+</Callout>
+
 ### WhatsApp disconnected
 
 WhatsApp sessions expire if unused for too long.
@@ -135,6 +139,10 @@ Watchdog timeouts are reset after reconnect, so quiet chats should no longer fal
 The pending per-auth credentials save queue is now drained before sockets are reopened, preventing a reconnect-time race that could cause auth bootstrap to falsely restore from backup. Large outbound media send reliability has also been improved.
 </Callout>
 
+<Callout type="info" title="WhatsApp onboarding fix (v2026.4.23)">
+First-run WhatsApp setup is kept off the Baileys runtime dependency path, so packaged QuickStart installs can reach the WhatsApp setup screen before runtime deps are staged. If your packaged install was stuck on the WhatsApp step during onboarding, upgrading resolves it. (Fixes #70932)
+</Callout>
+
 ### Slack "not_in_channel" error
 
 Your bot isn't in the channel you're trying to post to. In Slack:
@@ -157,6 +165,10 @@ Option menus for slash commands such as `/verbose` now work correctly when Slack
 
 <Callout type="info" title="Slack thread alias fix (v2026.4.21)">
 As of v2026.4.21, thread aliases are preserved in runtime outbound sends. Generic runtime sends now correctly stay in the intended Slack thread when the caller supplies `threadTs`. If your custom replies or automations were landing in the wrong thread, upgrading to v2026.4.21 resolves this. (#62947)
+</Callout>
+
+<Callout type="info" title="Slack group DM classification (v2026.4.23)">
+Multi-person group DMs (MPIMs) are now classified as group chat context. Verbose tool and plan progress messages are suppressed on non-DM Slack surfaces, so internal "Working…" traces no longer leak into group rooms while 1:1 DMs keep tool-call progress. If you were seeing unexpected tool progress output in Slack group DMs, upgrading to v2026.4.23 resolves it. (Fixes #70912)
 </Callout>
 
 ### Slack in proxy-only deployments
@@ -187,6 +199,10 @@ Media cap is now 100MB (previously 25MB), so larger video and audio files upload
 
 <Callout type="info" title="Discord tool-call text fix (v2026.4.15)">
 Standalone Gemma-style `<function>...</function>` tool-call payloads are now stripped from visible assistant text in Discord. This prevents raw tool-call XML from appearing in your channel when using Gemma-format models. Prose text and trailing replies are preserved — only actual standalone tool-call payloads are removed.
+</Callout>
+
+<Callout type="warn" title="Discord slash command policy (v2026.4.23)">
+Native slash-command channel policy no longer bypasses configured owner or member restrictions. If a permissive channel policy was unintentionally opening owner-only or member-only slash commands to a broader audience, the stricter access rule now wins. Channel-policy fallback still applies when no stricter rule exists. (#70711)
 </Callout>
 
 ### Teams media and threading
@@ -312,6 +328,32 @@ New built-in tools include `video_generate` and `music_generate` for media creat
 
 <Callout type="info" title="New in v2026.4.15">
 The Codex plugin is now auto-enabled when `codex` is selected as an embedded agent harness runtime (including forced default, per-agent, and `OPENCLAW_AGENT_RUNTIME` paths). Previously, you had to manually enable the Codex plugin in your config even when selecting Codex as your runtime.
+</Callout>
+
+### Image generation issues (v2026.4.23)
+
+<Callout type="info" title="OpenAI gpt-image-2 without an API key (v2026.4.23)">
+OpenAI image generation and reference-image editing now route through Codex OAuth when an `openai-codex` profile is active. This means `openai/gpt-image-2` works without an `OPENAI_API_KEY` for users already authenticated with Codex. Previously, image generation probed `OPENAI_API_KEY` first and would fail if only Codex OAuth was configured. (Fixes #70703)
+</Callout>
+
+<Callout type="info" title="OpenAI reference-image edits (v2026.4.23)">
+Reference-image edits are now sent as guarded multipart uploads instead of JSON data URLs, restoring complex multi-reference `gpt-image-2` edits that were failing. If your image-edit runs were silently losing reference images, upgrading resolves it. (Fixes #70642) Thanks @dashhuang.
+</Callout>
+
+<Callout type="info" title="OpenRouter image generation (v2026.4.23)">
+OpenRouter image generation and reference-image editing now work through `image_generate` with `OPENROUTER_API_KEY`. (Fixes #55066) Additionally, OpenRouter multimodal image-understanding prompts now send user text before image parts, restoring non-empty vision responses. (Fixes #70410) Thanks @notamicrodose.
+</Callout>
+
+<Callout type="info" title="Private-network SSRF opt-in for image providers (v2026.4.23)">
+Google Gemini image generation and OpenAI-compatible image generation endpoints now honor the private-network SSRF opt-in. Trusted proxy setups that resolve Google API hosts to private addresses can use `image_generate` with Gemini, and trusted LocalAI/LAN `image_generate` routes work without disabling SSRF checks globally. (Fixes #67216, #62879) Thanks @seitzbg.
+</Callout>
+
+<Callout type="info" title="Image model configuration precedence (v2026.4.23)">
+Explicit image-model configuration is now honored before native-vision skips. OpenClaw respects `agents.defaults.imageModel`, `tools.media.image.models`, and provider image defaults (such as MiniMax VL) when the active chat model is text-only. If media understanding was skipping your configured image model because the chat model advertised vision, this is fixed. (Fixes #47614, #63722, #69171)
+</Callout>
+
+<Callout type="info" title="Anthropic Vertex ADC model discovery (v2026.4.23)">
+ADC-backed Anthropic Vertex model discovery is restored after the lightweight provider-discovery path. Synthetic auth is exposed on bootstrap discovery, and copied env snapshots are honored when probing the default GCP ADC path. If Vertex-backed Claude models stopped appearing in discovery, upgrading resolves it. (Fixes #65715) Thanks @feiskyer.
 </Callout>
 
 <Callout type="info" title="New local model options (v2026.4.12)">
@@ -500,6 +542,10 @@ New optional Active Memory plugin gives your agent a dedicated memory sub-agent 
 
 <Callout type="info" title="Active Memory context path (v2026.4.14)">
 As of v2026.4.14, recalled memories are placed on the hidden untrusted prompt-prefix path rather than injected into the system prompt. This is a security and reliability improvement — it means Active Memory context is properly isolated and labeled in gateway debug logs, so you can see exactly what the model received.
+</Callout>
+
+<Callout type="info" title="QMD collection recreation (v2026.4.23)">
+Stale managed QMD collections are now recreated on startup repair when the collection name already exists. This means root memory narrows back to `MEMORY.md` instead of getting stuck on broad workspace markdown indexing after a collection-name collision. If your memory recall was returning unrelated files from across your workspace instead of focused `MEMORY.md` context, upgrading resolves it.
 </Callout>
 
 ---

@@ -34,11 +34,23 @@ const MAX_TOKENS = 2048
 // Iteration caps: hard ceiling on tool-loop cost. Raise if a release legitimately
 // touches more than ~10 files.
 const MAX_ITER_TRIAGE = 8
-const MAX_ITER_WRITER = 15
+const MAX_ITER_WRITER = 20
+
+// Token budget per loop. Input tokens compound quadratically because every
+// iteration resends the full history (file reads + assistant responses + tool
+// results). Without a budget cap, a chatty writer can balloon to 500k+ tokens
+// on a multi-file release. Calibrated from a real run that used ~511k.
+const TOKEN_BUDGET_TRIAGE = 80_000
+const TOKEN_BUDGET_WRITER = 250_000
 
 // Track total token usage across all calls — printed at end of run.
 let totalInputTokens = 0
 let totalOutputTokens = 0
+
+// Track every file written by safeWrite during this run — authoritative source
+// of truth for "which files did the writer touch?", as opposed to parsing the
+// model's final text (which doesn't emit if the loop hits max_iter).
+const filesWritten = new Set<string>()
 
 // ─── GitHub helpers ──────────────────────────────────────────────────────────
 
@@ -111,6 +123,7 @@ function safeWrite(filePath: string, content: string): string {
   if (!resolved.startsWith(CONTENT_DIR)) return "Error: path outside content directory"
   fs.mkdirSync(path.dirname(resolved), { recursive: true })
   fs.writeFileSync(resolved, content, "utf8")
+  filesWritten.add(filePath)
   console.log(`  ✏️  Updated: ${filePath}`)
   return `Updated: ${filePath}`
 }
@@ -230,12 +243,14 @@ async function runAgentLoop(
   tools: Anthropic.Tool[],
   maxIter: number,
   label: string,
+  loopTokenBudget?: number,
 ): Promise<string> {
   const messages: Anthropic.MessageParam[] = [
     { role: "user", content: userMessage },
   ]
 
   let lastText = ""
+  let loopInputTokens = 0
 
   for (let i = 0; i < maxIter; i++) {
     const response = await createMessageWithRetry({
@@ -246,6 +261,7 @@ async function runAgentLoop(
       messages,
     })
 
+    loopInputTokens += response.usage.input_tokens
     totalInputTokens += response.usage.input_tokens
     totalOutputTokens += response.usage.output_tokens
 
@@ -273,6 +289,16 @@ async function runAgentLoop(
     }))
 
     messages.push({ role: "user", content: results })
+
+    // Hard budget cap — input tokens compound each iter (full history resent),
+    // so a chatty writer can balloon to 500k+ on a multi-file release. Stop the
+    // loop early if we've exceeded the budget.
+    if (loopTokenBudget && loopInputTokens > loopTokenBudget) {
+      console.warn(
+        `  [${label}] hit token budget (${loopInputTokens.toLocaleString()} > ${loopTokenBudget.toLocaleString()}) — stopping after iter ${i + 1}`,
+      )
+      break
+    }
 
     if (i === maxIter - 1) {
       console.warn(`  [${label}] hit max_iter (${maxIter}) — stopping`)
@@ -331,6 +357,7 @@ ${releaseNotes || "(no release notes provided)"}
     readOnlyTools,
     MAX_ITER_TRIAGE,
     "triage",
+    TOKEN_BUDGET_TRIAGE,
   )
 }
 
@@ -377,21 +404,21 @@ Execute the triage plan:
 2. Skip files marked as no changes needed
 3. After all writes, list the updated file paths`
 
-  const finalText = await runAgentLoop(
+  const beforeWrites = new Set(filesWritten)
+
+  await runAgentLoop(
     MODEL_WRITER,
     system,
     userMessage,
     writeTools,
     MAX_ITER_WRITER,
     "writer",
+    TOKEN_BUDGET_WRITER,
   )
 
-  // Extract written file paths from the final output
-  for (const line of finalText.split("\n")) {
-    const trimmed = line.replace(/^[-*]\s*/, "").trim()
-    if (trimmed.startsWith("content/") && trimmed.endsWith(".mdx")) {
-      writtenFiles.push(trimmed)
-    }
+  // Authoritative list: files added to filesWritten during this loop.
+  for (const f of filesWritten) {
+    if (!beforeWrites.has(f)) writtenFiles.push(f)
   }
 
   return writtenFiles

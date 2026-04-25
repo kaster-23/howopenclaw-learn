@@ -55,10 +55,12 @@ const filesWritten = new Set<string>()
 // ─── GitHub helpers ──────────────────────────────────────────────────────────
 
 async function getLatestRelease(): Promise<{ tag: string; notes: string } | null> {
-  // List releases (includes prereleases); skip drafts. The GitHub API returns
-  // them ordered by created_at desc, so [0] is the most recent.
+  // /releases/latest returns the latest stable, non-prerelease, non-draft release.
+  // We track stable only so the site matches the official OpenClaw docs and
+  // doesn't ship experimental beta features that might never land in stable
+  // (e.g. a beta channel card pointing to a page that doesn't exist).
   const res = await fetch(
-    `https://api.github.com/repos/${OPENCLAW_REPO}/releases?per_page=10`,
+    `https://api.github.com/repos/${OPENCLAW_REPO}/releases/latest`,
     {
       headers: {
         Accept: "application/vnd.github+json",
@@ -67,16 +69,11 @@ async function getLatestRelease(): Promise<{ tag: string; notes: string } | null
     }
   )
   if (!res.ok) {
-    console.log(`GitHub API returned ${res.status} — no releases or rate limited`)
+    console.log(`GitHub API returned ${res.status} — no stable release or rate limited`)
     return null
   }
-  const releases = await res.json() as Array<{ tag_name: string; body?: string; draft: boolean }>
-  const latest = releases.find((r) => !r.draft)
-  if (!latest) {
-    console.log("No non-draft releases found")
-    return null
-  }
-  return { tag: latest.tag_name, notes: latest.body ?? "" }
+  const release = await res.json() as { tag_name: string; body?: string }
+  return { tag: release.tag_name, notes: release.body ?? "" }
 }
 
 // ─── Version tracking ─────────────────────────────────────────────────────────

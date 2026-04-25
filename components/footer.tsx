@@ -149,7 +149,7 @@ export function Footer() {
         <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-y-3 text-xs text-zinc-500">
 
           {/* Left */}
-          <div className="flex items-center gap-x-1.5">
+          <div className="flex items-center gap-x-1.5 whitespace-nowrap">
             Made with ❤️ in Argentina 🇦🇷 by{" "}
             <a
               href="https://x.com/imfrancoierace"

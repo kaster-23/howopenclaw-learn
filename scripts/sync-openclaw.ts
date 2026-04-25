@@ -1,10 +1,12 @@
 /**
  * sync-openclaw.ts
  *
- * Three-phase doc sync using two models:
- *   Phase 1 — Haiku:  triage release notes → identify affected files + what to change
- *   Phase 2 — Sonnet: execute the plan → read targeted files, write updates
- *   Phase 3 — Sonnet: audit all written files → verify correctness, fix anything off
+ * Two-phase doc sync, both phases on Haiku:
+ *   Phase 1 — triage release notes → identify affected files + what to change
+ *   Phase 2 — execute the plan → read targeted files, write updates
+ *
+ * Quality is verified by the workflow's lint + build steps after this script
+ * runs, so a separate audit phase is unnecessary.
  *
  * Run via GitHub Actions on a schedule, or locally:
  *   ANTHROPIC_API_KEY=sk-... pnpm tsx scripts/sync-openclaw.ts
@@ -20,8 +22,23 @@ const CONTENT_DIR = path.resolve(process.cwd(), "content")
 const VERSION_FILE = path.resolve(process.cwd(), ".openclaw-last-version")
 const OPENCLAW_REPO = "OpenClaw/OpenClaw"
 
+// Both phases run on Haiku — the writer was previously Sonnet, but writes are
+// short and structured; lint + build catches anything broken in CI.
 const MODEL_TRIAGE = "claude-haiku-4-5-20251001"
-const MODEL_WRITER = "claude-sonnet-4-6"
+const MODEL_WRITER = "claude-haiku-4-5-20251001"
+
+// Token caps: triage outputs are short (file lists), writes are per-file MDX.
+// 2048 is comfortable for both and prevents runaway responses.
+const MAX_TOKENS = 2048
+
+// Iteration caps: hard ceiling on tool-loop cost. Raise if a release legitimately
+// touches more than ~10 files.
+const MAX_ITER_TRIAGE = 8
+const MAX_ITER_WRITER = 15
+
+// Track total token usage across all calls — printed at end of run.
+let totalInputTokens = 0
+let totalOutputTokens = 0
 
 // ─── GitHub helpers ──────────────────────────────────────────────────────────
 
@@ -162,6 +179,48 @@ function executeTool(name: string, input: Record<string, string>): string {
   }
 }
 
+// ─── Model call with retry + credit-balance handling ─────────────────────────
+
+interface ApiErrorShape {
+  status?: number
+  error?: { error?: { type?: string; message?: string } }
+  message?: string
+}
+
+function isCreditBalanceError(err: unknown): boolean {
+  const e = err as ApiErrorShape
+  const msg = e?.error?.error?.message ?? e?.message ?? ""
+  return typeof msg === "string" && msg.toLowerCase().includes("credit balance is too low")
+}
+
+function isRetryableError(err: unknown): boolean {
+  const e = err as ApiErrorShape
+  // 5xx and 429 are transient. 4xx (other than 429) are not.
+  return e?.status === 429 || (typeof e?.status === "number" && e.status >= 500)
+}
+
+async function createMessageWithRetry(
+  params: Anthropic.MessageCreateParamsNonStreaming,
+): Promise<Anthropic.Message> {
+  try {
+    return await client.messages.create(params)
+  } catch (err) {
+    if (isCreditBalanceError(err)) {
+      console.error(
+        "\n💳 Anthropic API credit balance is too low. Top up at " +
+          "https://console.anthropic.com/settings/billing — this is not a code bug.",
+      )
+      process.exit(2)
+    }
+    if (isRetryableError(err)) {
+      console.warn("  Transient API error, retrying once after 1s…")
+      await new Promise((r) => setTimeout(r, 1000))
+      return await client.messages.create(params)
+    }
+    throw err
+  }
+}
+
 // ─── Agentic loop ─────────────────────────────────────────────────────────────
 
 async function runAgentLoop(
@@ -179,13 +238,16 @@ async function runAgentLoop(
   let lastText = ""
 
   for (let i = 0; i < maxIter; i++) {
-    const response = await client.messages.create({
+    const response = await createMessageWithRetry({
       model,
-      max_tokens: 8096,
+      max_tokens: MAX_TOKENS,
       system,
       tools,
       messages,
     })
+
+    totalInputTokens += response.usage.input_tokens
+    totalOutputTokens += response.usage.output_tokens
 
     messages.push({ role: "assistant", content: response.content })
 
@@ -195,7 +257,7 @@ async function runAgentLoop(
     }
 
     if (response.stop_reason === "end_turn") {
-      console.log(`  [${label}] finished.`)
+      console.log(`  [${label}] finished after ${i + 1} iter`)
       break
     }
 
@@ -211,6 +273,10 @@ async function runAgentLoop(
     }))
 
     messages.push({ role: "user", content: results })
+
+    if (i === maxIter - 1) {
+      console.warn(`  [${label}] hit max_iter (${maxIter}) — stopping`)
+    }
   }
 
   return lastText
@@ -263,19 +329,19 @@ ${releaseNotes || "(no release notes provided)"}
     system,
     userMessage,
     readOnlyTools,
-    15,
+    MAX_ITER_TRIAGE,
     "triage",
   )
 }
 
-// ─── Phase 2: Sonnet writes ───────────────────────────────────────────────────
+// ─── Phase 2: writer ──────────────────────────────────────────────────────────
 
 async function executeUpdates(
   releaseTag: string,
   releaseNotes: string,
   triagePlan: string,
 ): Promise<string[]> {
-  console.log(`\n[Phase 2 — Sonnet] Executing updates...`)
+  console.log(`\n[Phase 2 — Haiku writer] Executing updates...`)
 
   const writtenFiles: string[] = []
 
@@ -316,7 +382,7 @@ Execute the triage plan:
     system,
     userMessage,
     writeTools,
-    30,
+    MAX_ITER_WRITER,
     "writer",
   )
 
@@ -329,58 +395,6 @@ Execute the triage plan:
   }
 
   return writtenFiles
-}
-
-// ─── Phase 3: Sonnet audit ────────────────────────────────────────────────────
-
-async function auditUpdates(
-  releaseTag: string,
-  releaseNotes: string,
-  writtenFiles: string[],
-): Promise<void> {
-  if (writtenFiles.length === 0) {
-    console.log(`\n[Phase 3 — Sonnet] No files to audit.`)
-    return
-  }
-
-  console.log(`\n[Phase 3 — Sonnet] Auditing ${writtenFiles.length} updated file(s)...`)
-
-  const system = `You are a senior documentation auditor for HowOpenClaw.
-
-Your job: review recently updated documentation files and fix any issues you find.
-
-Check for:
-- Broken MDX syntax (unclosed tags, malformed components, missing frontmatter fields)
-- Version numbers that still reference old versions instead of ${releaseTag}
-- Incomplete sentences or truncated content
-- Callout titles that don't include the version tag
-- Any leftover placeholder text like <OpenClawVersion /> that should be a literal version string
-- Content that contradicts the release notes
-- Anything that looks wrong or out of place
-
-If a file looks correct, do not rewrite it. Only write_file when you find a real issue.`
-
-  const fileList = writtenFiles.join("\n")
-
-  const userMessage = `Files updated during the ${releaseTag} sync:
-${fileList}
-
-Audit each file:
-1. Read it
-2. Check for issues listed above
-3. If you find issues, fix them with write_file
-4. If it looks correct, move on
-
-After reviewing all files, summarize what you found and fixed (or confirmed as correct).`
-
-  await runAgentLoop(
-    MODEL_WRITER,
-    system,
-    userMessage,
-    writeTools,
-    20,
-    "auditor",
-  )
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -415,12 +429,9 @@ async function main() {
     return
   }
 
-  // Phase 2 — Sonnet: execute the triage plan
+  // Phase 2 — execute the triage plan
   const writtenFiles = await executeUpdates(release.tag, release.notes, triagePlan)
   console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
-
-  // Phase 3 — Sonnet: audit all written files
-  await auditUpdates(release.tag, release.notes, writtenFiles)
 
   // Save version + set outputs
   saveVersion(release.tag)
@@ -428,10 +439,20 @@ async function main() {
   setOutput("version", release.tag)
   setOutput("release_notes", release.notes.slice(0, 800))
 
-  console.log(`\n✅ Docs synced to OpenClaw ${release.tag}`)
+  console.log(
+    `\n✅ Docs synced to OpenClaw ${release.tag}` +
+      ` — tokens: ${totalInputTokens.toLocaleString()} in / ${totalOutputTokens.toLocaleString()} out`,
+  )
 }
 
 main().catch((err) => {
+  if (isCreditBalanceError(err)) {
+    console.error(
+      "\n💳 Anthropic API credit balance is too low. Top up at " +
+        "https://console.anthropic.com/settings/billing — this is not a code bug.",
+    )
+    process.exit(2)
+  }
   console.error(err)
   process.exit(1)
 })

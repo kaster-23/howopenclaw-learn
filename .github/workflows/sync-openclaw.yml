@@ -85,3 +85,15 @@ jobs:
           git add -A
           git commit -m "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
           git push origin main
+
+      # Version-only bump: triage decided no MDX needed updating, but we still
+      # commit .openclaw-last-version so the next daily run doesn't re-triage
+      # the same release forever. Skip lint/build — nothing else changed.
+      - name: Commit version bump only (no doc changes)
+        if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'false' && steps.sync.outputs.version_only == 'true'
+        run: |
+          git config user.name "kaster-23"
+          git config user.email "francoierace.dev@gmail.com"
+          git add .openclaw-last-version
+          git commit -m "chore: track OpenClaw ${{ steps.sync.outputs.version }} (no doc changes needed)"
+          git push origin main

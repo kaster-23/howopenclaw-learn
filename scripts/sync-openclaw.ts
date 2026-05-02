@@ -319,11 +319,21 @@ async function triageRelease(
 The site has these doc files:
 - content/course/       — 10-module course (0-setup through 9-next-steps)
 - content/channels/     — per-channel setup guides (telegram, slack, discord, whatsapp, imessage, signal, teams, webchat)
-- content/reference/    — CLI reference, concepts, troubleshooting, pricing, system-requirements
+- content/reference/    — CLI reference, concepts, troubleshooting, pricing, system-requirements, what-is-openclaw
 
 Your job: given a release's changelog, identify which doc files need updating and what specifically to change in each.
 
-Be precise and conservative — only flag files where the release notes directly affect the content. Output a structured plan.`
+**Always flag for update when the release contains any of these:**
+- **Breaking config changes** — anything that changes how users write \`openclaw.json\` (tool sections, profile behavior, channel config keys, security defaults). These typically affect content/reference/concepts.mdx and the relevant channel/course page.
+- **New AI providers or models** — new provider integrations (e.g. NVIDIA, Bedrock variants), new default models, new model auth flows. Typically affect content/course/0-setup.mdx, content/reference/system-requirements.mdx, content/reference/pricing.mdx.
+- **Channel changes** — bug fixes, new features, or removed features for any messaging channel (Slack, Telegram, Discord, WhatsApp, iMessage, Signal, Teams, Matrix, Feishu, webchat). Each affects its content/channels/<name>.mdx page. Even reliability/edge-case fixes are worth a brief note.
+- **CLI command changes** — new commands, new flags, removed commands, output format changes. Affect content/reference/cli.mdx.
+- **Security changes** — new defaults, new restrictions, advisory fixes. Affect content/course/8-security-ethics.mdx and content/reference/concepts.mdx.
+- **Memory / automation / cron / skills features** — affect their respective course modules (5-memory-personality, 6-autonomous-tasks, 3-skills-tools).
+
+**Skip only when:** the release is genuinely internal — pure refactors, dependency bumps, CI changes, release-tooling updates, or contributor-facing changes that don't surface in user behavior or config. When in doubt, flag it.
+
+Be thorough but precise. Recall over precision: missing a doc-relevant change means the docs go stale; over-flagging just costs a few extra Haiku tokens. Output a structured plan.`
 
   const userMessage = `OpenClaw released **${releaseTag}** (previous: ${lastVersion || "unknown"}).
 
@@ -447,9 +457,14 @@ async function main() {
 
   // Check if anything actually needs updating
   if (!triagePlan.includes("## Files to update") || triagePlan.match(/## Files to update\s*\n\s*## /)) {
-    console.log("Triage found no files to update — nothing to do.")
+    console.log("Triage found no files to update — bumping version file only.")
     saveVersion(release.tag)
+    // version_only=true tells the workflow to commit just the version file
+    // (no lint/build needed, no doc changes). Without this, the bumped version
+    // file is discarded with the runner and we re-triage the same release daily.
     setOutput("updated", "false")
+    setOutput("version_only", "true")
+    setOutput("version", release.tag)
     return
   }
 

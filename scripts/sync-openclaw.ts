@@ -32,18 +32,22 @@ const MODEL_WRITER = "claude-haiku-4-5-20251001"
 const MAX_TOKENS = 2048
 
 // Iteration caps: hard ceiling on tool-loop cost. Raise if a release legitimately
-// touches more than ~10 files.
-const MAX_ITER_TRIAGE = 8
+// touches more than ~10 files. Triage was raised 8 → 12 because large releases
+// (e.g. v2026.4.29) require the agent to read many files (concepts, channels,
+// CLI, security) before it can commit to a plan.
+const MAX_ITER_TRIAGE = 12
 const MAX_ITER_WRITER = 20
 
 // Token budget per loop. Input tokens compound quadratically because every
 // iteration resends the full history (file reads + assistant responses + tool
 // results). Without a budget cap, a chatty writer can balloon to 500k+ tokens
 // on a multi-file release. Calibrated from a real run that used ~511k.
-// Triage was raised from 80k to 200k after a real run blew the budget on
-// iter 3 with a long release notes body — Haiku is cheap and the cost of
-// missing a doc-relevant change is much higher than a few extra tokens.
-const TOKEN_BUDGET_TRIAGE = 200_000
+// Triage was raised 80k → 200k → 400k after large releases (v2026.4.29)
+// kept blowing the budget while still doing legitimate work — reading many
+// docs files before committing to a plan. Haiku is cheap (~$1/M input) and
+// the cost of missing a doc-relevant change is much higher than a few
+// extra tokens.
+const TOKEN_BUDGET_TRIAGE = 400_000
 const TOKEN_BUDGET_WRITER = 250_000
 
 // Track total token usage across all calls — printed at end of run.

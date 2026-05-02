@@ -2,8 +2,12 @@
  * sync-openclaw.ts
  *
  * Two-phase doc sync, both phases on Haiku:
- *   Phase 1 — triage release notes → identify affected files + what to change
- *   Phase 2 — execute the plan → read targeted files, write updates
+ *   Phase 1 — triage release notes → identify affected files + what to change.
+ *             Tool-loop agent (list_docs, read_file). Emits a markdown plan.
+ *   Phase 2 — per-file writer. ONE non-tool API call per file in the plan:
+ *             we hand the model the file content + change instructions, the
+ *             model returns the complete updated file in a fenced block, we
+ *             write it. No iteration loop, so context can't compound.
  *
  * Quality is verified by the workflow's lint + build steps after this script
  * runs, so a separate audit phase is unnecessary.
@@ -27,35 +31,25 @@ const OPENCLAW_REPO = "OpenClaw/OpenClaw"
 const MODEL_TRIAGE = "claude-haiku-4-5-20251001"
 const MODEL_WRITER = "claude-haiku-4-5-20251001"
 
-// Token caps: triage outputs are short (file lists), writes are per-file MDX.
-// 2048 is comfortable for both and prevents runaway responses.
-const MAX_TOKENS = 2048
+// Token caps:
+//  - Triage runs in a tool loop and emits a short file-list response, so 2k is plenty.
+//  - Writer is now a single non-tool call per file that must echo the entire
+//    file content back. Larger MDX files (system-requirements.mdx ~13KB,
+//    cli.mdx ~11KB) generate ~4-5k output tokens, so 8k headroom.
+const MAX_TOKENS_TRIAGE = 2048
+const MAX_TOKENS_WRITER = 8192
 
-// Iteration caps: hard ceiling on tool-loop cost. Raise if a release legitimately
-// touches more than ~10 files. Triage was raised 8 → 12 because large releases
-// (e.g. v2026.4.29) require the agent to read many files (concepts, channels,
-// CLI, security) before it can commit to a plan. Writer is now per-file (no
-// shared loop), so MAX_ITER_WRITER is the cap per single-file call. Started at
-// 4, but real run on v2026.4.29 showed Haiku consistently hits 4 before
-// writing — needs read → reason → maybe re-check → write → confirm. 8 gives
-// comfortable headroom; tight per-file budget (60k) still bounds the cost.
+// Iteration cap for triage tool loop. 12 is enough for a large release where
+// the agent reads many files before committing to a plan. Writer no longer
+// uses a tool loop — single API call per file, no iterations.
 const MAX_ITER_TRIAGE = 12
-const MAX_ITER_WRITER = 8
 
-// Token budget per loop. Input tokens compound quadratically because every
-// iteration resends the full history (file reads + assistant responses + tool
-// results). Without a budget cap, a chatty writer can balloon to 500k+ tokens
-// on a multi-file release. Calibrated from a real run that used ~511k.
-// Triage was raised 80k → 200k → 400k after large releases (v2026.4.29)
-// kept blowing the budget while still doing legitimate work — reading many
-// docs files before committing to a plan. Haiku is cheap (~$1/M input) and
-// the cost of missing a doc-relevant change is much higher than a few
-// extra tokens. Writer is now per-file: each call gets a tight 60k budget
-// (file content + changes block + a couple iters of writing). One large
-// shared-loop writer was unreliable on big releases — Haiku spent 14 iters
-// reading without writing on v2026.4.29.
+// Token budget for triage tool loop. Input tokens compound quadratically
+// because every iteration resends the full history (file reads + assistant
+// responses + tool results). Triage was raised 80k → 200k → 400k after large
+// releases kept blowing the budget while still doing legitimate work.
+// Haiku is cheap (~$1/M input).
 const TOKEN_BUDGET_TRIAGE = 400_000
-const TOKEN_BUDGET_WRITER = 60_000
 
 // Track total token usage across all calls — printed at end of run.
 let totalInputTokens = 0
@@ -173,31 +167,12 @@ const readOnlyTools: Anthropic.Tool[] = [
   },
 ]
 
-const writeTools: Anthropic.Tool[] = [
-  ...readOnlyTools,
-  {
-    name: "write_file",
-    description: "Write updated content to a documentation .mdx file. Only call this when changes are actually needed.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        path: { type: "string", description: "Relative path from project root" },
-        content: { type: "string", description: "Full updated file content (preserve frontmatter and MDX components)" },
-      },
-      required: ["path", "content"],
-    },
-  },
-]
-
 function executeTool(name: string, input: Record<string, string>): string {
   switch (name) {
     case "list_docs":
       return listMdxFiles(CONTENT_DIR).join("\n")
     case "read_file":
       return safeRead(input.path)
-    case "write_file":
-      if (!input.content) return "Error: content is required for write_file"
-      return safeWrite(input.path, input.content)
     default:
       return `Unknown tool: ${name}`
   }
@@ -274,7 +249,7 @@ async function runAgentLoop(
   for (let i = 0; i < maxIter; i++) {
     const response = await createMessageWithRetry({
       model,
-      max_tokens: MAX_TOKENS,
+      max_tokens: MAX_TOKENS_TRIAGE,
       system,
       tools,
       messages,
@@ -438,20 +413,30 @@ function parseTriagePlan(triagePlan: string): { path: string; instructions: stri
   return items
 }
 
+// Extract the MDX body from a model response wrapped in a fenced code block.
+// Accepts ```mdx, ```markdown, or plain ``` fences. Returns null if no fence
+// is found (model declined to write or produced malformed output).
+function extractMdxFromResponse(text: string): string | null {
+  // Match the first ``` fenced block. Optional language tag (mdx/markdown/md).
+  const fenceRe = /```(?:mdx|markdown|md)?\s*\n([\s\S]*?)\n```/
+  const match = text.match(fenceRe)
+  return match ? match[1] : null
+}
+
 async function writeOneFile(
   releaseTag: string,
   filePath: string,
   instructions: string,
-): Promise<{ written: boolean; stopped: LoopResult["stopped"] }> {
+): Promise<{ written: boolean; reason: "wrote" | "no_changes" | "malformed" | "skipped" }> {
   const current = safeRead(filePath)
   if (current.startsWith("Error:")) {
     console.warn(`  ⚠️  Skipping ${filePath}: ${current}`)
-    return { written: false, stopped: "clean" }
+    return { written: false, reason: "skipped" }
   }
 
   const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw.
 
-You will be given ONE file and ONE set of changes. Read the current content, apply the changes, and call write_file with the full updated content. Do not read other files. Do not skip the write step.
+You will be given ONE file and ONE set of changes. Apply the changes and output the FULL updated file content.
 
 Rules:
 - Preserve all existing MDX frontmatter and structure (faqs, howToSteps, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, title, description)
@@ -461,7 +446,13 @@ Rules:
 - For removed features, note the removal in a Callout
 - Do not change moduleNumber, readTime, nextModule, prevModule, or moduleId values
 - Make ONLY the changes listed in the instructions — do not refactor or rewrite unrelated sections
-- If after reading the changes you decide they're not actually applicable to this file's current content, do NOT call write_file. Output a one-line explanation instead.`
+- Markdown link syntax must remain balanced: [text](url) — never drop a closing paren
+
+Output format:
+- If the changes apply: output exactly one fenced code block tagged \`\`\`mdx containing the COMPLETE updated file content (including frontmatter), then nothing else.
+- If after reviewing the file you decide the changes do NOT actually apply to this file's current content: output exactly the literal string NO_CHANGES on its own line, with no fenced block.
+
+Do not include any prose, explanation, or commentary outside the fenced block / NO_CHANGES marker.`
 
   const userMessage = `File: \`${filePath}\`
 
@@ -473,60 +464,94 @@ ${current}
 Changes to apply (from triage):
 ${instructions}
 
-Apply these changes and call write_file with the complete updated file content. Use write_file exactly once.`
+Output the complete updated file in a \`\`\`mdx fenced block, or NO_CHANGES if not applicable.`
 
-  const result = await runAgentLoop(
-    MODEL_WRITER,
+  console.log(`    [writer:${path.basename(filePath)}] sending request...`)
+  const response = await createMessageWithRetry({
+    model: MODEL_WRITER,
+    max_tokens: MAX_TOKENS_WRITER,
     system,
-    userMessage,
-    writeTools,
-    MAX_ITER_WRITER,
-    `writer:${path.basename(filePath)}`,
-    TOKEN_BUDGET_WRITER,
-  )
+    messages: [{ role: "user", content: userMessage }],
+  })
 
-  return { written: filesWritten.has(filePath), stopped: result.stopped }
+  totalInputTokens += response.usage.input_tokens
+  totalOutputTokens += response.usage.output_tokens
+
+  const text = response.content
+    .filter((b): b is Anthropic.TextBlock => b.type === "text")
+    .map((b) => b.text)
+    .join("\n")
+    .trim()
+
+  if (text === "NO_CHANGES" || text.startsWith("NO_CHANGES")) {
+    console.log(`    [writer:${path.basename(filePath)}] model returned NO_CHANGES`)
+    return { written: false, reason: "no_changes" }
+  }
+
+  const newContent = extractMdxFromResponse(text)
+  if (!newContent) {
+    console.warn(
+      `    [writer:${path.basename(filePath)}] no valid mdx fence in response (stop_reason=${response.stop_reason}). Skipping.`,
+    )
+    return { written: false, reason: "malformed" }
+  }
+
+  // Sanity check: refuse to write a near-empty file. Real MDX docs are at
+  // least 500 bytes, and a writer that returns 200 bytes is almost certainly
+  // truncating. Better to skip than corrupt.
+  if (newContent.length < 500) {
+    console.warn(
+      `    [writer:${path.basename(filePath)}] suspiciously small output (${newContent.length} bytes). Skipping.`,
+    )
+    return { written: false, reason: "malformed" }
+  }
+
+  safeWrite(filePath, newContent)
+  return { written: true, reason: "wrote" }
 }
 
 async function executeUpdates(
   releaseTag: string,
   _releaseNotes: string,
   triagePlan: string,
-): Promise<{ writtenFiles: string[]; stopped: LoopResult["stopped"] }> {
+): Promise<{
+  writtenFiles: string[]
+  noChangeFiles: string[]
+  failedFiles: string[]
+}> {
   const items = parseTriagePlan(triagePlan)
   console.log(
     `\n[Phase 2 — Haiku writer] Executing per-file updates for ${items.length} file(s)...`,
   )
 
-  if (items.length === 0) {
-    return { writtenFiles: [], stopped: "clean" }
-  }
-
   const writtenFiles: string[] = []
-  let anyForceStopped: LoopResult["stopped"] = "clean"
+  const noChangeFiles: string[] = []
+  const failedFiles: string[] = []
+
+  if (items.length === 0) {
+    return { writtenFiles, noChangeFiles, failedFiles }
+  }
 
   for (const item of items) {
     console.log(`\n  → ${item.path}`)
     try {
-      const { written, stopped } = await writeOneFile(
-        releaseTag,
-        item.path,
-        item.instructions,
-      )
-      if (written) writtenFiles.push(item.path)
-      // Track worst stop reason across all files for the caller's fail-loud
-      // logic. A single force-stop on one file shouldn't tank the run, but we
-      // surface it.
-      if (stopped !== "clean" && anyForceStopped === "clean") {
-        anyForceStopped = stopped
+      const result = await writeOneFile(releaseTag, item.path, item.instructions)
+      if (result.reason === "wrote") {
+        writtenFiles.push(item.path)
+      } else if (result.reason === "no_changes") {
+        noChangeFiles.push(item.path)
+      } else {
+        // malformed or skipped — count as failure so threshold guard catches it
+        failedFiles.push(item.path)
       }
     } catch (err) {
       console.error(`  ❌ Failed on ${item.path}:`, err)
+      failedFiles.push(item.path)
       // Continue with the rest — partial sync is better than no sync.
     }
   }
 
-  return { writtenFiles, stopped: anyForceStopped }
+  return { writtenFiles, noChangeFiles, failedFiles }
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -579,7 +604,7 @@ async function main() {
     return
   }
 
-  // Phase 2 — execute the triage plan (one Haiku call per file)
+  // Phase 2 — execute the triage plan (one Haiku call per file, no tool loop)
   const plannedItems = parseTriagePlan(triage.text)
   if (plannedItems.length === 0) {
     throw new Error(
@@ -588,34 +613,53 @@ async function main() {
     )
   }
 
-  const { writtenFiles, stopped: writerStopped } = await executeUpdates(
+  const { writtenFiles, noChangeFiles, failedFiles } = await executeUpdates(
     release.tag,
     release.notes,
     triage.text,
   )
-  console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
+  console.log(
+    `\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}` +
+      (noChangeFiles.length ? `\nNo-change ${noChangeFiles.length}: ${noChangeFiles.join(", ")}` : "") +
+      (failedFiles.length ? `\nFailed ${failedFiles.length}: ${failedFiles.join(", ")}` : ""),
+  )
 
-  // Fail loud if too few files were actually written. A partial sync where
-  // 2/13 files got through (real result on v2026.4.29 with MAX_ITER_WRITER=4)
-  // is functionally a broken release — we'd bump the version, declare done,
-  // and the next 11 missed updates would never run. Threshold: ≥ 60% must
-  // be written for the run to count as successful. Anything less means we
-  // refuse the version bump and let the next run retry with no false success.
-  const successRatio = writtenFiles.length / plannedItems.length
+  // Fail loud if too few files were handled successfully. "Handled" =
+  // wrote OR model decided no-changes-needed (both are clean outcomes).
+  // "Failed" = malformed model output, write error, or exception.
+  // Threshold: ≥ 60% of the plan must be cleanly handled. A run where most
+  // files errored out shouldn't bump the version pretending everything
+  // synced. (Real bug we hit on earlier v2026.4.29 runs.)
+  const handled = writtenFiles.length + noChangeFiles.length
+  const successRatio = handled / plannedItems.length
   const MIN_SUCCESS_RATIO = 0.6
   if (successRatio < MIN_SUCCESS_RATIO) {
     throw new Error(
-      `Only ${writtenFiles.length}/${plannedItems.length} files written ` +
+      `Only ${handled}/${plannedItems.length} files handled cleanly ` +
         `(${(successRatio * 100).toFixed(0)}% < ${MIN_SUCCESS_RATIO * 100}% threshold). ` +
-        `Refusing to bump version. Per-file stop reason: ${writerStopped}. ` +
-        `Inspect logs for which files hit max_iter or budget.`,
+        `Wrote: ${writtenFiles.length}, no-changes: ${noChangeFiles.length}, ` +
+        `failed: ${failedFiles.length}. Refusing to bump version.`,
     )
   }
-  if (writerStopped !== "clean" || writtenFiles.length < plannedItems.length) {
+  if (failedFiles.length > 0) {
     console.warn(
-      `⚠️  Partial sync: ${writtenFiles.length}/${plannedItems.length} file(s) written ` +
-        `(stop reason: ${writerStopped}). Above threshold — committing what we have.`,
+      `⚠️  Partial sync: ${failedFiles.length} file(s) failed: ${failedFiles.join(", ")}. ` +
+        `Above threshold — committing what we have.`,
     )
+  }
+  // If no files were actually written (everything came back NO_CHANGES),
+  // emit version_only so the workflow takes the no-doc-change commit path
+  // instead of trying to commit MDX changes that don't exist.
+  if (writtenFiles.length === 0) {
+    console.log(
+      `Triage planned ${plannedItems.length} file(s) but writer determined ` +
+        `none actually needed changes. Bumping version only.`,
+    )
+    saveVersion(release.tag)
+    setOutput("updated", "false")
+    setOutput("version_only", "true")
+    setOutput("version", release.tag)
+    return
   }
 
   // Save version + set outputs

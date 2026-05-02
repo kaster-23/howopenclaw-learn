@@ -446,17 +446,20 @@ function checkMdxTagBalance(content: string): string | null {
   return null
 }
 
-async function writeOneFile(
+// Outcome of one writer attempt — used by writeOneFile to decide whether to
+// retry. The discriminator is on `kind` so callers can pattern-match cleanly.
+type AttemptResult =
+  | { kind: "wrote"; content: string }
+  | { kind: "no_changes" }
+  | { kind: "malformed"; reason: string }
+
+async function writerAttempt(
   releaseTag: string,
   filePath: string,
+  current: string,
   instructions: string,
-): Promise<{ written: boolean; reason: "wrote" | "no_changes" | "malformed" | "skipped" }> {
-  const current = safeRead(filePath)
-  if (current.startsWith("Error:")) {
-    console.warn(`  ⚠️  Skipping ${filePath}: ${current}`)
-    return { written: false, reason: "skipped" }
-  }
-
+  retryFeedback: string | null,
+): Promise<AttemptResult> {
   const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw.
 
 You will be given ONE file and ONE set of changes. Apply the changes and output the FULL updated file content.
@@ -480,6 +483,10 @@ Output format:
 
 Do not include any prose, explanation, or commentary outside the fenced block / NO_CHANGES marker.`
 
+  const retryBlock = retryFeedback
+    ? `\n\nIMPORTANT — your previous attempt was rejected: ${retryFeedback}\nFix the imbalance and re-output the COMPLETE file. Count every opening and closing tag yourself before submitting.\n`
+    : ""
+
   const userMessage = `File: \`${filePath}\`
 
 Current content:
@@ -488,11 +495,12 @@ ${current}
 \`\`\`
 
 Changes to apply (from triage):
-${instructions}
+${instructions}${retryBlock}
 
 Output the complete updated file in a \`\`\`mdx fenced block, or NO_CHANGES if not applicable.`
 
-  console.log(`    [writer:${path.basename(filePath)}] sending request...`)
+  const label = `writer:${path.basename(filePath)}${retryFeedback ? " (retry)" : ""}`
+  console.log(`    [${label}] sending request...`)
   const response = await createMessageWithRetry({
     model: MODEL_WRITER,
     max_tokens: MAX_TOKENS_WRITER,
@@ -510,40 +518,69 @@ Output the complete updated file in a \`\`\`mdx fenced block, or NO_CHANGES if n
     .trim()
 
   if (text === "NO_CHANGES" || text.startsWith("NO_CHANGES")) {
-    console.log(`    [writer:${path.basename(filePath)}] model returned NO_CHANGES`)
-    return { written: false, reason: "no_changes" }
+    return { kind: "no_changes" }
   }
 
   const newContent = extractMdxFromResponse(text)
   if (!newContent) {
-    console.warn(
-      `    [writer:${path.basename(filePath)}] no valid mdx fence in response (stop_reason=${response.stop_reason}). Skipping.`,
-    )
-    return { written: false, reason: "malformed" }
+    return {
+      kind: "malformed",
+      reason: `no valid mdx fence (stop_reason=${response.stop_reason})`,
+    }
   }
 
-  // Sanity check: refuse to write a near-empty file. Real MDX docs are at
-  // least 500 bytes, and a writer that returns 200 bytes is almost certainly
-  // truncating. Better to skip than corrupt.
   if (newContent.length < 500) {
-    console.warn(
-      `    [writer:${path.basename(filePath)}] suspiciously small output (${newContent.length} bytes). Skipping.`,
-    )
-    return { written: false, reason: "malformed" }
+    return {
+      kind: "malformed",
+      reason: `suspiciously small output (${newContent.length} bytes)`,
+    }
   }
 
-  // Tag balance check: previous syncs shipped MDX with dropped </Step> and
-  // similar, breaking the build. Reject malformed output rather than letting
-  // it slip past and fail the workflow's later build step.
   const imbalance = checkMdxTagBalance(newContent)
   if (imbalance) {
+    return { kind: "malformed", reason: imbalance }
+  }
+
+  return { kind: "wrote", content: newContent }
+}
+
+async function writeOneFile(
+  releaseTag: string,
+  filePath: string,
+  instructions: string,
+): Promise<{ written: boolean; reason: "wrote" | "no_changes" | "malformed" | "skipped" }> {
+  const current = safeRead(filePath)
+  if (current.startsWith("Error:")) {
+    console.warn(`  ⚠️  Skipping ${filePath}: ${current}`)
+    return { written: false, reason: "skipped" }
+  }
+
+  // First attempt
+  let result = await writerAttempt(releaseTag, filePath, current, instructions, null)
+
+  // Retry once with the specific imbalance fed back. Haiku consistently drops
+  // closing </Step> tags on long files; pointing it at the exact issue boosts
+  // success rate. Skip retry for non-imbalance malformed (truncation / no
+  // fence — likely a model output issue that won't be fixed by reprompting).
+  if (result.kind === "malformed" && result.reason.includes("imbalance")) {
     console.warn(
-      `    [writer:${path.basename(filePath)}] tag balance check failed (${imbalance}). Skipping.`,
+      `    [writer:${path.basename(filePath)}] tag balance check failed (${result.reason}). Retrying once...`,
+    )
+    result = await writerAttempt(releaseTag, filePath, current, instructions, result.reason)
+  }
+
+  if (result.kind === "no_changes") {
+    console.log(`    [writer:${path.basename(filePath)}] model returned NO_CHANGES`)
+    return { written: false, reason: "no_changes" }
+  }
+  if (result.kind === "malformed") {
+    console.warn(
+      `    [writer:${path.basename(filePath)}] giving up (${result.reason}). Skipping.`,
     )
     return { written: false, reason: "malformed" }
   }
 
-  safeWrite(filePath, newContent)
+  safeWrite(filePath, result.content)
   return { written: true, reason: "wrote" }
 }
 

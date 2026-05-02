@@ -35,10 +35,12 @@ const MAX_TOKENS = 2048
 // touches more than ~10 files. Triage was raised 8 → 12 because large releases
 // (e.g. v2026.4.29) require the agent to read many files (concepts, channels,
 // CLI, security) before it can commit to a plan. Writer is now per-file (no
-// shared loop), so MAX_ITER_WRITER is the cap per single-file call — 4 is
-// plenty for read → reason → write.
+// shared loop), so MAX_ITER_WRITER is the cap per single-file call. Started at
+// 4, but real run on v2026.4.29 showed Haiku consistently hits 4 before
+// writing — needs read → reason → maybe re-check → write → confirm. 8 gives
+// comfortable headroom; tight per-file budget (60k) still bounds the cost.
 const MAX_ITER_TRIAGE = 12
-const MAX_ITER_WRITER = 4
+const MAX_ITER_WRITER = 8
 
 // Token budget per loop. Input tokens compound quadratically because every
 // iteration resends the full history (file reads + assistant responses + tool
@@ -593,21 +595,26 @@ async function main() {
   )
   console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
 
-  // If the writer wrote nothing despite a non-empty plan, that's a hard
-  // failure — we don't want to bump the version pretending we synced. (Real
-  // bug we hit on v2026.4.29 where the shared writer loop hit its budget
-  // with 0 files written but the workflow committed the version anyway.)
-  if (writtenFiles.length === 0) {
+  // Fail loud if too few files were actually written. A partial sync where
+  // 2/13 files got through (real result on v2026.4.29 with MAX_ITER_WRITER=4)
+  // is functionally a broken release — we'd bump the version, declare done,
+  // and the next 11 missed updates would never run. Threshold: ≥ 60% must
+  // be written for the run to count as successful. Anything less means we
+  // refuse the version bump and let the next run retry with no false success.
+  const successRatio = writtenFiles.length / plannedItems.length
+  const MIN_SUCCESS_RATIO = 0.6
+  if (successRatio < MIN_SUCCESS_RATIO) {
     throw new Error(
-      `Writer wrote 0 files despite a plan with ${plannedItems.length} item(s) ` +
-        `(stopped: ${writerStopped}). Refusing to bump version. ` +
-        `Inspect logs for per-file failures.`,
+      `Only ${writtenFiles.length}/${plannedItems.length} files written ` +
+        `(${(successRatio * 100).toFixed(0)}% < ${MIN_SUCCESS_RATIO * 100}% threshold). ` +
+        `Refusing to bump version. Per-file stop reason: ${writerStopped}. ` +
+        `Inspect logs for which files hit max_iter or budget.`,
     )
   }
-  if (writerStopped !== "clean") {
+  if (writerStopped !== "clean" || writtenFiles.length < plannedItems.length) {
     console.warn(
-      `⚠️  At least one per-file writer call was force-stopped (reason: ${writerStopped}). ` +
-        `${writtenFiles.length}/${plannedItems.length} file(s) written — partial sync.`,
+      `⚠️  Partial sync: ${writtenFiles.length}/${plannedItems.length} file(s) written ` +
+        `(stop reason: ${writerStopped}). Above threshold — committing what we have.`,
     )
   }
 

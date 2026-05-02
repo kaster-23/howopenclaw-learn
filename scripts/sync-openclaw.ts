@@ -46,9 +46,12 @@ const MAX_ITER_WRITER = 20
 // kept blowing the budget while still doing legitimate work — reading many
 // docs files before committing to a plan. Haiku is cheap (~$1/M input) and
 // the cost of missing a doc-relevant change is much higher than a few
-// extra tokens.
+// extra tokens. Writer was raised 250k → 800k for the same reason: on
+// v2026.4.29, writer hit 250k at iter 5 having written zero files (still
+// in read/reason phase). 800k gives Haiku room to read every targeted file
+// and write all of them in a release that touches ~10 docs.
 const TOKEN_BUDGET_TRIAGE = 400_000
-const TOKEN_BUDGET_WRITER = 250_000
+const TOKEN_BUDGET_WRITER = 800_000
 
 // Track total token usage across all calls — printed at end of run.
 let totalInputTokens = 0
@@ -394,7 +397,7 @@ async function executeUpdates(
   releaseTag: string,
   releaseNotes: string,
   triagePlan: string,
-): Promise<string[]> {
+): Promise<{ writtenFiles: string[]; stopped: LoopResult["stopped"] }> {
   console.log(`\n[Phase 2 — Haiku writer] Executing updates...`)
 
   const writtenFiles: string[] = []
@@ -433,7 +436,7 @@ Execute the triage plan:
 
   const beforeWrites = new Set(filesWritten)
 
-  await runAgentLoop(
+  const result = await runAgentLoop(
     MODEL_WRITER,
     system,
     userMessage,
@@ -448,7 +451,7 @@ Execute the triage plan:
     if (!beforeWrites.has(f)) writtenFiles.push(f)
   }
 
-  return writtenFiles
+  return { writtenFiles, stopped: result.stopped }
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -502,8 +505,29 @@ async function main() {
   }
 
   // Phase 2 — execute the triage plan
-  const writtenFiles = await executeUpdates(release.tag, release.notes, triage.text)
+  const { writtenFiles, stopped: writerStopped } = await executeUpdates(
+    release.tag,
+    release.notes,
+    triage.text,
+  )
   console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
+
+  // If the writer was force-stopped AND wrote nothing, that's a hard failure —
+  // we don't want to bump the version pretending we synced. (Real bug we hit
+  // on v2026.4.29 where writer hit 250k budget at iter 5 with 0 files written
+  // but the workflow committed `.openclaw-last-version` anyway as "synced".)
+  if (writerStopped !== "clean" && writtenFiles.length === 0) {
+    throw new Error(
+      `Writer was force-stopped (reason: ${writerStopped}) and wrote 0 files. ` +
+        `Refusing to bump version. Raise TOKEN_BUDGET_WRITER or MAX_ITER_WRITER if this recurs.`,
+    )
+  }
+  if (writerStopped !== "clean") {
+    console.warn(
+      `⚠️  Writer was force-stopped (reason: ${writerStopped}) after ${writtenFiles.length} file(s). ` +
+        `Partial sync — committing what was written and advancing the version.`,
+    )
+  }
 
   // Save version + set outputs
   saveVersion(release.tag)

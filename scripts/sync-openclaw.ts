@@ -423,6 +423,29 @@ function extractMdxFromResponse(text: string): string | null {
   return match ? match[1] : null
 }
 
+// Tags whose open/close counts must match in any valid Fumadocs MDX file.
+// Self-closing variants (<Step />) and Mermaid fenced code blocks aren't
+// counted here — we only care about block-form components. Build errors on
+// previous syncs were always one of these missing a closing tag.
+const REQUIRED_BALANCED_TAGS = ["Step", "Steps", "Tab", "Tabs", "Callout", "Cards", "Card"]
+
+// Verify every tag in REQUIRED_BALANCED_TAGS has equal open/close counts in
+// the MDX body. Returns null if balanced, or a string describing the mismatch.
+function checkMdxTagBalance(content: string): string | null {
+  for (const tag of REQUIRED_BALANCED_TAGS) {
+    // Open: `<Tag` followed by space, newline, or `>`. Excludes self-closing
+    // `<Tag />` by requiring something other than `/` to follow the tag name.
+    const openRe = new RegExp(`<${tag}(?=[\\s>])(?![^>]*/>)`, "g")
+    const closeRe = new RegExp(`</${tag}>`, "g")
+    const opens = content.match(openRe)?.length ?? 0
+    const closes = content.match(closeRe)?.length ?? 0
+    if (opens !== closes) {
+      return `<${tag}> tag imbalance: ${opens} open vs ${closes} close`
+    }
+  }
+  return null
+}
+
 async function writeOneFile(
   releaseTag: string,
   filePath: string,
@@ -438,15 +461,18 @@ async function writeOneFile(
 
 You will be given ONE file and ONE set of changes. Apply the changes and output the FULL updated file content.
 
+CRITICAL — every tag must be balanced. The previous version of this script shipped output with dropped closing tags (</Step>, </Steps>, </Tabs>) and broke the build. Before writing your output, mentally verify that every <Step>, <Steps>, <Tab>, <Tabs>, <Callout>, <Card>, <Cards> has a matching closing tag. The count of openers must equal the count of closers for every component.
+
 Rules:
 - Preserve all existing MDX frontmatter and structure (faqs, howToSteps, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, title, description)
 - Preserve all component syntax (Fumadocs: Callout, Steps, Step, Cards, Card, Tabs, Tab; course: ReadTime, LearningObjectives, ModuleNav, MarkComplete, VideoEmbed; Mermaid fenced blocks)
+- Every component opening tag MUST have a matching closing tag. <Step>...</Step>, <Tabs>...</Tabs>, <Callout>...</Callout>. Never omit a closing tag.
+- Markdown link syntax must remain balanced: [text](url) — never drop a closing paren
 - Keep the same writing style and tone — calm, professional, beginner-friendly
 - For new features added in this release, wrap them in: <Callout type="info" title="New in ${releaseTag}">...</Callout>
 - For removed features, note the removal in a Callout
 - Do not change moduleNumber, readTime, nextModule, prevModule, or moduleId values
 - Make ONLY the changes listed in the instructions — do not refactor or rewrite unrelated sections
-- Markdown link syntax must remain balanced: [text](url) — never drop a closing paren
 
 Output format:
 - If the changes apply: output exactly one fenced code block tagged \`\`\`mdx containing the COMPLETE updated file content (including frontmatter), then nothing else.
@@ -502,6 +528,17 @@ Output the complete updated file in a \`\`\`mdx fenced block, or NO_CHANGES if n
   if (newContent.length < 500) {
     console.warn(
       `    [writer:${path.basename(filePath)}] suspiciously small output (${newContent.length} bytes). Skipping.`,
+    )
+    return { written: false, reason: "malformed" }
+  }
+
+  // Tag balance check: previous syncs shipped MDX with dropped </Step> and
+  // similar, breaking the build. Reject malformed output rather than letting
+  // it slip past and fail the workflow's later build step.
+  const imbalance = checkMdxTagBalance(newContent)
+  if (imbalance) {
+    console.warn(
+      `    [writer:${path.basename(filePath)}] tag balance check failed (${imbalance}). Skipping.`,
     )
     return { written: false, reason: "malformed" }
   }

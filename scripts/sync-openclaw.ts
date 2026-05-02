@@ -40,7 +40,10 @@ const MAX_ITER_WRITER = 20
 // iteration resends the full history (file reads + assistant responses + tool
 // results). Without a budget cap, a chatty writer can balloon to 500k+ tokens
 // on a multi-file release. Calibrated from a real run that used ~511k.
-const TOKEN_BUDGET_TRIAGE = 80_000
+// Triage was raised from 80k to 200k after a real run blew the budget on
+// iter 3 with a long release notes body — Haiku is cheap and the cost of
+// missing a doc-relevant change is much higher than a few extra tokens.
+const TOKEN_BUDGET_TRIAGE = 200_000
 const TOKEN_BUDGET_WRITER = 250_000
 
 // Track total token usage across all calls — printed at end of run.
@@ -233,6 +236,13 @@ async function createMessageWithRetry(
 
 // ─── Agentic loop ─────────────────────────────────────────────────────────────
 
+type LoopResult = {
+  text: string
+  // 'clean' = model called end_turn or finished without tools
+  // 'budget' / 'max_iter' = forced termination, output may be incomplete
+  stopped: "clean" | "budget" | "max_iter"
+}
+
 async function runAgentLoop(
   model: string,
   system: string,
@@ -241,13 +251,14 @@ async function runAgentLoop(
   maxIter: number,
   label: string,
   loopTokenBudget?: number,
-): Promise<string> {
+): Promise<LoopResult> {
   const messages: Anthropic.MessageParam[] = [
     { role: "user", content: userMessage },
   ]
 
   let lastText = ""
   let loopInputTokens = 0
+  let stopped: LoopResult["stopped"] = "max_iter"
 
   for (let i = 0; i < maxIter; i++) {
     const response = await createMessageWithRetry({
@@ -271,13 +282,17 @@ async function runAgentLoop(
 
     if (response.stop_reason === "end_turn") {
       console.log(`  [${label}] finished after ${i + 1} iter`)
+      stopped = "clean"
       break
     }
 
     const toolCalls = response.content.filter(
       (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
     )
-    if (toolCalls.length === 0) break
+    if (toolCalls.length === 0) {
+      stopped = "clean"
+      break
+    }
 
     const results: Anthropic.ToolResultBlockParam[] = toolCalls.map((tool) => ({
       type: "tool_result",
@@ -294,6 +309,7 @@ async function runAgentLoop(
       console.warn(
         `  [${label}] hit token budget (${loopInputTokens.toLocaleString()} > ${loopTokenBudget.toLocaleString()}) — stopping after iter ${i + 1}`,
       )
+      stopped = "budget"
       break
     }
 
@@ -302,7 +318,7 @@ async function runAgentLoop(
     }
   }
 
-  return lastText
+  return { text: lastText, stopped }
 }
 
 // ─── Phase 1: Haiku triage ────────────────────────────────────────────────────
@@ -311,7 +327,7 @@ async function triageRelease(
   releaseTag: string,
   releaseNotes: string,
   lastVersion: string,
-): Promise<string> {
+): Promise<LoopResult> {
   console.log(`\n[Phase 1 — Haiku] Triaging release ${releaseTag}...`)
 
   const system = `You are a triage assistant for HowOpenClaw, an educational site about OpenClaw.
@@ -452,11 +468,24 @@ async function main() {
   console.log(`\nNew release: ${release.tag} (previous: ${lastVersion || "none"})\n`)
 
   // Phase 1 — Haiku: cheap triage to identify what needs changing
-  const triagePlan = await triageRelease(release.tag, release.notes, lastVersion)
-  console.log(`\nTriage plan:\n${triagePlan}\n`)
+  const triage = await triageRelease(release.tag, release.notes, lastVersion)
+  console.log(`\nTriage plan:\n${triage.text}\n`)
+
+  // If the triage loop was force-stopped (budget/max_iter), the output may be
+  // empty or partial — we cannot trust the "no files to update" inference.
+  // Fail loudly so the next run retries instead of silently bumping the
+  // version and skipping a doc-relevant release. (Real bug we hit on
+  // v2026.4.29 where the loop bailed at iter 3 on the original 80k budget.)
+  if (triage.stopped !== "clean") {
+    throw new Error(
+      `Triage did not terminate cleanly (reason: ${triage.stopped}). ` +
+        `Output may be incomplete. Refusing to bump version. ` +
+        `Raise TOKEN_BUDGET_TRIAGE or MAX_ITER_TRIAGE if this recurs.`,
+    )
+  }
 
   // Check if anything actually needs updating
-  if (!triagePlan.includes("## Files to update") || triagePlan.match(/## Files to update\s*\n\s*## /)) {
+  if (!triage.text.includes("## Files to update") || triage.text.match(/## Files to update\s*\n\s*## /)) {
     console.log("Triage found no files to update — bumping version file only.")
     saveVersion(release.tag)
     // version_only=true tells the workflow to commit just the version file
@@ -469,7 +498,7 @@ async function main() {
   }
 
   // Phase 2 — execute the triage plan
-  const writtenFiles = await executeUpdates(release.tag, release.notes, triagePlan)
+  const writtenFiles = await executeUpdates(release.tag, release.notes, triage.text)
   console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
 
   // Save version + set outputs

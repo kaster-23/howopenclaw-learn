@@ -3,7 +3,7 @@ title: "Is OpenClaw Free?"
 description: "OpenClaw is free and open source — no subscription. You only pay for AI API calls. Here's the real cost breakdown and how to keep it under $5/month."
 faqs:
   - q: "Is OpenClaw free?"
-    a: "OpenClaw itself is free and [open source](https://github.com/openclaw/openclaw). There is no subscription, no license fee, and no usage cap. You pay only for the AI API calls you make to your chosen provider ([OpenAI](https://platform.openai.com/docs/pricing), [Anthropic](https://www.anthropic.com/pricing), or [Google](https://ai.google.dev/pricing)). Typical personal use costs $1–10 per month."
+    a: "OpenClaw itself is free and [open source](https://github.com/openclaw/openclaw). There is no subscription, no license fee, and no usage cap. You pay only for the AI API calls you make to your chosen provider ([OpenAI](https://platform.openai.com/docs/pricing), [Anthropic](https://www.anthropic.com/pricing), [Google](https://ai.google.dev/pricing), or [NVIDIA](https://www.nvidia.com/en-us/ai/). Typical personal use costs $1–10 per month."
   - q: "How much does OpenClaw cost per month?"
     a: "Costs depend on [your AI provider](https://docs.openclaw.ai/providers) and how much you use it. Light use (a few conversations per day) typically runs $1–5/month. Heavy use with daily briefings and frequent messaging typically runs $5–20/month. All costs go directly to your AI provider — OpenClaw itself charges nothing."
   - q: "Does OpenClaw have a subscription?"
@@ -19,7 +19,7 @@ Typical personal use: **$1–5/month** (light). **$5–20/month** (heavy with da
 
 OpenClaw is free and open source. There is no subscription, no license fee, no account required, and no usage limits imposed by OpenClaw itself.
 
-**You pay only for AI API calls** — the requests OpenClaw makes to your chosen AI provider (OpenAI, Anthropic, or Google) on your behalf.
+**You pay only for AI API calls** — the requests OpenClaw makes to your chosen AI provider (OpenAI, Anthropic, Google, or NVIDIA) on your behalf.
 
 ---
 
@@ -46,11 +46,16 @@ Costs vary based on:
 |---|---|---|
 | Anthropic | claude-haiku-4-5 | Low |
 | OpenAI | gpt-4o-mini | Low |
+| NVIDIA | Meta-Llama-3.1-8B | Low |
 | Anthropic | claude-sonnet-4-6 | Medium |
 | OpenAI | gpt-4o | Medium–High |
 | Anthropic | claude-opus-4-6 | High |
 
-For personal daily use, Claude Haiku or GPT-4o-mini provides a good balance of quality and cost. The quality difference for everyday tasks (briefings, reminders, questions) is minimal.
+<Callout type="info" title="NVIDIA API pricing">
+NVIDIA offers competitive pricing for open-source models through its hosted inference service. Models like Llama 3.1 typically cost less per token than proprietary alternatives, making them ideal for cost-conscious deployments. NVIDIA also includes free tier usage for eligible models.
+</Callout>
+
+For personal daily use, Claude Haiku, GPT-4o-mini, or NVIDIA's Llama models provide a good balance of quality and cost. The quality difference for everyday tasks (briefings, reminders, questions) is minimal.
 
 ---
 

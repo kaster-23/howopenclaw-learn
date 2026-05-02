@@ -34,9 +34,11 @@ const MAX_TOKENS = 2048
 // Iteration caps: hard ceiling on tool-loop cost. Raise if a release legitimately
 // touches more than ~10 files. Triage was raised 8 → 12 because large releases
 // (e.g. v2026.4.29) require the agent to read many files (concepts, channels,
-// CLI, security) before it can commit to a plan.
+// CLI, security) before it can commit to a plan. Writer is now per-file (no
+// shared loop), so MAX_ITER_WRITER is the cap per single-file call — 4 is
+// plenty for read → reason → write.
 const MAX_ITER_TRIAGE = 12
-const MAX_ITER_WRITER = 20
+const MAX_ITER_WRITER = 4
 
 // Token budget per loop. Input tokens compound quadratically because every
 // iteration resends the full history (file reads + assistant responses + tool
@@ -46,12 +48,12 @@ const MAX_ITER_WRITER = 20
 // kept blowing the budget while still doing legitimate work — reading many
 // docs files before committing to a plan. Haiku is cheap (~$1/M input) and
 // the cost of missing a doc-relevant change is much higher than a few
-// extra tokens. Writer was raised 250k → 800k for the same reason: on
-// v2026.4.29, writer hit 250k at iter 5 having written zero files (still
-// in read/reason phase). 800k gives Haiku room to read every targeted file
-// and write all of them in a release that touches ~10 docs.
+// extra tokens. Writer is now per-file: each call gets a tight 60k budget
+// (file content + changes block + a couple iters of writing). One large
+// shared-loop writer was unreliable on big releases — Haiku spent 14 iters
+// reading without writing on v2026.4.29.
 const TOKEN_BUDGET_TRIAGE = 400_000
-const TOKEN_BUDGET_WRITER = 800_000
+const TOKEN_BUDGET_WRITER = 60_000
 
 // Track total token usage across all calls — printed at end of run.
 let totalInputTokens = 0
@@ -393,48 +395,83 @@ ${releaseNotes || "(no release notes provided)"}
 
 // ─── Phase 2: writer ──────────────────────────────────────────────────────────
 
-async function executeUpdates(
+// Parse triage output into per-file work items. Triage is instructed to emit:
+//   ## Files to update
+//   ### content/path/to/file.mdx
+//   **Reason:** ...
+//   **Changes needed:**
+//   - ...
+//   - ...
+//
+//   ### content/another/file.mdx
+//   ...
+//
+//   ## Files with no changes needed
+//   - ...
+function parseTriagePlan(triagePlan: string): { path: string; instructions: string }[] {
+  const items: { path: string; instructions: string }[] = []
+  const startIdx = triagePlan.indexOf("## Files to update")
+  if (startIdx === -1) return items
+  const endMarker = triagePlan.indexOf("## Files with no changes", startIdx)
+  const section = triagePlan.slice(
+    startIdx,
+    endMarker === -1 ? triagePlan.length : endMarker,
+  )
+  // Split on "### " headers; first chunk is the section title, skip it.
+  const chunks = section.split(/\n###\s+/).slice(1)
+  for (const chunk of chunks) {
+    const newlineIdx = chunk.indexOf("\n")
+    const headerLine = (newlineIdx === -1 ? chunk : chunk.slice(0, newlineIdx)).trim()
+    const body = newlineIdx === -1 ? "" : chunk.slice(newlineIdx + 1).trim()
+    // Header may be just `content/x.mdx` or `content/x.mdx — reason`. Strip
+    // backticks and anything after a separator.
+    const filePath = headerLine
+      .replace(/[`*]/g, "")
+      .split(/\s+[—–-]\s+/)[0]
+      .trim()
+    if (filePath.startsWith("content/") && filePath.endsWith(".mdx")) {
+      items.push({ path: filePath, instructions: body })
+    }
+  }
+  return items
+}
+
+async function writeOneFile(
   releaseTag: string,
-  releaseNotes: string,
-  triagePlan: string,
-): Promise<{ writtenFiles: string[]; stopped: LoopResult["stopped"] }> {
-  console.log(`\n[Phase 2 — Haiku writer] Executing updates...`)
+  filePath: string,
+  instructions: string,
+): Promise<{ written: boolean; stopped: LoopResult["stopped"] }> {
+  const current = safeRead(filePath)
+  if (current.startsWith("Error:")) {
+    console.warn(`  ⚠️  Skipping ${filePath}: ${current}`)
+    return { written: false, stopped: "clean" }
+  }
 
-  const writtenFiles: string[] = []
+  const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw.
 
-  const system = `You are a technical documentation maintainer for HowOpenClaw, a course-based educational site for OpenClaw (an open-source self-hosted AI assistant).
-
-The site is structured as a 10-module course (content/course/) plus secondary reference sections (content/channels/, content/reference/).
+You will be given ONE file and ONE set of changes. Read the current content, apply the changes, and call write_file with the full updated content. Do not read other files. Do not skip the write step.
 
 Rules:
-- Only update the files identified in the triage plan
-- Preserve all existing MDX structure and frontmatter — including course-specific fields: title, description, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, faqs, howToSteps
-- Preserve all component syntax — both Fumadocs components (Callout, Steps, Step, Cards, Card, Tabs, Tab) and course components (ReadTime, LearningObjectives, ModuleNav, MarkComplete, VideoEmbed) and Mermaid fenced code blocks
-- Keep the same writing style and tone — calm, professional, beginner-friendly, step-by-step
-- If a feature changed, update the relevant steps/descriptions
-- If a feature is new, add it in the appropriate module section using version-tagged Callouts: <Callout type="info" title="New in ${releaseTag}">
-- If a feature was removed, note the removal with a Callout
+- Preserve all existing MDX frontmatter and structure (faqs, howToSteps, readTime, moduleNumber, learningObjectives, prerequisites, nextModule, prevModule, title, description)
+- Preserve all component syntax (Fumadocs: Callout, Steps, Step, Cards, Card, Tabs, Tab; course: ReadTime, LearningObjectives, ModuleNav, MarkComplete, VideoEmbed; Mermaid fenced blocks)
+- Keep the same writing style and tone — calm, professional, beginner-friendly
+- For new features added in this release, wrap them in: <Callout type="info" title="New in ${releaseTag}">...</Callout>
+- For removed features, note the removal in a Callout
 - Do not change moduleNumber, readTime, nextModule, prevModule, or moduleId values
-- After writing all files, output a plain list of the file paths you updated, one per line`
+- Make ONLY the changes listed in the instructions — do not refactor or rewrite unrelated sections
+- If after reading the changes you decide they're not actually applicable to this file's current content, do NOT call write_file. Output a one-line explanation instead.`
 
-  const userMessage = `OpenClaw released **${releaseTag}**.
+  const userMessage = `File: \`${filePath}\`
 
-Release notes:
----
-${releaseNotes || "(no release notes provided)"}
----
+Current content:
+\`\`\`mdx
+${current}
+\`\`\`
 
-Triage plan from Phase 1:
----
-${triagePlan}
----
+Changes to apply (from triage):
+${instructions}
 
-Execute the triage plan:
-1. For each file marked for update: read it, apply the specified changes, write it back
-2. Skip files marked as no changes needed
-3. After all writes, list the updated file paths`
-
-  const beforeWrites = new Set(filesWritten)
+Apply these changes and call write_file with the complete updated file content. Use write_file exactly once.`
 
   const result = await runAgentLoop(
     MODEL_WRITER,
@@ -442,16 +479,52 @@ Execute the triage plan:
     userMessage,
     writeTools,
     MAX_ITER_WRITER,
-    "writer",
+    `writer:${path.basename(filePath)}`,
     TOKEN_BUDGET_WRITER,
   )
 
-  // Authoritative list: files added to filesWritten during this loop.
-  for (const f of filesWritten) {
-    if (!beforeWrites.has(f)) writtenFiles.push(f)
+  return { written: filesWritten.has(filePath), stopped: result.stopped }
+}
+
+async function executeUpdates(
+  releaseTag: string,
+  _releaseNotes: string,
+  triagePlan: string,
+): Promise<{ writtenFiles: string[]; stopped: LoopResult["stopped"] }> {
+  const items = parseTriagePlan(triagePlan)
+  console.log(
+    `\n[Phase 2 — Haiku writer] Executing per-file updates for ${items.length} file(s)...`,
+  )
+
+  if (items.length === 0) {
+    return { writtenFiles: [], stopped: "clean" }
   }
 
-  return { writtenFiles, stopped: result.stopped }
+  const writtenFiles: string[] = []
+  let anyForceStopped: LoopResult["stopped"] = "clean"
+
+  for (const item of items) {
+    console.log(`\n  → ${item.path}`)
+    try {
+      const { written, stopped } = await writeOneFile(
+        releaseTag,
+        item.path,
+        item.instructions,
+      )
+      if (written) writtenFiles.push(item.path)
+      // Track worst stop reason across all files for the caller's fail-loud
+      // logic. A single force-stop on one file shouldn't tank the run, but we
+      // surface it.
+      if (stopped !== "clean" && anyForceStopped === "clean") {
+        anyForceStopped = stopped
+      }
+    } catch (err) {
+      console.error(`  ❌ Failed on ${item.path}:`, err)
+      // Continue with the rest — partial sync is better than no sync.
+    }
+  }
+
+  return { writtenFiles, stopped: anyForceStopped }
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -504,7 +577,15 @@ async function main() {
     return
   }
 
-  // Phase 2 — execute the triage plan
+  // Phase 2 — execute the triage plan (one Haiku call per file)
+  const plannedItems = parseTriagePlan(triage.text)
+  if (plannedItems.length === 0) {
+    throw new Error(
+      `Triage emitted "## Files to update" but the parser found no valid file entries. ` +
+        `Triage output may be malformed. Refusing to bump version. Triage text:\n${triage.text.slice(0, 1000)}`,
+    )
+  }
+
   const { writtenFiles, stopped: writerStopped } = await executeUpdates(
     release.tag,
     release.notes,
@@ -512,20 +593,21 @@ async function main() {
   )
   console.log(`\nUpdated ${writtenFiles.length} file(s): ${writtenFiles.join(", ")}`)
 
-  // If the writer was force-stopped AND wrote nothing, that's a hard failure —
-  // we don't want to bump the version pretending we synced. (Real bug we hit
-  // on v2026.4.29 where writer hit 250k budget at iter 5 with 0 files written
-  // but the workflow committed `.openclaw-last-version` anyway as "synced".)
-  if (writerStopped !== "clean" && writtenFiles.length === 0) {
+  // If the writer wrote nothing despite a non-empty plan, that's a hard
+  // failure — we don't want to bump the version pretending we synced. (Real
+  // bug we hit on v2026.4.29 where the shared writer loop hit its budget
+  // with 0 files written but the workflow committed the version anyway.)
+  if (writtenFiles.length === 0) {
     throw new Error(
-      `Writer was force-stopped (reason: ${writerStopped}) and wrote 0 files. ` +
-        `Refusing to bump version. Raise TOKEN_BUDGET_WRITER or MAX_ITER_WRITER if this recurs.`,
+      `Writer wrote 0 files despite a plan with ${plannedItems.length} item(s) ` +
+        `(stopped: ${writerStopped}). Refusing to bump version. ` +
+        `Inspect logs for per-file failures.`,
     )
   }
   if (writerStopped !== "clean") {
     console.warn(
-      `⚠️  Writer was force-stopped (reason: ${writerStopped}) after ${writtenFiles.length} file(s). ` +
-        `Partial sync — committing what was written and advancing the version.`,
+      `⚠️  At least one per-file writer call was force-stopped (reason: ${writerStopped}). ` +
+        `${writtenFiles.length}/${plannedItems.length} file(s) written — partial sync.`,
     )
   }
 

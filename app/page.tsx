@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { LandingContent } from "@/components/landing-content"
 import { Footer } from "@/components/footer"
 import { BackgroundDotsLoader } from "@/components/background-dots-loader"
-import { OPENCLAW_VERSION } from "@/lib/openclaw-version"
 
 const description =
   "Build your own private AI assistant with OpenClaw — no subscriptions, no cloud. 10 beginner-friendly modules to go from zero to running in an hour."
@@ -119,7 +118,7 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqJsonLd) }}
       />
       <BackgroundDotsLoader />
-      <LandingContent syncedVersion={OPENCLAW_VERSION} />
+      <LandingContent />
       <Footer />
     </>
   )

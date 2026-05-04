@@ -2,7 +2,7 @@ name: Sync OpenClaw docs
 
 on:
   schedule:
-    - cron: "0 9 * * *" # Daily at 9am UTC
+    - cron: "0 9 * * 1" # Weekly, Monday at 9am UTC
   workflow_dispatch:     # Manual trigger from GitHub UI
 
 # Opt all JS actions (checkout, setup-node, action-setup) into Node 24 to

@@ -26,18 +26,25 @@ const CONTENT_DIR = path.resolve(process.cwd(), "content")
 const VERSION_FILE = path.resolve(process.cwd(), ".openclaw-last-version")
 const OPENCLAW_REPO = "OpenClaw/OpenClaw"
 
-// Both phases run on Haiku — the writer was previously Sonnet, but writes are
-// short and structured; lint + build catches anything broken in CI.
+// Triage stays on Haiku — it's just classifying release notes against a file
+// list, no structured-output requirements. Writer is Sonnet 4.6 because Haiku
+// 4.5 consistently malforms long structured MDX (drops </Step>/</Callout>
+// closing tags on files with multi-step blocks). Repeated runs on real
+// releases showed retry-with-feedback can't recover Haiku from that mode —
+// it produces the same imbalance both attempts. Sonnet is ~5x more expensive
+// but lands the file cleanly, which is the requirement for a hands-off cron.
 const MODEL_TRIAGE = "claude-haiku-4-5-20251001"
-const MODEL_WRITER = "claude-haiku-4-5-20251001"
+const MODEL_WRITER = "claude-sonnet-4-6"
 
 // Token caps:
 //  - Triage runs in a tool loop and emits a short file-list response, so 2k is plenty.
-//  - Writer is now a single non-tool call per file that must echo the entire
-//    file content back. Larger MDX files (system-requirements.mdx ~13KB,
-//    cli.mdx ~11KB) generate ~4-5k output tokens, so 8k headroom.
+//  - Writer is a single non-tool call per file that must echo the entire
+//    file content back. Largest MDX files (system-requirements.mdx ~13KB,
+//    cli.mdx ~11KB, troubleshooting.mdx ~20KB) generate ~6-8k output tokens.
+//    16k cap gives comfortable room without risking truncation; Sonnet 4.6
+//    supports up to 64k output so this is well within model limits.
 const MAX_TOKENS_TRIAGE = 2048
-const MAX_TOKENS_WRITER = 8192
+const MAX_TOKENS_WRITER = 16384
 
 // Iteration cap for triage tool loop. 12 is enough for a large release where
 // the agent reads many files before committing to a plan. Writer no longer

@@ -84,10 +84,17 @@ jobs:
           git config user.email "francoierace.dev@gmail.com"
           git add -A
           git commit -m "docs: sync with OpenClaw ${{ steps.sync.outputs.version }}"
-          git push origin main
+          # Pull-rebase + push, retry up to 3 times if main moved underneath us
+          # (e.g. concurrent manual push). Without this, a race produces a
+          # silent failure that requires manually re-running the workflow.
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push attempt $i failed, retrying after fetch+rebase..."
+            sleep 5
+          done
 
       # Version-only bump: triage decided no MDX needed updating, but we still
-      # commit .openclaw-last-version so the next daily run doesn't re-triage
+      # commit .openclaw-last-version so the next weekly run doesn't re-triage
       # the same release forever. Skip lint/build — nothing else changed.
       - name: Commit version bump only (no doc changes)
         if: steps.check.outputs.skip == 'false' && steps.sync.outputs.updated == 'false' && steps.sync.outputs.version_only == 'true'
@@ -96,4 +103,8 @@ jobs:
           git config user.email "francoierace.dev@gmail.com"
           git add .openclaw-last-version
           git commit -m "chore: track OpenClaw ${{ steps.sync.outputs.version }} (no doc changes needed)"
-          git push origin main
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push attempt $i failed, retrying after fetch+rebase..."
+            sleep 5
+          done

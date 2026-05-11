@@ -37,9 +37,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // ── Locale prefixes → English (i18n was rolled back; only English is published) ──
+      { source: "/en", destination: "/", permanent: true },
       { source: "/es", destination: "/", permanent: true },
       { source: "/pt", destination: "/", permanent: true },
       { source: "/ja", destination: "/", permanent: true },
+      { source: "/en/:path*", destination: "/:path*", permanent: true },
       { source: "/es/:path*", destination: "/:path*", permanent: true },
       { source: "/pt/:path*", destination: "/:path*", permanent: true },
       { source: "/ja/:path*", destination: "/:path*", permanent: true },

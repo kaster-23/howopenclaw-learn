@@ -1,6 +1,15 @@
 ---
 title: Reference
 description: "OpenClaw quick reference — all CLI commands, flags, and key concepts in one place. Bookmark this when you need something fast."
+faqs:
+  - q: "Where do I find the OpenClaw CLI commands?"
+    a: "The full CLI cheatsheet lives at [/reference/cli](/reference/cli). It covers the gateway, channels, cron, skills, models, plugins, devices, and config commands — with real output examples for the ones you'll use most. Run `openclaw --help` locally for the up-to-date list bundled with your install."
+  - q: "What are OpenClaw's system requirements?"
+    a: "Node.js 22.16 or newer (Node 24 recommended), 2 GB RAM minimum (4 GB comfortable), and a 64-bit OS — macOS, Linux, or Windows. Apple Silicon, ARM64 servers, Raspberry Pi 5, and Docker all work. iMessage is the only channel that requires macOS specifically. See [system requirements](/reference/system-requirements) for tiered specs by use case."
+  - q: "How much does OpenClaw cost?"
+    a: "OpenClaw itself is free and open source — no subscription, no license fee, no usage cap. You pay only for AI API calls to your chosen provider (OpenAI, Anthropic, Google, or NVIDIA), typically $1–10/month for personal use. With local Ollama models the cost is $0. Full breakdown at [pricing](/reference/pricing)."
+  - q: "Where do I troubleshoot when OpenClaw isn't working?"
+    a: "Start at [/reference/troubleshooting](/reference/troubleshooting). It covers the common failures — gateway won't start, bot not responding, pairing fails, cron not firing — with exact commands and step-by-step fixes. If your issue isn't there, run `openclaw doctor --fix` to auto-repair config and plugin issues."
 ---
 
 The Reference section is your quick-lookup guide when you need an answer fast. Find CLI commands, understand terminology, troubleshoot problems, or check costs. Most answers are under 200 words. For hands-on learning, see the [Course](/course).

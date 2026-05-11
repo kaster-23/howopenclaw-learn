@@ -1,6 +1,15 @@
 ---
 title: "Channels"
 description: "Connect your private AI assistant to Telegram, WhatsApp, Slack, Discord, Signal, iMessage, or Microsoft Teams. Full setup guide for every OpenClaw channel."
+faqs:
+  - q: "Which messaging app should I use with OpenClaw?"
+    a: "Use whatever you already message in. Telegram is the easiest to set up (just a BotFather token). WhatsApp gives you the broadest reach for personal contacts. Slack and Microsoft Teams are best for work contexts. iMessage requires a Mac and is iOS-friendly. Discord works well for community or hobby use. There is no single best — pick the one your daily chats already happen in. See [choosing a channel](/channels/choosing-a-channel) for a detailed comparison."
+  - q: "Do I need a paid plan for any OpenClaw channel?"
+    a: "No. Every OpenClaw channel — Telegram, WhatsApp, Slack, Discord, Signal, iMessage, Microsoft Teams, webchat — works on the free tier of the underlying platform. You only pay for AI API calls to your chosen provider (OpenAI, Anthropic, Google, or local Ollama). Typical personal use runs $1–10/month. See [pricing](/reference/pricing) for a full cost breakdown."
+  - q: "Can I connect OpenClaw to more than one channel at the same time?"
+    a: "Yes. OpenClaw can serve multiple channels simultaneously from one gateway — for example, Telegram for personal chats, Slack for work, and Discord for a community, all on the same agent. Each channel has its own setup guide, and you can add new channels at any time without restarting existing ones."
+  - q: "What hardware do I need to run OpenClaw channels?"
+    a: "Any machine running Node.js 22.16+ on macOS, Linux, or Windows. The gateway uses under 200 MB RAM, so a Raspberry Pi 5, an old laptop, or a $5/month VPS all work. iMessage is the one exception — it requires macOS. See [system requirements](/reference/system-requirements) for the full hardware matrix."
 ---
 
 Channels are how you communicate with your agent. Rather than forcing you into a dedicated app, OpenClaw meets you in the messaging tools you already use — your phone, your workspace, your community.

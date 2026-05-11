@@ -105,11 +105,14 @@ Use when adding a new messaging platform or approving a new user. `channels pair
 
 ```bash
 openclaw channels list                        # List configured channels
+openclaw channels list --all                  # Also list bundled + catalog channels (v2026.5.7+)
 openclaw channels pair                        # Approve pending pairing requests
 openclaw channels login --channel whatsapp    # WhatsApp QR code pairing
 openclaw channels setup imessage              # iMessage permission setup
 openclaw gateway status                       # Shows channel connection status
 ```
+
+As of v2026.5.7, `openclaw channels list` shows only channel state (installed / configured / enabled). Model auth and usage details moved to `openclaw models auth list` and `openclaw status`.
 
 ---
 
@@ -231,6 +234,7 @@ If a tool appears in `tools list` but the agent refuses to invoke it, check your
 
 ```bash
 openclaw models                        # List available AI models
+openclaw models auth list              # List saved per-agent auth profiles (v2026.5.4+)
 openclaw plugins                       # List installed plugins
 ```
 
